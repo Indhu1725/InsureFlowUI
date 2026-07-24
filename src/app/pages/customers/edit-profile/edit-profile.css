@@ -1,0 +1,94 @@
+/* Page Background */
+.container-fluid {
+    background-color: #f8f9fa;
+}
+
+/* Card */
+.card {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 15px 20px;
+}
+
+.card-body {
+    padding: 30px;
+}
+
+/* Heading */
+h2 {
+    font-weight: 700;
+    color: #212529;
+}
+
+/* Labels */
+.form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+}
+
+/* Inputs & Textarea */
+.form-control {
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    padding: 10px 12px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+/* Textarea */
+textarea.form-control {
+    resize: none;
+}
+
+/* Buttons */
+.btn {
+    border-radius: 8px;
+    padding: 10px 22px;
+    font-weight: 500;
+}
+
+.btn-success {
+    margin-right: 10px;
+}
+
+/* Loading */
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Card Hover */
+.card:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    transition: 0.3s ease-in-out;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+
+    .card-body {
+        padding: 20px;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .btn-success {
+        margin-right: 0;
+    }
+}

@@ -1,0 +1,24 @@
+.container {
+  max-width: 700px;
+}
+
+.card {
+  border-radius: 10px;
+}
+
+.card-header {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+label {
+  margin-bottom: 5px;
+}
+
+textarea {
+  resize: vertical;
+}
+
+button {
+  min-width: 140px;
+}

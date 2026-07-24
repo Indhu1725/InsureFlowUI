@@ -1,0 +1,391 @@
+/* ===========================
+   Login Page
+=========================== */
+
+.login-page{
+    background:#f4f7fc;
+    overflow-x:hidden;
+    min-height:100vh;
+}
+
+/* ===========================
+   Left Panel
+=========================== */
+
+.left-panel{
+    background:linear-gradient(135deg,#071b52 0%,#0a2d74 100%);
+    min-height:100vh;
+    color:#fff;
+    display:flex;
+    align-items:center;
+}
+
+.left-content{
+    width:100%;
+    height:100vh;
+    padding:28px 36px;
+    display:flex;
+    flex-direction:column;
+}
+
+/* ===========================
+   Logo
+=========================== */
+
+.logo-section{
+    display:flex;
+    align-items:center;
+    margin-bottom:25px;
+}
+
+.logo-box{
+    width:56px;
+    height:56px;
+    border-radius:14px;
+    background:rgba(255,255,255,.12);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin-right:15px;
+}
+
+.logo-box i{
+    font-size:26px;
+    color:#fff;
+}
+
+.logo-section h3{
+    margin:0;
+    font-size:30px;
+    font-weight:700;
+}
+
+.logo-section p{
+    margin:0;
+    color:rgba(255,255,255,.85);
+    font-size:14px;
+}
+
+/* ===========================
+   Welcome
+=========================== */
+
+.welcome-section{
+    margin-bottom:20px;
+}
+
+.welcome-section h1{
+    font-size:34px;
+    font-weight:700;
+    margin-bottom:15px;
+}
+
+.welcome-section p{
+    font-size:16px;
+    line-height:1.6;
+    color:rgba(255,255,255,.85);
+}
+
+/* ===========================
+   Dashboard Preview
+=========================== */
+
+.dashboard-preview{
+    flex:1;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.dashboard-preview img{
+    width:82%;
+    max-height:280px;
+    object-fit:contain;
+    border-radius:18px;
+    box-shadow:0 18px 45px rgba(0,0,0,.35);
+}
+
+/* ===========================
+   Footer
+=========================== */
+
+.copyright{
+    text-align:center;
+    color:rgba(255,255,255,.75);
+    font-size:13px;
+    margin-top:auto;
+    padding-bottom:10px;
+}
+
+/* ===========================
+   Right Panel
+=========================== */
+
+.login-card{
+    width:100%;
+    max-width:460px;
+    background:#fff;
+    border-radius:20px;
+    padding:28px 32px;
+    box-shadow:0 15px 40px rgba(0,0,0,.08);
+
+    max-height:90vh;
+    overflow-y:auto;
+}
+
+.login-card h2{
+    font-size:34px;
+    font-weight:700;
+    margin-bottom:8px;
+    color:#111;
+}
+
+.login-card p{
+    color:#777;
+    margin-bottom:22px;
+}
+
+/* ===========================
+   Labels
+=========================== */
+
+.form-label{
+    font-weight:600;
+    color:#333;
+    margin-bottom:8px;
+}
+
+/* ===========================
+   Inputs
+=========================== */
+
+.input-group{
+    margin-bottom:4px;
+}
+
+.input-group-text{
+    background:#fff;
+    border-right:none;
+    border-radius:12px 0 0 12px;
+    padding:12px;
+}
+
+.input-group-text i{
+    color:#888;
+}
+
+.form-control{
+    height:48px;
+    border-left:none;
+    border-radius:0 12px 12px 0;
+    font-size:15px;
+}
+
+.form-control:focus{
+    border-color:#6f42ff;
+    box-shadow:none;
+}
+
+.input-group:focus-within .input-group-text{
+    border-color:#6f42ff;
+}
+
+.btn-outline-secondary{
+    border-left:none;
+    border-radius:0 12px 12px 0;
+}
+
+.btn-outline-secondary:focus{
+    box-shadow:none;
+}
+
+.form-check-input{
+    cursor:pointer;
+}
+
+.form-check-input:checked{
+    background-color:#6547ff;
+    border-color:#6547ff;
+}
+
+.form-check-label{
+    font-size:15px;
+    color:#444;
+}
+
+a{
+    color:#6547ff;
+    text-decoration:none;
+    font-weight:600;
+}
+
+a:hover{
+    text-decoration:underline;
+}
+
+/* ===========================
+   Login Button
+=========================== */
+
+.login-btn{
+    width:100%;
+    height:48px;
+    border:none;
+    border-radius:12px;
+    background:linear-gradient(90deg,#5b46ff,#6c3bff,#7a2cff);
+    color:#fff;
+    font-size:17px;
+    font-weight:600;
+    transition:.3s ease;
+}
+
+.login-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 25px rgba(101,71,255,.35);
+}
+
+/* ===========================
+   Divider
+=========================== */
+
+.divider{
+    display:flex;
+    align-items:center;
+    margin:18px 0;
+    color:#999;
+}
+
+.divider::before,
+.divider::after{
+    content:"";
+    flex:1;
+    border-top:1px solid #ddd;
+}
+
+.divider span{
+    margin:0 12px;
+    white-space:nowrap;
+    font-size:14px;
+}
+
+/* ===========================
+   Social Buttons
+=========================== */
+
+.social-btn{
+    width:100%;
+    height:48px;
+    border-radius:12px;
+    border:1px solid #ddd;
+    background:#fff;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+    font-weight:600;
+    font-size:15px;
+    transition:.3s ease;
+}
+
+.social-btn:hover{
+    background:#f8f9fa;
+    border-color:#6547ff;
+}
+
+.social-btn img{
+    width:20px;
+    height:20px;
+}
+
+/* ===========================
+   Validation
+=========================== */
+
+.text-danger,
+.text-danger small{
+    font-size:11px;
+    margin-top:2px;
+    margin-bottom:0;
+    display:block;
+}
+
+/* ===========================
+   Form Spacing
+=========================== */
+
+.mb-3,
+.mb-4,
+.form-group{
+    margin-bottom:12px !important;
+}
+
+/* ===========================
+   Utility
+=========================== */
+
+.login-page,
+.left-panel{
+    min-height:100vh;
+}
+
+/* ===========================
+   Responsive
+=========================== */
+
+@media (max-width:991px){
+
+    .left-panel{
+        display:none;
+    }
+
+    .login-page{
+        min-height:100vh;
+    }
+
+    .login-card{
+        max-width:500px;
+        margin:30px auto;
+        padding:30px;
+    }
+
+    .login-card h2{
+        font-size:32px;
+    }
+
+}
+
+@media (max-width:576px){
+
+    .login-card{
+        margin:15px;
+        padding:22px;
+        border-radius:16px;
+    }
+
+    .login-card h2{
+        font-size:28px;
+    }
+
+    .form-control{
+        height:46px;
+    }
+
+    .input-group-text{
+        padding:10px;
+    }
+
+    .login-btn{
+        height:46px;
+        font-size:16px;
+    }
+
+    .social-btn{
+        height:46px;
+        font-size:14px;
+    }
+
+    .divider{
+        margin:15px 0;
+    }
+
+}

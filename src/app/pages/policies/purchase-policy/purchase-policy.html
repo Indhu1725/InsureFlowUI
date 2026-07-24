@@ -1,0 +1,55 @@
+<div class="container mt-4">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-success text-white">
+
+            <h3>Purchase Policy</h3>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="mb-3">
+
+                <label class="form-label">
+
+                    Plan Id
+
+                </label>
+
+                <input
+                    type="number"
+                    class="form-control"
+                    [(ngModel)]="purchase.planId">
+
+            </div>
+
+            <div class="mb-3">
+
+                <label class="form-label">
+
+                    Start Date
+
+                </label>
+
+                <input
+                    type="date"
+                    class="form-control"
+                    [(ngModel)]="purchase.startDate">
+
+            </div>
+
+            <button
+                class="btn btn-success"
+                (click)="purchasePolicy()">
+
+                Purchase
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>

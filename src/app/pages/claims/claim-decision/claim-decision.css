@@ -1,0 +1,30 @@
+.container {
+  max-width: 600px;
+}
+
+.card {
+  border: none;
+  border-radius: 12px;
+}
+
+.card-header {
+  border-radius: 12px 12px 0 0;
+}
+
+.form-label {
+  font-weight: 600;
+}
+
+.form-control,
+.form-select {
+  border-radius: 8px;
+}
+
+textarea {
+  resize: none;
+}
+
+.btn {
+  min-width: 140px;
+  border-radius: 8px;
+}

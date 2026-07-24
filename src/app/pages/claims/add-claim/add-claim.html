@@ -1,0 +1,210 @@
+<div class="container mt-4">
+
+  <div class="card shadow">
+
+    <div class="card-header bg-primary text-white">
+      <h3 class="mb-0">Submit Claim</h3>
+    </div>
+
+    <div class="card-body">
+
+      <form (ngSubmit)="submitClaim()">
+
+        <!-- Policy -->
+
+        <div class="mb-3">
+
+          <label class="form-label">
+            Policy
+          </label>
+
+          <select
+            class="form-select"
+            [(ngModel)]="claim.policyId"
+            name="policyId"
+            required>
+
+            <option [ngValue]="0">
+              Select Policy
+            </option>
+
+            @for(policy of policies; track policy.policyId){
+
+            <option [ngValue]="policy.policyId">
+
+              {{policy.policyNumber}}
+              -
+              {{policy.planName}}
+
+            </option>
+
+            }
+
+          </select>
+
+        </div>
+
+        <!-- Claim Amount -->
+
+        <div class="mb-3">
+
+          <label class="form-label">
+
+            Claim Amount
+
+          </label>
+
+          <input
+            type="number"
+            class="form-control"
+            [(ngModel)]="claim.claimAmount"
+            name="claimAmount"
+            required>
+
+        </div>
+
+        <!-- Incident Date -->
+
+        <div class="mb-3">
+
+          <label class="form-label">
+
+            Incident Date
+
+          </label>
+
+          <input
+            type="date"
+            class="form-control"
+            [(ngModel)]="claim.incidentDate"
+            name="incidentDate"
+            required>
+
+        </div>
+
+        <!-- Claim Reason -->
+
+        <div class="mb-3">
+
+          <label class="form-label">
+
+            Claim Reason
+
+          </label>
+
+          <textarea
+            rows="4"
+            class="form-control"
+            [(ngModel)]="claim.claimReason"
+            name="claimReason"
+            required>
+
+          </textarea>
+
+        </div>
+
+        <hr>
+
+        <h5>
+
+          Supporting Documents
+
+        </h5>
+
+        @for(document of claim.supportingDocuments;
+        track $index){
+
+        <div class="border rounded p-3 mb-3">
+
+          <div class="row">
+
+            <div class="col-md-4">
+
+              <label class="form-label">
+
+                Document Name
+
+              </label>
+
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="document.documentName"
+                [name]="'documentName'+$index">
+
+            </div>
+
+            <div class="col-md-4">
+
+              <label class="form-label">
+
+                Document Type
+
+              </label>
+
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="document.documentType"
+                [name]="'documentType'+$index">
+
+            </div>
+
+            <div class="col-md-4">
+
+              <label class="form-label">
+
+                Document Reference
+
+              </label>
+
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="document.documentReference"
+                [name]="'documentReference'+$index">
+
+            </div>
+
+          </div>
+
+          <button
+            type="button"
+            class="btn btn-danger mt-3"
+            (click)="removeDocument($index)"
+            [disabled]="claim.supportingDocuments.length==1">
+
+            Remove
+
+          </button>
+
+        </div>
+
+        }
+
+        <button
+          type="button"
+          class="btn btn-secondary mb-3"
+          (click)="addDocument()">
+
+          Add Another Document
+
+        </button>
+
+        <hr>
+
+        <button
+          type="submit"
+          class="btn btn-success">
+
+          Submit Claim
+
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+</div>

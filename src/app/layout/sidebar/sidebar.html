@@ -1,0 +1,160 @@
+<div
+  class="sidebar"
+  [class.collapsed]="sidebarService.collapsed()">
+
+    <!-- Logo -->
+    <div class="logo">
+
+        <img
+            src="assets/images/logo.png"
+            alt="InsureFlow Logo"
+            class="logo-img">
+
+        <div>
+            <h5>InsureFlow</h5>
+            <small>Insurance Management System</small>
+        </div>
+
+    </div>
+
+    <!-- Menu -->
+    <ul>
+
+        <!-- Dashboard (All Roles) -->
+        <li routerLink="/dashboard" routerLinkActive="active">
+            <i class="bi bi-grid"></i>
+            <span>Dashboard</span>
+        </li>
+
+        <!-- ================= ADMIN ================= -->
+
+        @if(isAdmin){
+
+            <li routerLink="/users" routerLinkActive="active">
+                <i class="bi bi-people"></i>
+                <span>Users</span>
+            </li>
+
+            <li routerLink="/customers" routerLinkActive="active">
+                <i class="bi bi-person-badge"></i>
+                <span>Customers</span>
+            </li>
+
+            <li routerLink="/policies" routerLinkActive="active">
+                <i class="bi bi-file-earmark"></i>
+                <span>Policies</span>
+            </li>
+
+            <li routerLink="/policy-plans" routerLinkActive="active">
+                <i class="bi bi-file-earmark-text"></i>
+                <span>Policy Plans</span>
+            </li>
+
+            <li routerLink="/premium-payments" routerLinkActive="active">
+                <i class="bi bi-wallet2"></i>
+                <span>Premium Payments</span>
+            </li>
+
+            <li routerLink="/claims" routerLinkActive="active">
+                <i class="bi bi-shield-check"></i>
+                <span>Claims</span>
+            </li>
+
+            <li routerLink="/products" routerLinkActive="active">
+                <i class="bi bi-box"></i>
+                <span>Products</span>
+            </li>
+
+        }
+
+        <!-- ================= INTERNAL STAFF ================= -->
+
+
+@if(isStaff){
+
+    <li routerLink="/customers" routerLinkActive="active">
+        <i class="bi bi-person-badge"></i>
+        <span>Customers</span>
+    </li>
+
+    <li routerLink="/policies" routerLinkActive="active">
+        <i class="bi bi-file-earmark"></i>
+        <span>Policies</span>
+    </li>
+
+    <li routerLink="/claims" routerLinkActive="active">
+        <i class="bi bi-shield-check"></i>
+        <span>Claims</span>
+    </li>
+
+    <li routerLink="/premium-payments" routerLinkActive="active">
+        <i class="bi bi-wallet2"></i>
+        <span>Premium Payments</span>
+    </li>
+
+    <li routerLink="/products" routerLinkActive="active">
+        <i class="bi bi-box"></i>
+        <span>Products</span>
+    </li>
+
+    <li routerLink="/policy-plans" routerLinkActive="active">
+        <i class="bi bi-file-earmark-text"></i>
+        <span>Policy Plans</span>
+    </li>
+
+}
+        <!-- ================= CUSTOMER ================= -->
+
+        @if(isCustomer){
+
+            <li routerLink="/customers/my-profile" routerLinkActive="active">
+                <i class="bi bi-person-circle"></i>
+                <span>My Profile</span>
+            </li>
+
+            <li routerLink="/policies" routerLinkActive="active">
+                <i class="bi bi-file-earmark"></i>
+                <span>Policies</span>
+            </li>
+            <li routerLink="/policy-plans" routerLinkActive="active">
+                <i class="bi bi-file-earmark-text"></i>
+                <span>Policy Plans</span>
+            </li>
+            <li routerLink="/policy-purchase" routerLinkActive="active">
+                <i class="bi bi-wallet2"></i>
+                <span>Purchase Policies</span>
+            </li>
+
+            <li routerLink="/premium-payments" routerLinkActive="active">
+                <i class="bi bi-wallet2"></i>
+                <span>Premium Payments</span>
+            </li>
+
+            <li routerLink="/claims" routerLinkActive="active">
+                <i class="bi bi-shield-check"></i>
+                <span>Claims</span>
+            </li>
+
+        }
+
+    </ul>
+
+    <!-- Profile -->
+    <div class="profile">
+
+        <img
+            src="assets/images/avatar.jpg"
+            alt="User"
+            class="profile-avatar">
+
+        <div>
+
+    <h6>{{ role }}</h6>
+
+    <small>{{ email }}</small>
+
+</div>
+
+    </div>
+
+</div>

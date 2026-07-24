@@ -1,0 +1,122 @@
+@if (claim$ | async; as claim) {
+
+<div class="container mt-4">
+
+  <div class="card shadow">
+
+    <div class="card-header bg-primary text-white">
+      <h3 class="mb-0">View Claim Details</h3>
+    </div>
+
+    <div class="card-body">
+
+      <div class="row">
+
+        <div class="col-md-6 mb-3">
+          <label class="fw-bold">Claim Number</label>
+          <p>{{ claim.claimNumber }}</p>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label class="fw-bold">Customer Name</label>
+          <p>{{ claim.customerName }}</p>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label class="fw-bold">Policy Number</label>
+          <p>{{ claim.policyNumber }}</p>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label class="fw-bold">Claim Amount</label>
+          <p>₹ {{ claim.claimAmount }}</p>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label class="fw-bold">Incident Date</label>
+          <p>{{ claim.incidentDate | date:'dd-MM-yyyy' }}</p>
+        </div>
+
+        <div class="col-md-6 mb-3">
+
+          <label class="fw-bold">Claim Status</label>
+
+          <p>
+
+            <span class="badge"
+              [ngClass]="{
+                'bg-warning text-dark': claim.claimStatus == 0,
+                'bg-info': claim.claimStatus == 1,
+                'bg-primary': claim.claimStatus == 2,
+                'bg-secondary': claim.claimStatus == 3,
+                'bg-success': claim.claimStatus == 4,
+                'bg-danger': claim.claimStatus == 5
+              }">
+
+              {{
+                claim.claimStatus == 0 ? 'Submitted' :
+                claim.claimStatus == 1 ? 'Under Review' :
+                claim.claimStatus == 2 ? 'Recommended For Approval' :
+                claim.claimStatus == 3 ? 'Recommended For Rejection' :
+                claim.claimStatus == 4 ? 'Approved' :
+                'Rejected'
+              }}
+
+            </span>
+
+          </p>
+
+        </div>
+
+        <div class="col-12 mb-3">
+          <label class="fw-bold">Claim Reason</label>
+          <p>{{ claim.claimReason }}</p>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label class="fw-bold">Internal Staff Remarks</label>
+          <p>{{ claim.internalStaffRemarks || 'No Remarks' }}</p>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label class="fw-bold">Admin Remarks</label>
+          <p>{{ claim.adminRemarks || 'No Remarks' }}</p>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label class="fw-bold">Created Date</label>
+          <p>{{ claim.createdDate | date:'dd-MM-yyyy hh:mm a' }}</p>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label class="fw-bold">Updated Date</label>
+          <p>{{ claim.updatedDate | date:'dd-MM-yyyy hh:mm a' }}</p>
+        </div>
+
+      </div>
+
+      <div class="mt-4">
+        <a routerLink="/claims" class="btn btn-secondary">
+          Back
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+} @else {
+
+<div class="container mt-4">
+
+  <div class="alert alert-info text-center">
+
+    Loading claim details...
+
+  </div>
+
+</div>
+
+}

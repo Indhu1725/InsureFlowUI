@@ -1,0 +1,23 @@
+.card{
+    border:none;
+    border-radius:12px;
+}
+
+.card-header{
+    font-size:20px;
+    font-weight:600;
+}
+
+label{
+    font-weight:600;
+    margin-bottom:6px;
+}
+
+.form-control,
+.form-select{
+    height:45px;
+}
+
+.btn{
+    min-width:120px;
+}

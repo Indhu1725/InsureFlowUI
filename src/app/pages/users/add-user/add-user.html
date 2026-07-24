@@ -1,0 +1,189 @@
+<div class="container-fluid">
+
+  <div class="card shadow">
+
+    <div class="card-header bg-primary text-white">
+      <h3>Add User</h3>
+    </div>
+
+    <div class="card-body">
+
+      <form [formGroup]="addUserForm" (ngSubmit)="saveUser()">
+
+        <!-- First Row -->
+        <div class="row">
+
+          <!-- Full Name -->
+          <div class="col-md-6 mb-3">
+
+            <label class="form-label">Full Name</label>
+
+            <input
+              type="text"
+              class="form-control"
+              formControlName="fullName"
+              [class.is-invalid]="addUserForm.get('fullName')?.invalid && addUserForm.get('fullName')?.touched">
+
+            <div
+              class="text-danger mt-1"
+              *ngIf="addUserForm.get('fullName')?.touched">
+
+              <small *ngIf="addUserForm.get('fullName')?.hasError('required')">
+                Full Name is required.
+              </small>
+
+              <small *ngIf="addUserForm.get('fullName')?.hasError('pattern')">
+                Full Name must start with a capital letter and contain only letters.
+              </small>
+
+            </div>
+
+          </div>
+
+          <!-- Email -->
+          <div class="col-md-6 mb-3">
+
+            <label class="form-label">Email</label>
+
+            <input
+              type="email"
+              class="form-control"
+              formControlName="email"
+              [class.is-invalid]="addUserForm.get('email')?.invalid && addUserForm.get('email')?.touched">
+
+            <div
+              class="text-danger mt-1"
+              *ngIf="addUserForm.get('email')?.touched">
+
+              <small *ngIf="addUserForm.get('email')?.hasError('required')">
+                Email is required.
+              </small>
+
+              <small *ngIf="addUserForm.get('email')?.hasError('email')">
+                Enter a valid email address.
+              </small>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Second Row -->
+        <div class="row">
+
+          <!-- Mobile Number -->
+          <div class="col-md-6 mb-3">
+
+            <label class="form-label">Mobile Number</label>
+
+            <input
+              type="text"
+              class="form-control"
+              formControlName="mobileNumber"
+              [class.is-invalid]="addUserForm.get('mobileNumber')?.invalid && addUserForm.get('mobileNumber')?.touched">
+
+            <div
+              class="text-danger mt-1"
+              *ngIf="addUserForm.get('mobileNumber')?.touched">
+
+              <small *ngIf="addUserForm.get('mobileNumber')?.hasError('required')">
+                Mobile Number is required.
+              </small>
+
+              <small *ngIf="addUserForm.get('mobileNumber')?.hasError('pattern')">
+                Mobile Number must contain exactly 10 digits and start with 6, 7, 8, or 9.
+              </small>
+
+            </div>
+
+          </div>
+
+          <!-- Password -->
+          <div class="col-md-6 mb-3">
+
+            <label class="form-label">Password</label>
+
+            <input
+              type="password"
+              class="form-control"
+              formControlName="password"
+              [class.is-invalid]="addUserForm.get('password')?.invalid && addUserForm.get('password')?.touched">
+
+            <div
+              class="text-danger mt-1"
+              *ngIf="addUserForm.get('password')?.touched">
+
+              <small *ngIf="addUserForm.get('password')?.hasError('required')">
+                Password is required.
+              </small>
+
+              <small *ngIf="addUserForm.get('password')?.hasError('pattern')">
+                Password must be at least 8 characters and include:
+                <ul class="mb-0 ps-3">
+                  <li>One uppercase letter</li>
+                  <li>One lowercase letter</li>
+                  <li>One number</li>
+                  <li>One special character</li>
+                </ul>
+              </small>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Role -->
+        <div class="mb-4">
+
+          <label class="form-label">Role</label>
+
+          <select
+            class="form-select"
+            formControlName="role"
+            [class.is-invalid]="addUserForm.get('role')?.invalid && addUserForm.get('role')?.touched">
+
+            <option value="">Select Role</option>
+            <option value="Admin">Admin</option>
+            <option value="InternalStaff">Internal Staff</option>
+
+          </select>
+
+          <div
+            class="text-danger mt-1"
+            *ngIf="addUserForm.get('role')?.touched">
+
+            <small *ngIf="addUserForm.get('role')?.hasError('required')">
+              Please select a role.
+            </small>
+
+          </div>
+
+        </div>
+
+        <!-- Buttons -->
+        <button
+          type="submit"
+          class="btn btn-success">
+
+          Save User
+
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-secondary ms-2"
+          routerLink="/users">
+
+          Cancel
+
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+</div>

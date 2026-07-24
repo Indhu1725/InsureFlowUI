@@ -1,0 +1,23 @@
+<div class="layout">
+
+    <!-- Sidebar -->
+    <app-sidebar></app-sidebar>
+
+    <!-- Right Side -->
+    <div
+  class="content"
+  [class.content-collapsed]="sidebarService.collapsed()">
+
+        <!-- Top Navbar -->
+        <app-navbar></app-navbar>
+
+        <!-- Page Content -->
+        <main class="page-container">
+
+            <router-outlet></router-outlet>
+
+        </main>
+
+    </div>
+
+</div>

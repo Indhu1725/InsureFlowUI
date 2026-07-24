@@ -1,0 +1,11 @@
+.wrapper{
+    display:flex;
+    min-height:100vh;
+    background:#f4f7fc;
+}
+
+.main-content{
+    flex:1;
+    margin-left:260px;
+    background:#f8f9fc;
+}

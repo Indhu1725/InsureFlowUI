@@ -1,0 +1,237 @@
+<div class="container-fluid p-4">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+      <h2 class="fw-bold">Users</h2>
+    <p class="page-subtitle">
+        Manage customer and staff accounts from one place.
+    </p>
+</div>
+
+    <button
+    class="btn btn-primary add-btn"
+    routerLink="/users/add">
+
+    <i class="bi bi-plus-circle me-2"></i>
+
+    Add User
+
+</button>
+
+  </div>
+
+  <!-- Filters -->
+  <div class="card filter-card mb-4">
+
+    <div class="card-body">
+
+        <div class="row">
+
+    <div class="col-md-4">
+
+      <label class="form-label fw-semibold">User Filter</label>
+
+      <select
+        class="form-select"
+        (change)="onFilterChange($any($event.target).value)">
+
+        <option value="all">All Users</option>
+        <option value="active">Active Users</option>
+        <option value="staff">Internal Staff</option>
+        <option value="id">User By ID</option>
+
+      </select>
+
+    </div>
+
+    <div class="col-md-4">
+
+      <label class="form-label fw-semibold">Status</label>
+
+      <select
+        class="form-select"
+        (change)="onStatusChange($any($event.target).value)">
+
+        <option value="all">All Status</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+
+      </select>
+
+
+    </div>
+
+  </div>
+
+    </div>
+
+</div>
+  
+
+  <!-- Search By ID -->
+  @if(selectedFilter === 'id'){
+
+  <div class="row mb-4">
+
+    <div class="col-md-3">
+
+      <label class="form-label fw-semibold">User ID</label>
+
+      <input
+        type="number"
+        class="form-control"
+        #userId>
+
+    </div>
+
+    <div class="col-md-2 d-flex align-items-end">
+
+      <button
+        class="btn btn-primary w-100"
+        (click)="searchById(userId.valueAsNumber)">
+        Search
+      </button>
+      
+
+    </div>
+
+  </div>
+
+  }
+
+  <!-- Users Table -->
+  <div class="card shadow-sm">
+
+    <div class="card-body">
+
+      <div class="table-responsive">
+
+        <table class="table table-hover table-bordered align-middle">
+
+          <thead class="table-primary">
+
+            <tr>
+
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Mobile</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th>Action</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            @if(users$ | async; as users){
+
+              @for(user of users; track user.userId){
+
+                <tr>
+
+                  <td>{{ user.userId }}</td>
+
+                  <td>{{ user.fullName }}</td>
+
+                  <td>{{ user.email }}</td>
+
+                  <td>{{ user.mobileNumber }}</td>
+
+                  <td>{{ user.role }}</td>
+
+                  <td>
+
+                    <span
+                      class="badge"
+                      [ngClass]="user.isActive ? 'status-active' : 'status-inactive'">
+
+                      {{ user.isActive ? 'Active' : 'Inactive' }}
+
+                    </span>
+
+                  </td>
+
+                  <td>
+
+                    {{ user.createdDate | date:'dd-MM-yyyy' }}
+
+                  </td>
+
+                  <td>
+
+                    <button
+                      class="btn btn-sm"
+                      [ngClass]="user.isActive ? 'btn-danger' : 'btn-success'"
+                      (click)="changeStatus(user)">
+
+                      {{ user.isActive ? 'Deactivate' : 'Activate' }}
+
+                    </button>
+
+                  </td>
+
+                </tr>
+
+              }
+
+              @if(users.length === 0){
+
+                <tr>
+
+                  <td colspan="8" class="text-center py-3">
+
+                    No users found.
+
+                  </td>
+
+                </tr>
+
+              }
+
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+<div
+class="d-flex justify-content-between align-items-center mt-4">
+
+    <button
+        class="btn btn-secondary"
+        (click)="previousPage()"
+        [disabled]="pageNumber === 1">
+
+        Previous
+
+    </button>
+
+    <span class="fw-semibold">
+
+        Page {{ pageNumber }} of {{ totalPages }}
+
+    </span>
+
+    <button
+        class="btn btn-secondary"
+        (click)="nextPage()"
+        [disabled]="pageNumber === totalPages">
+
+        Next
+
+    </button>
+
+</div>

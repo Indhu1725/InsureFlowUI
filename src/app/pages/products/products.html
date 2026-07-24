@@ -1,0 +1,284 @@
+<div class="container-fluid p-4">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+
+      <h2 class="fw-bold">Products</h2>
+
+      <p class="page-subtitle">
+        Manage all insurance products from one place.
+      </p>
+
+    </div>
+
+    @if(isAdmin){
+
+    <button
+      class="btn add-btn"
+      routerLink="/products/add">
+
+      <i class="bi bi-plus-circle me-2"></i>
+
+      Add Product
+
+    </button>
+
+    }
+
+  </div>
+
+  <!-- Filters -->
+  <div class="card filter-card mb-4">
+
+    <div class="card-body">
+
+      <div class="row">
+
+        <div class="col-md-4">
+
+          <label class="form-label fw-semibold">
+            Product Filter
+          </label>
+
+          <select
+            class="form-select"
+            (change)="onFilterChange($any($event.target).value)">
+
+            <option value="all">All Products</option>
+            <option value="active">Active Products</option>
+            <option value="id">Product By ID</option>
+
+          </select>
+
+        </div>
+
+        <div class="col-md-4">
+
+          <label class="form-label fw-semibold">
+            Status
+          </label>
+
+          <select
+            class="form-select"
+            (change)="onStatusChange($any($event.target).value)">
+
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Search By ID -->
+
+  @if(selectedFilter === 'id'){
+
+  <div class="card filter-card mb-4">
+
+    <div class="card-body">
+
+      <div class="row">
+
+        <div class="col-md-3">
+
+          <label class="form-label fw-semibold">
+
+            Product ID
+
+          </label>
+
+          <input
+            type="number"
+            class="form-control"
+            #productId>
+
+        </div>
+
+        <div class="col-md-2 d-flex align-items-end">
+
+          <button
+            class="btn btn-primary w-100"
+            (click)="searchById(productId.valueAsNumber)">
+
+            Search
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  }
+
+  <!-- Table -->
+
+  <div class="card shadow-sm">
+
+    <div class="card-body">
+
+      <div class="table-responsive">
+
+        <table class="table table-hover align-middle mb-0">
+
+          <thead>
+
+            <tr>
+
+              <th>ID</th>
+              <th>Product Name</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Status</th>
+              <th>Created</th>
+
+              @if(isAdmin){
+                <th>Actions</th>
+              }
+
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            @if(products$ | async; as products){
+
+              @if(products.length > 0){
+
+                @for(product of products; track product.productId){
+
+                <tr>
+
+                  <td>{{product.productId}}</td>
+
+                  <td>{{product.productName}}</td>
+
+                  <td>{{product.productType}}</td>
+
+                  <td class="description-column">
+
+                    {{product.description}}
+
+                  </td>
+
+                  <td>
+
+                    <span
+                      class="badge rounded-pill"
+                      [ngClass]="product.isActive ? 'bg-success':'bg-danger'">
+
+                      {{product.isActive ? 'Active':'Inactive'}}
+
+                    </span>
+
+                  </td>
+
+                  <td>
+
+                    {{product.createdDate | date:'dd-MM-yyyy'}}
+
+                  </td>
+
+                  @if(isAdmin){
+
+                  <td>
+
+                    <div class="action-buttons">
+
+                      <button
+                        class="btn edit-btn btn-sm"
+                        [routerLink]="['/products/edit', product.productId]">
+
+                        Edit
+
+                      </button>
+
+                      <button
+                        class="btn btn-sm"
+                        [ngClass]="product.isActive ? 'btn-danger':'btn-success'"
+                        (click)="toggleStatus(product)">
+
+                        {{product.isActive ? 'Deactivate':'Activate'}}
+
+                      </button>
+
+                    </div>
+
+                  </td>
+
+                  }
+
+                </tr>
+
+                }
+
+              } @else {
+
+                <tr>
+
+                  <td
+                    [attr.colspan]="isAdmin ? 7 : 6"
+                    class="text-center py-4">
+
+                    No Products Found
+
+                  </td>
+
+                </tr>
+
+              }
+
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<div class="d-flex justify-content-between align-items-center mt-4">
+
+  <button
+    class="btn btn-secondary"
+    (click)="previousPage()"
+    [disabled]="pageNumber === 1">
+
+    Previous
+
+  </button>
+
+  <span class="fw-semibold">
+
+    Page {{ pageNumber }} of {{ totalPages }}
+
+  </span>
+
+  <button
+    class="btn btn-secondary"
+    (click)="nextPage()"
+    [disabled]="pageNumber === totalPages">
+
+    Next
+
+  </button>
+
+</div>

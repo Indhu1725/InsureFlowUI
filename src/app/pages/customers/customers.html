@@ -1,0 +1,227 @@
+<div class="container-fluid p-4">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+      <h2 class="fw-bold">Customers</h2>
+      <p class="page-subtitle">
+        Manage all customer accounts from one place.
+      </p>
+    </div>
+
+  </div>
+
+  <!-- Filter Card -->
+@if(role === 'Admin' || role === 'InternalStaff') {
+
+<div class="card filter-card mb-4">
+
+  <div class="card-body">
+
+    <div class="row">
+
+      <div class="col-md-4">
+
+        <label class="form-label fw-semibold">
+          Customer Filter
+        </label>
+
+        <select
+          class="form-select"
+          (change)="onFilterChange($any($event.target).value)">
+
+          <option value="all">All Customers</option>
+          <option value="active">Active Customers</option>
+          <option value="id">Customer By ID</option>
+
+        </select>
+
+      </div>
+
+      <div class="col-md-4">
+
+        <label class="form-label fw-semibold">
+          Status
+        </label>
+
+        <select
+          class="form-select"
+          (change)="onStatusChange($any($event.target).value)">
+
+          <option value="all">All Status</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+}
+
+  <!-- Search -->
+  @if((role === 'Admin' || role === 'InternalStaff') && selectedFilter === 'id'){
+
+  <div class="row mb-4">
+
+    <div class="col-md-3">
+
+      <label class="form-label fw-semibold">
+        Customer ID
+      </label>
+
+      <input
+        type="number"
+        class="form-control"
+        #customerId>
+
+    </div>
+
+    <div class="col-md-2 d-flex align-items-end">
+
+      <button
+        class="btn btn-primary w-100"
+        (click)="searchById(customerId.valueAsNumber)">
+
+        Search
+
+      </button>
+
+    </div>
+
+  </div>
+
+  }
+
+  <!-- Customer Table -->
+  <div class="card shadow-sm">
+
+    <div class="card-body">
+
+      <div class="table-responsive">
+
+        <table class="table table-hover table-bordered align-middle">
+
+          <thead>
+
+            <tr>
+
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Mobile</th>
+              <th>City</th>
+              <th>State</th>
+              <th>Nominee</th>
+              <th>Status</th>
+              <th>Created</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            @if(customers$ | async; as customers){
+
+              @for(customer of customers; track customer.customerId){
+
+              <tr>
+
+                <td>{{customer.customerId}}</td>
+
+                <td>{{customer.fullName}}</td>
+
+                <td>{{customer.email}}</td>
+
+                <td>{{customer.mobileNumber}}</td>
+
+                <td>{{customer.city}}</td>
+
+                <td>{{customer.state}}</td>
+
+                <td>{{customer.nomineeName}}</td>
+
+                <td>
+
+                  <span
+                    class="badge"
+                    [ngClass]="customer.isActive ? 'status-active' : 'status-inactive'">
+
+                    {{customer.isActive ? 'Active' : 'Inactive'}}
+
+                  </span>
+
+                </td>
+
+                <td>
+
+                  {{customer.createdDate | date:'dd-MM-yyyy'}}
+
+                </td>
+
+              </tr>
+
+              }
+
+              @if(customers.length === 0){
+
+              <tr>
+
+                <td colspan="9" class="text-center py-3">
+
+                  No customers found.
+
+                </td>
+
+              </tr>
+
+              }
+
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+<div
+class="d-flex justify-content-between align-items-center mt-4">
+
+    <button
+        class="btn btn-secondary"
+        (click)="previousPage()"
+        [disabled]="pageNumber === 1">
+
+        Previous
+
+    </button>
+
+    <span class="fw-semibold">
+
+        Page {{ pageNumber }} of {{ totalPages }}
+
+    </span>
+
+    <button
+        class="btn btn-secondary"
+        (click)="nextPage()"
+        [disabled]="pageNumber === totalPages">
+
+        Next
+
+    </button>
+
+</div>

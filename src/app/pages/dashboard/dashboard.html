@@ -1,0 +1,420 @@
+<div class="dashboard">
+
+  <!-- Header -->
+  <div class="mb-1">
+    <h3 class="fw-bold mb-1">Dashboard</h3>
+
+<p class="text-muted mb-2">
+
+@if(role === 'Admin'){
+
+  Welcome back, Admin! Here's what's happening with your insurance business.
+
+}
+
+@else if(role === 'InternalStaff'){
+
+  Welcome back! Here's today's operational overview.
+
+}
+
+@else{
+
+  Welcome back! Manage your policies, claims and premium payments from your dashboard.
+
+}
+
+</p>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="row g-2">
+
+    <!-- Card 1 -->
+    <div class="col-lg-3 col-md-6">
+      <div class="card shadow-sm border-0 rounded-4 p-2 stats-card">
+        <div class="d-flex align-items-center">
+
+          <div class="icon purple">
+            <i class="bi bi-people-fill"></i>
+          </div>
+
+          <div class="ms-3">
+            @if(role === 'Customer'){
+
+<small class="text-muted">
+
+My Policies
+
+</small>
+
+<h2 class="fw-bold mb-0">
+
+{{ totalPolicies }}
+
+</h2>
+
+<small class="text-muted">
+
+Policies Purchased
+
+</small>
+
+}
+
+@else{
+
+<small class="text-muted">
+
+Total Customers
+
+</small>
+
+<h2 class="fw-bold mb-0">
+
+{{ totalCustomers }}
+
+</h2>
+
+<small class="text-muted">
+
+Registered Customers
+
+</small>
+
+}
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="col-lg-3 col-md-6">
+      <div class="card shadow-sm border-0 rounded-4 p-2 stats-card">
+        <div class="d-flex align-items-center">
+
+          <div class="icon blue">
+            <i class="bi bi-file-earmark-text"></i>
+          </div>
+
+          <div class="ms-3">
+            @if(role === 'Customer'){
+
+<small class="text-muted">
+
+Available Plans
+
+</small>
+
+<h2 class="fw-bold mb-0">
+
+{{ totalPlans }}
+
+</h2>
+
+<small class="text-muted">
+
+Insurance Plans
+
+</small>
+
+}
+
+@else{
+
+<small class="text-muted">
+
+Total Policies
+
+</small>
+
+<h2 class="fw-bold mb-0">
+
+{{ totalPolicies }}
+
+</h2>
+
+<small class="text-muted">
+
+Total Issued Policies
+
+</small>
+
+}
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="col-lg-3 col-md-6">
+      <div class="card shadow-sm border-0 rounded-4 p-2 stats-card">
+        <div class="d-flex align-items-center">
+
+          <div class="icon green">
+            <i class="bi bi-currency-rupee"></i>
+          </div>
+
+          <div class="ms-3">
+            @if(role === 'Customer'){
+
+<small class="text-muted">
+
+My Claims
+
+</small>
+
+<h2 class="fw-bold mb-0">
+
+{{ totalClaims }}
+
+</h2>
+
+<small class="text-muted">
+
+Claims Submitted
+
+</small>
+
+}
+
+@else{
+
+<small class="text-muted">
+
+Policy Plans
+
+</small>
+
+<h2 class="fw-bold mb-0">
+
+{{ totalPlans }}
+
+</h2>
+
+<small class="text-muted">
+
+Available Policy Plans
+
+</small>
+
+}
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="col-lg-3 col-md-6">
+      <div class="card shadow-sm border-0 rounded-4 p-2 stats-card">
+        <div class="d-flex align-items-center">
+
+          <div class="icon orange">
+            <i class="bi bi-shield-check"></i>
+          </div>
+
+          <div class="ms-3">
+            @if(role === 'Customer'){
+
+<small class="text-muted">
+
+Approved Claims
+
+</small>
+
+<h2 class="fw-bold mb-0">
+
+{{ approvedClaims }}
+
+</h2>
+
+<small class="text-muted">
+
+Successfully Approved
+
+</small>
+
+}
+
+@else{
+
+<small class="text-muted">
+
+Total Claims
+
+</small>
+
+<h2 class="fw-bold mb-0">
+
+{{ totalClaims }}
+
+</h2>
+
+<small class="text-muted">
+
+Total Submitted Claims
+
+</small>
+
+}
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="row mt-1">
+
+  <!-- Premium Collection -->
+  <div class="col-lg-7">
+    <div class="card shadow-sm border-0 rounded-4 p-2 chart-card">
+
+      <div class="d-flex justify-content-between mb-3">
+        <h5>
+
+@if(role === 'Customer'){
+
+My Policy Premiums
+
+}
+
+@else{
+
+Premium Collection Overview
+
+}
+
+</h5>
+
+        <select class="form-select w-auto">
+          <option>Monthly</option>
+        </select>
+      </div>
+
+      <canvas id="premiumChart"></canvas>
+
+    </div>
+  </div>
+
+  <!-- Claims Overview -->
+  <div class="col-lg-5">
+    <div class="card shadow-sm border-0 rounded-4 p-2 chart-card">
+
+      <h5 class="mb-3">
+
+@if(role === 'Customer'){
+
+My Claims Overview
+
+}
+
+@else{
+
+Claims Overview
+
+}
+
+</h5>
+
+      <canvas id="claimChart"></canvas>
+
+    </div>
+  </div>
+
+</div>
+<div class="row mt-1">
+
+  <!-- Recent Activities -->
+  <div class="col-lg-7">
+    <div class="card shadow-sm border-0 rounded-4 p-2 bottom-card">
+
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold">
+
+@if(role === 'Customer'){
+
+My Recent Claims
+
+}
+
+@else{
+
+Recent Activities
+
+}
+
+</h5>
+        <a href="#" class="text-decoration-none">View All</a>
+      </div>
+
+      <table class="table table-hover align-middle">
+        <tbody>
+
+  @for (claim of recentClaims; track claim.claimId) {
+
+    <tr>
+
+      <td>
+        <i class="bi bi-shield-check text-primary"></i>
+      </td>
+
+      <td>
+        {{ claim.claimNumber }}
+      </td>
+
+      <td>
+        {{ claim.customerName }}
+      </td>
+
+      <td>
+        {{ claim.createdDate | date:'dd MMM yyyy' }}
+      </td>
+
+    </tr>
+
+  }
+
+</tbody>
+      </table>
+
+    </div>
+  </div>
+
+  <!-- Top Policy Plans -->
+  <div class="col-lg-5">
+    <div class="card shadow-sm border-0 rounded-4 p-2 bottom-card">
+
+      <h5 class="fw-bold mb-4">Top Policy Plans</h5>
+
+      @for (plan of topPlans; track plan.policyPlanId) {
+
+  <p class="mb-1 fw-semibold">
+    {{ plan.planName }}
+  </p>
+
+  <div class="progress mb-3" style="height:8px">
+
+    <div
+      class="progress-bar"
+      [class.bg-primary]="$index == 0"
+      [class.bg-success]="$index == 1"
+      [class.bg-warning]="$index == 2"
+      [class.bg-danger]="$index == 3"
+      [class.bg-info]="$index == 4"
+      [style.width.%]="100 - ($index * 15)">
+    </div>
+
+  </div>
+
+}
+
+    </div>
+  </div>
+
+</div>
+
+</div>

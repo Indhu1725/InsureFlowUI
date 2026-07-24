@@ -1,0 +1,85 @@
+<div class="container mt-4">
+
+  <div class="card shadow">
+
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+
+      <h3 class="mb-0">Claim Status History</h3>
+
+      <a
+        routerLink="/claims"
+        class="btn btn-light btn-sm">
+
+        Back
+
+      </a>
+
+    </div>
+
+    <div class="card-body">
+
+      @if(history$ | async; as history){
+
+        @if(history.length > 0){
+
+          <table class="table table-bordered table-hover align-middle">
+
+            <thead class="table-dark">
+
+              <tr>
+
+                <th>#</th>
+                <th>Old Status</th>
+                <th>New Status</th>
+                <th>Remarks</th>
+                <th>Changed By</th>
+                <th>Changed Date</th>
+
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              @for(item of history; track item.historyId; let i = $index){
+
+                <tr>
+
+                  <td>{{ i + 1 }}</td>
+
+                  <td>{{ item.oldStatus }}</td>
+
+                  <td>{{ item.newStatus }}</td>
+
+                  <td>{{ item.remarks }}</td>
+
+                  <td>{{ item.changedBy }}</td>
+
+                  <td>{{ item.changedDate | date:'dd-MM-yyyy hh:mm a' }}</td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        }
+        @else{
+
+          <div class="alert alert-warning text-center">
+
+            No claim history found.
+
+          </div>
+
+        }
+
+      }
+
+    </div>
+
+  </div>
+
+</div>

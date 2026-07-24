@@ -1,0 +1,133 @@
+<div class="container-fluid p-4">
+
+  <div class="card shadow-sm border-0 rounded-4">
+
+    <div class="card-header bg-primary text-white">
+      <h2 class="mb-0 fw-bold">
+        Add Insurance Product
+      </h2>
+    </div>
+
+    <div class="card-body">
+
+      <form
+        [formGroup]="addProductForm"
+        (ngSubmit)="saveProduct()">
+
+        <div class="row">
+
+          <!-- Product Name -->
+          <div class="col-md-6 mb-3">
+
+            <label class="form-label fw-semibold">
+              Product Name
+            </label>
+
+            <input
+              type="text"
+              class="form-control"
+              formControlName="productName">
+
+            @if(addProductForm.get('productName')?.touched &&
+                addProductForm.get('productName')?.invalid){
+
+              <small class="text-danger">
+                Product Name is required.
+              </small>
+
+            }
+
+          </div>
+
+          <!-- Product Type -->
+          <div class="col-md-6 mb-3">
+
+            <label class="form-label fw-semibold">
+              Product Type
+            </label>
+
+            <select
+              class="form-select"
+              formControlName="productType">
+
+              <option value="">
+                Select Product Type
+              </option>
+
+              @for(type of productTypes; track type.value){
+
+  <option [ngValue]="type.value">
+    {{ type.name }}
+  </option>
+
+}
+
+            </select>
+
+            @if(addProductForm.get('productType')?.touched &&
+                addProductForm.get('productType')?.invalid){
+
+              <small class="text-danger">
+                Product Type is required.
+              </small>
+
+            }
+
+          </div>
+
+          <!-- Description -->
+          <div class="col-12 mb-4">
+
+            <label class="form-label fw-semibold">
+              Description
+            </label>
+
+            <textarea
+              rows="5"
+              class="form-control"
+              formControlName="description">
+            </textarea>
+
+            @if(addProductForm.get('description')?.touched &&
+                addProductForm.get('description')?.invalid){
+
+              <small class="text-danger">
+
+                Description must contain at least 10 characters.
+
+              </small>
+
+            }
+
+          </div>
+
+        </div>
+
+        <div class="mt-3">
+
+          <button
+            type="submit"
+            class="btn btn-success me-2">
+
+            Save Product
+
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-secondary"
+            routerLink="/products">
+
+            Cancel
+
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+</div>

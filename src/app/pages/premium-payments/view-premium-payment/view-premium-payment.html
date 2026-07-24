@@ -1,0 +1,154 @@
+<div class="container mt-4">
+
+  <div class="card shadow">
+
+    <div class="card-header bg-primary text-white">
+      <h3 class="mb-0">View Premium Payment</h3>
+    </div>
+
+    <div class="card-body">
+
+      <!-- Error Message -->
+
+      <div
+        *ngIf="errorMessage"
+        class="alert alert-danger">
+
+        {{ errorMessage }}
+
+      </div>
+
+      <!-- Payment Details -->
+
+      <ng-container *ngIf="payment$ | async as payment">
+
+        <div class="row">
+
+          <div class="col-md-6 mb-3">
+
+            <label class="form-label fw-bold">
+              Payment ID
+            </label>
+
+            <input
+              type="text"
+              class="form-control"
+              [value]="payment.paymentId"
+              readonly>
+
+          </div>
+
+          <div class="col-md-6 mb-3">
+
+            <label class="form-label fw-bold">
+              Policy Number
+            </label>
+
+            <input
+              type="text"
+              class="form-control"
+              [value]="payment.policyNumber"
+              readonly>
+
+          </div>
+
+          <div class="col-md-6 mb-3">
+
+            <label class="form-label fw-bold">
+              Amount
+            </label>
+
+            <input
+              type="text"
+              class="form-control"
+              [value]="payment.amount"
+              readonly>
+
+          </div>
+
+          <div class="col-md-6 mb-3">
+
+            <label class="form-label fw-bold">
+              Payment Date
+            </label>
+
+            <input
+              type="text"
+              class="form-control"
+              [value]="payment.paymentDate | date:'dd-MM-yyyy'"
+              readonly>
+
+          </div>
+
+          <div class="col-md-6 mb-3">
+
+            <label class="form-label fw-bold">
+              Payment Mode
+            </label>
+
+            <select
+              class="form-select"
+              [value]="payment.paymentMode"
+              disabled>
+
+              <option
+                *ngFor="let mode of paymentModes"
+                [value]="mode.value">
+
+                {{ mode.text }}
+
+              </option>
+
+            </select>
+
+          </div>
+
+          <div class="col-md-6 mb-3">
+
+            <label class="form-label fw-bold">
+              Transaction Reference
+            </label>
+
+            <input
+              type="text"
+              class="form-control"
+              [value]="payment.transactionReference"
+              readonly>
+
+          </div>
+
+          <div class="col-md-6 mb-3">
+
+            <label class="form-label fw-bold">
+              Payment Status
+            </label>
+
+            <input
+              type="text"
+              class="form-control"
+              [value]="payment.paymentStatus"
+              readonly>
+
+          </div>
+
+        </div>
+
+        <div class="text-center mt-4">
+
+          <button
+            class="btn btn-secondary"
+            (click)="back()">
+
+            Back
+
+          </button>
+
+        </div>
+
+      </ng-container>
+
+    </div>
+
+  </div>
+
+</div>

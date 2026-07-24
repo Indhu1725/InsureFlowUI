@@ -1,0 +1,88 @@
+.container {
+  max-width: 1000px;
+}
+
+.card {
+  border: none;
+  border-radius: 12px;
+}
+
+.card-header {
+  border-radius: 12px 12px 0 0;
+  padding: 15px 20px;
+}
+
+.card-body {
+  padding: 20px;
+}
+
+.card-footer {
+  background-color: #fff;
+  border-top: none;
+  padding: 15px 20px;
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+.table th {
+  text-align: center;
+  vertical-align: middle;
+  font-weight: 600;
+}
+
+.table td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+
+.alert {
+  margin-bottom: 0;
+  font-weight: 500;
+}
+
+.btn {
+  min-width: 120px;
+  border-radius: 8px;
+}
+
+.btn-light {
+  font-weight: 600;
+}
+
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+
+  .table {
+    font-size: 14px;
+  }
+
+  .btn {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .card-header {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+
+}

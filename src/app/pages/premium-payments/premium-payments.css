@@ -1,0 +1,214 @@
+/* Page */
+
+.container{
+    max-width:100%;
+    background:#f5f7fb;
+    min-height:100vh;
+    padding:25px;
+}
+
+/* Header */
+
+h2{
+    color:#1f2937;
+    font-weight:700;
+}
+
+.page-subtitle{
+    color:#6b7280;
+    font-size:16px;
+    margin-bottom:0;
+}
+
+/* Cards */
+
+.card{
+    border:none;
+    border-radius:18px;
+    box-shadow:0 10px 25px rgba(0,0,0,.05);
+}
+
+.card-body{
+    padding:20px;
+}
+
+.filter-card{
+    background:#fff;
+}
+
+/* Add Button */
+
+.add-btn{
+    background:linear-gradient(135deg,#2563eb,#3b82f6);
+    color:#fff;
+    border:none;
+    border-radius:12px;
+    padding:10px 22px;
+    font-weight:600;
+    transition:.3s;
+    box-shadow:0 8px 18px rgba(37,99,235,.25);
+}
+
+.add-btn:hover{
+    color:#fff;
+    transform:translateY(-2px);
+    box-shadow:0 12px 25px rgba(37,99,235,.35);
+}
+
+/* Forms */
+
+.form-label{
+    font-weight:600;
+}
+
+.form-control,
+.form-select{
+    height:44px;
+    border-radius:8px;
+}
+
+/* Table */
+
+.table{
+    margin-bottom:0;
+    border-radius:14px;
+    overflow:hidden;
+}
+
+.table thead th{
+
+    background:#1f2937;
+
+    color:#fff;
+
+    border:none;
+
+    text-align:center;
+
+    padding:16px;
+
+    white-space:nowrap;
+
+}
+
+.table tbody td{
+
+    text-align:center;
+
+    vertical-align:middle;
+
+    padding:15px 10px;
+
+    white-space:nowrap;
+
+}
+
+.table tbody tr{
+
+    transition:.2s;
+
+}
+
+.table tbody tr:hover{
+
+    background:#f8fbff;
+
+    transform:scale(1.003);
+
+}
+
+/* Sortable */
+
+.table thead th[style*="cursor:pointer"]:hover{
+
+    background:#374151;
+
+}
+
+/* View Button */
+
+.view-btn{
+
+    background:#0ea5e9;
+
+    color:#fff;
+
+    border:none;
+
+    border-radius:25px;
+
+    min-width:90px;
+
+    font-weight:600;
+
+}
+
+.view-btn:hover{
+
+    background:#0284c7;
+
+    color:#fff;
+
+}
+
+/* Alerts */
+
+.alert{
+
+    border-radius:12px;
+
+}
+
+/* Pagination */
+
+.btn-secondary{
+
+    border-radius:25px;
+
+    min-width:110px;
+
+}
+
+.table-responsive{
+
+    overflow-x:auto;
+
+}
+
+.shadow-sm{
+
+    box-shadow:0 .125rem .5rem rgba(0,0,0,.08)!important;
+
+}
+
+/* Responsive */
+
+@media(max-width:768px){
+
+.container{
+
+    padding:15px;
+
+}
+
+.add-btn{
+
+    width:100%;
+
+    margin-top:10px;
+
+}
+
+.table{
+
+    font-size:14px;
+
+}
+
+.btn-secondary{
+
+    min-width:90px;
+
+}
+
+}

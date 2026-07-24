@@ -1,0 +1,324 @@
+<div class="container-fluid p-4">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+      <h2 class="fw-bold">
+
+@if(role === 'Customer'){
+
+My Policies
+
+}
+
+@else{
+
+Policies
+
+}
+
+</h2>
+
+<p class="page-subtitle">
+
+@if(role === 'Customer'){
+
+View all your purchased insurance policies.
+
+}
+
+@else{
+
+Manage all insurance policies from one place.
+
+}
+
+</p>
+    </div>
+
+    @if(role !== 'Customer'){
+
+<div>
+
+  <button
+    class="btn btn-primary issue-btn"
+    routerLink="/policy-issue">
+
+    <i class="bi bi-file-earmark-plus me-2"></i>
+    Issue Policy
+
+  </button>
+
+</div>
+
+}
+
+  </div>
+
+  <!-- Filter Card -->
+  <div class="card filter-card mb-4">
+
+    <div class="card-body">
+
+      <div class="row">
+
+        <div class="col-md-4">
+
+          <label class="form-label fw-semibold">
+            Policy Filter
+          </label>
+
+          <select
+            class="form-select"
+            (change)="onFilterChange($any($event.target).value)">
+
+            @if(role !== 'Customer'){
+
+<option value="all">All Policies</option>
+<option value="active">Active Policies</option>
+
+}
+
+<option value="id">Policy By ID</option>
+<option value="number">Policy By Number</option>
+          </select>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Search By ID -->
+  @if(selectedFilter === 'id'){
+
+  <div class="row mb-4">
+
+    <div class="col-md-3">
+
+      <label class="form-label fw-semibold">
+        Policy ID
+      </label>
+
+      <input
+        type="number"
+        class="form-control"
+        #policyId>
+
+    </div>
+
+    <div class="col-md-2 d-flex align-items-end">
+
+      <button
+        class="btn btn-primary w-100"
+        (click)="searchById(policyId.valueAsNumber)">
+        Search
+      </button>
+
+    </div>
+
+  </div>
+
+  }
+
+  <!-- Search By Number -->
+  @if(selectedFilter === 'number'){
+
+  <div class="row mb-4">
+
+    <div class="col-md-4">
+
+      <label class="form-label fw-semibold">
+        Policy Number
+      </label>
+
+      <input
+        type="text"
+        class="form-control"
+        #policyNumber>
+
+    </div>
+
+    <div class="col-md-2 d-flex align-items-end">
+
+      <button
+        class="btn btn-primary w-100"
+        (click)="searchByNumber(policyNumber.value)">
+        Search
+      </button>
+
+    </div>
+
+  </div>
+
+  }
+
+  <!-- Table -->
+
+  <div class="card shadow-sm">
+
+    <div class="card-body">
+
+      <div class="table-responsive">
+
+        <table class="table table-hover table-bordered align-middle">
+
+          <thead>
+
+            <tr>
+
+              <th>ID</th>
+              <th>Policy No</th>
+              <th>Customer</th>
+              <th>Plan</th>
+              <th>Product</th>
+              <th>Coverage</th>
+              <th>Premium</th>
+              <th>Start</th>
+              <th>End</th>
+              <th>Status</th>
+              <th>Total Paid</th>
+              @if(role !== 'Customer'){
+  <th>Action</th>
+}
+
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            @if(policies$ | async; as policies){
+
+              @for(policy of policies; track policy.policyId){
+
+              <tr>
+
+                <td>{{policy.policyId}}</td>
+
+                <td>{{policy.policyNumber}}</td>
+
+                <td>{{policy.customerName}}</td>
+
+                <td>{{policy.planName}}</td>
+
+                <td>{{policy.productType}}</td>
+
+                <td>{{policy.coverageAmount}}</td>
+
+                <td>{{policy.premiumAmount}}</td>
+
+                <td>{{policy.startDate}}</td>
+
+                <td>{{policy.endDate}}</td>
+
+                <td>
+
+                  <span
+                    class="badge"
+                    [ngClass]="{
+                    'status-pending':policy.policyStatus==='PendingPayment',
+                    'status-active':policy.policyStatus==='Active',
+                    'status-expired':policy.policyStatus==='Expired',
+                    'status-cancelled':policy.policyStatus==='Cancelled'
+                    }">
+
+                    {{policy.policyStatus}}
+
+                  </span>
+
+                </td>
+
+                <td>{{policy.totalPremiumPaid}}</td>
+
+                @if(role !== 'Customer'){
+
+<td>
+
+  @if(policy.policyStatus==='Cancelled'){
+
+  <button
+    class="btn btn-secondary btn-sm"
+    disabled>
+
+    Cancelled
+
+  </button>
+
+  }@else{
+
+  <button
+    class="btn btn-danger btn-sm cancel-btn"
+    (click)="cancelPolicy(policy)">
+
+    Cancel
+
+  </button>
+
+  }
+
+</td>
+
+}
+
+              </tr>
+
+              }
+
+              @if(policies.length===0){
+
+              <tr>
+
+                <td colspan="12" class="text-center py-3">
+
+                  No Policies Found.
+
+                </td>
+
+              </tr>
+
+              }
+
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="d-flex justify-content-between align-items-center mt-4">
+
+  <button
+    class="btn btn-secondary"
+    (click)="previousPage()"
+    [disabled]="pageNumber === 1">
+
+    Previous
+
+  </button>
+
+  <span class="fw-semibold">
+
+    Page {{ pageNumber }} of {{ totalPages }}
+
+  </span>
+
+  <button
+    class="btn btn-secondary"
+    (click)="nextPage()"
+    [disabled]="pageNumber === totalPages">
+
+    Next
+
+  </button>
+
+</div>

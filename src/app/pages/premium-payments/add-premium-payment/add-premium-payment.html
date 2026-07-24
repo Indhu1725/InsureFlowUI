@@ -1,0 +1,167 @@
+<div class="container mt-4">
+
+  <div class="card shadow">
+
+    <div class="card-header bg-primary text-white">
+      <h2 class="mb-0">Add Premium Payment</h2>
+    </div>
+
+    <div class="card-body">
+
+      <div
+        class="alert alert-success"
+        *ngIf="successMessage">
+        {{ successMessage }}
+      </div>
+
+      <div
+        class="alert alert-danger"
+        *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <form
+        [formGroup]="paymentForm"
+        (ngSubmit)="submit()">
+
+        <!-- Policy Id -->
+        <div class="mb-3">
+
+          <label class="form-label">Policy Id</label>
+
+          <input
+            type="number"
+            class="form-control"
+            formControlName="policyId">
+
+          <div
+            class="text-danger"
+            *ngIf="submitted && paymentForm.get('policyId')?.invalid">
+
+            <small
+              *ngIf="paymentForm.get('policyId')?.hasError('required')">
+              Policy Id is required.
+            </small>
+
+            <small
+              *ngIf="paymentForm.get('policyId')?.hasError('min')">
+              Policy Id must be greater than 0.
+            </small>
+
+          </div>
+
+        </div>
+
+        <!-- Amount -->
+        <div class="mb-3">
+
+          <label class="form-label">Amount</label>
+
+          <input
+            type="number"
+            class="form-control"
+            formControlName="amount">
+
+          <div
+            class="text-danger"
+            *ngIf="submitted && paymentForm.get('amount')?.invalid">
+
+            <small
+              *ngIf="paymentForm.get('amount')?.hasError('required')">
+              Amount is required.
+            </small>
+
+            <small
+              *ngIf="paymentForm.get('amount')?.hasError('min')">
+              Amount must be greater than 0.
+            </small>
+
+          </div>
+
+        </div>
+
+        <!-- Payment Mode -->
+        <div class="mb-3">
+
+          <label class="form-label">Payment Mode</label>
+
+          <select
+            class="form-select"
+            formControlName="paymentMode">
+
+            <option
+  *ngFor="let mode of paymentModes"
+  [ngValue]="mode.value">
+
+  {{ mode.text }}
+
+</option>
+
+          </select>
+
+        </div>
+
+        <!-- Transaction Reference -->
+        <div class="mb-3">
+
+          <label class="form-label">
+            Transaction Reference
+          </label>
+
+          <input
+            type="text"
+            class="form-control"
+            formControlName="transactionReference">
+
+          <div
+            class="text-danger"
+            *ngIf="submitted && paymentForm.get('transactionReference')?.invalid">
+
+            <small
+              *ngIf="paymentForm.get('transactionReference')?.hasError('required')">
+
+              Transaction Reference is required.
+
+            </small>
+
+            <small
+              *ngIf="paymentForm.get('transactionReference')?.hasError('maxlength')">
+
+              Maximum 100 characters allowed.
+
+            </small>
+
+          </div>
+
+        </div>
+
+        <button
+          class="btn btn-success"
+          type="submit"
+          [disabled]="loading">
+
+          <span
+            *ngIf="loading"
+            class="spinner-border spinner-border-sm me-2">
+          </span>
+
+          {{ loading ? 'Submitting...' : 'Submit Payment' }}
+
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-secondary ms-2"
+          (click)="cancel()">
+
+          Cancel
+
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+</div>

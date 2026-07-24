@@ -1,0 +1,128 @@
+.container {
+  max-width: 900px;
+}
+
+.card {
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 18px 20px;
+}
+
+.card-header h2 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.card-body {
+  padding: 25px;
+}
+
+.form-label {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.form-control,
+.form-select {
+  height: 48px;
+  font-size: 18px;
+  border-radius: 8px;
+}
+
+.form-control:focus,
+.form-select:focus {
+  box-shadow: none;
+  border-color: #0d6efd;
+}
+
+.text-danger {
+  font-size: 14px;
+}
+
+.btn {
+  min-width: 140px;
+  height: 50px;
+  font-size: 18px;
+  border-radius: 8px;
+}
+
+.btn-success {
+  background-color: #198754;
+  border-color: #198754;
+}
+
+.btn-success:hover {
+  background-color: #157347;
+  border-color: #157347;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+  background-color: #5c636a;
+  border-color: #565e64;
+}
+
+.spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+}
+
+.alert {
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+input.ng-invalid.ng-touched,
+select.ng-invalid.ng-touched {
+  border-color: #dc3545;
+}
+
+input.ng-valid.ng-touched,
+select.ng-valid.ng-touched {
+  border-color: #198754;
+}
+
+@media (max-width: 768px) {
+
+  .container {
+    padding: 15px;
+  }
+
+  .card-body {
+    padding: 20px;
+  }
+
+  .card-header h2 {
+    font-size: 1.8rem;
+  }
+
+  .form-label {
+    font-size: 16px;
+  }
+
+  .form-control,
+  .form-select {
+    font-size: 16px;
+    height: 44px;
+  }
+
+  .btn {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .d-flex {
+    flex-direction: column;
+  }
+
+}

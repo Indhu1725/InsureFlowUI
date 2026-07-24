@@ -1,0 +1,52 @@
+.container {
+  max-width: 900px;
+}
+
+.card {
+  border-radius: 10px;
+}
+
+.card-header {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.form-label {
+  font-weight: 600;
+}
+
+.form-control,
+.form-select {
+  background-color: #f8f9fa;
+}
+
+.form-control[readonly] {
+  background-color: #f8f9fa;
+  opacity: 1;
+}
+
+.form-select:disabled {
+  background-color: #f8f9fa;
+  color: #212529;
+  opacity: 1;
+}
+
+.btn {
+  min-width: 120px;
+}
+
+.alert {
+  border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+
+  .container {
+    padding: 10px;
+  }
+
+  .card-header h3 {
+    font-size: 20px;
+  }
+
+}

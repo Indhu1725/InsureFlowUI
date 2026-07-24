@@ -1,0 +1,286 @@
+<div class="container-fluid p-4">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h2 class="fw-bold">
+
+@if(role === 'Customer'){
+
+Available Policy Plans
+
+}
+
+@else{
+
+Policy Plans
+
+}
+
+</h2>
+
+<p class="page-subtitle">
+
+@if(role === 'Customer'){
+
+Browse active insurance plans available for purchase.
+
+}
+
+@else{
+
+Manage all available insurance plans.
+
+}
+
+</p>
+    </div>
+
+    @if(role !== 'Customer'){
+
+<button
+    class="btn add-btn"
+    routerLink="/policy-plans/add">
+
+    <i class="bi bi-plus-circle me-2"></i>
+    Add Plan
+
+</button>
+
+}
+
+</div>
+
+  <!-- Filters -->
+  @if(role !== 'Customer'){
+
+<div class="card filter-card mb-4">
+
+<div class="card-body">
+
+<div class="row">
+
+    <div class="col-md-4">
+
+      <label class="form-label fw-semibold">
+        Plan Filter
+      </label>
+
+      <select
+        class="form-select"
+        (change)="onFilterChange($any($event.target).value)">
+
+        <option value="all">All Plans</option>
+        <option value="active">Active Plans</option>
+        <option value="id">Plan By ID</option>
+
+      </select>
+
+    </div>
+    
+  
+    <div class="col-md-4">
+
+      <label class="form-label fw-semibold">
+        Status
+      </label>
+
+      <select
+        class="form-select"
+        (change)="onStatusChange($any($event.target).value)">
+
+        <option value="all">All Status</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+
+      </select>
+
+    </div>
+    </div>
+
+</div>
+
+  </div>
+  }
+  <!-- Search By ID -->
+  @if(role !== 'Customer' && selectedFilter === 'id'){
+
+    <div class="row mb-4">
+
+      <div class="col-md-3">
+
+        <label class="form-label fw-semibold">
+          Plan ID
+        </label>
+
+        <input
+          type="number"
+          class="form-control"
+          #planId>
+
+      </div>
+
+      <div class="col-md-2 d-flex align-items-end">
+
+        <button
+          class="btn btn-primary w-100"
+          (click)="searchById(planId.valueAsNumber)">
+
+          Search
+
+        </button>
+
+      </div>
+
+    </div>
+
+  }
+
+  <!-- Policy Plans Table -->
+  <div class="card shadow-sm">
+
+    <div class="card-body">
+
+      <div class="table-responsive">
+
+        <table class="table table-hover table-bordered align-middle">
+
+          <thead>
+
+            <tr>
+
+              <th>ID</th>
+              <th>Plan Name</th>
+              <th>Product</th>
+              <th>Premium</th>
+              <th>Coverage</th>
+              <th>Duration</th>
+              <th>Status</th>
+              @if(role !== 'Customer'){
+    <th>Action</th>
+}
+
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            @if(plans$ | async; as plans){
+
+              @for(plan of plans; track plan.planId){
+
+                <tr>
+
+                  <td>{{ plan.planId }}</td>
+
+                  <td>{{ plan.planName }}</td>
+
+                  <td>{{ plan.productName }}</td>
+
+                  <td>{{ plan.premiumAmount }}</td>
+
+                  <td>{{ plan.coverageAmount }}</td>
+
+                  <td>{{ plan.durationYears }} Years</td>
+
+                  <td>
+
+                    <span
+                      class="badge"
+                      [ngClass]="plan.isActive ? 'status-active' : 'status-inactive'">
+
+                      {{ plan.isActive ? 'Active' : 'Inactive' }}
+
+                    </span>
+
+                  </td>
+
+                  @if(role !== 'Customer'){
+
+<td>
+
+    <div class="action-buttons">
+
+        <button
+            class="btn btn-info btn-sm edit-btn"
+            [routerLink]="['/policy-plans/edit', plan.planId]">
+
+            Edit
+
+        </button>
+
+        <button
+            class="btn btn-sm"
+            [ngClass]="plan.isActive ? 'btn-danger' : 'btn-success'"
+            (click)="toggleStatus(plan)">
+
+            {{ plan.isActive ? 'Deactivate' : 'Activate' }}
+
+        </button>
+
+    </div>
+
+</td>
+
+}
+
+                </tr>
+
+              }
+
+              @if(plans.length === 0){
+
+                <tr>
+
+                  <td colspan="8" class="text-center py-3">
+
+                    No policy plans found.
+
+                  </td>
+
+                </tr>
+
+              }
+
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="d-flex justify-content-between align-items-center mt-4">
+
+  <button
+    class="btn btn-secondary"
+    (click)="previousPage()"
+    [disabled]="query.pageNumber === 1">
+
+    Previous
+
+  </button>
+
+  <span class="fw-semibold">
+
+    Page {{ query.pageNumber }} of {{ totalPages }}
+
+  </span>
+
+  <button
+    class="btn btn-secondary"
+    (click)="nextPage()"
+    [disabled]="query.pageNumber === totalPages">
+
+    Next
+
+  </button>
+
+</div>

@@ -1,0 +1,93 @@
+<div class="container mt-4">
+
+  <div class="card shadow">
+
+    <div class="card-header bg-primary text-white">
+
+      <h3>Upload Document</h3>
+
+    </div>
+
+    <div class="card-body">
+
+      <div class="mb-3">
+
+        <label class="form-label">
+
+          Claim ID
+
+        </label>
+
+        <input
+          class="form-control"
+          [value]="claimId"
+          readonly>
+
+      </div>
+
+      <div class="mb-3">
+
+        <label class="form-label">
+
+          Document Name
+
+        </label>
+
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="documentName">
+
+      </div>
+
+      <div class="mb-3">
+
+        <label class="form-label">
+
+          Document Type
+
+        </label>
+
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="documentType">
+
+      </div>
+
+      <div class="mb-3">
+
+        <label class="form-label">
+
+          Choose File
+
+        </label>
+
+        <input
+          type="file"
+          class="form-control"
+          (change)="onFileSelected($event)">
+
+      </div>
+
+      <button
+        class="btn btn-success"
+        (click)="upload()">
+
+        Upload Document
+
+      </button>
+
+      <a
+        class="btn btn-secondary ms-2"
+        routerLink="/claims">
+
+        Back
+
+      </a>
+
+    </div>
+
+  </div>
+
+</div>

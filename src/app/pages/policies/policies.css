@@ -1,0 +1,180 @@
+/* Page */
+
+.container-fluid{
+    background:#f5f7fb;
+    min-height:100vh;
+}
+
+/* Header */
+
+h2{
+    color:#1f2937;
+    font-weight:700;
+}
+
+.page-subtitle{
+    color:#6b7280;
+    font-size:16px;
+    margin-bottom:0;
+}
+
+/* Cards */
+
+.card{
+    border:none;
+    border-radius:18px;
+    box-shadow:0 10px 25px rgba(0,0,0,.05);
+}
+
+.card-body{
+    padding:20px;
+}
+
+.filter-card{
+    background:#fff;
+}
+
+/* Buttons */
+
+.issue-btn{
+    background:linear-gradient(135deg,#2563eb,#3b82f6);
+    border:none;
+    border-radius:12px;
+    padding:10px 22px;
+    font-weight:600;
+    box-shadow:0 8px 18px rgba(37,99,235,.25);
+    transition:.3s;
+}
+
+.issue-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 12px 25px rgba(37,99,235,.35);
+}
+
+.purchase-btn{
+    background:linear-gradient(135deg,#16a34a,#22c55e);
+    border:none;
+    border-radius:12px;
+    padding:10px 22px;
+    font-weight:600;
+    box-shadow:0 8px 18px rgba(34,197,94,.25);
+    transition:.3s;
+}
+
+.purchase-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 12px 25px rgba(34,197,94,.35);
+}
+
+.cancel-btn{
+    min-width:95px;
+    border-radius:25px;
+    font-weight:600;
+}
+
+/* Form */
+
+.form-label{
+    font-weight:600;
+}
+
+.form-control,
+.form-select{
+    height:44px;
+    border-radius:8px;
+}
+
+/* Table */
+
+.table{
+    margin-bottom:0;
+    border-radius:14px;
+    overflow:hidden;
+}
+
+.table thead th{
+    background:#1f2937;
+    color:#fff;
+    border:none;
+    padding:16px;
+    text-align:center;
+    white-space:nowrap;
+}
+
+.table tbody td{
+    text-align:center;
+    vertical-align:middle;
+    padding:15px 10px;
+    white-space:nowrap;
+}
+
+.table tbody tr{
+    transition:.2s;
+}
+
+.table tbody tr:hover{
+    background:#f8fbff;
+    transform:scale(1.003);
+}
+
+/* Status */
+
+.status-active{
+    background:#16a34a;
+    color:#fff !important;
+    padding:7px 18px;
+    border-radius:30px;
+    font-weight:600;
+}
+
+.status-pending{
+    background:#facc15;
+    color:#000 !important;
+    padding:7px 18px;
+    border-radius:30px;
+    font-weight:600;
+}
+
+.status-expired{
+    background:#6b7280;
+    color:#fff !important;
+    padding:7px 18px;
+    border-radius:30px;
+    font-weight:600;
+}
+
+.status-cancelled{
+    background:#ef4444;
+    color:#fff !important;
+    padding:7px 18px;
+    border-radius:30px;
+    font-weight:600;
+}
+
+/* Responsive */
+
+.table-responsive{
+    overflow-x:auto;
+}
+
+.shadow-sm{
+    box-shadow:0 .125rem .5rem rgba(0,0,0,.08)!important;
+}
+
+@media(max-width:768px){
+
+.container-fluid{
+    padding:15px!important;
+}
+
+.purchase-btn,
+.issue-btn{
+    width:100%;
+    margin-top:10px;
+}
+
+.table{
+    font-size:14px;
+}
+
+}

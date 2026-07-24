@@ -1,0 +1,399 @@
+<div class="container-fluid register-page">
+
+  <div class="row g-0 min-vh-100">
+
+    <!-- ================= LEFT PANEL ================= -->
+
+    <div class="col-lg-5 d-none d-lg-flex left-panel">
+
+      <div class="left-content">
+
+        <!-- Logo -->
+
+        <div class="logo-section">
+
+          <div class="logo-box">
+
+            <i class="bi bi-shield-check"></i>
+
+          </div>
+
+          <div>
+
+            <h3>InsureFlow</h3>
+
+            <p>Insurance Management System</p>
+
+          </div>
+
+        </div>
+
+        <!-- Welcome -->
+
+        <div class="welcome-section">
+
+          <h1>Create Account</h1>
+
+          <p>
+            Join InsureFlow and simplify your insurance
+            management experience.
+          </p>
+
+        </div>
+
+        <!-- Dashboard Preview -->
+
+        <div class="dashboard-preview">
+
+          <img
+            src="assets/images/dashboard-preview.png"
+            alt="Dashboard Preview">
+
+        </div>
+
+        <!-- Footer -->
+
+        <div class="copyright">
+
+          © 2025 InsureFlow. All rights reserved.
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ================= RIGHT PANEL ================= -->
+
+    <div class="col-lg-7 d-flex justify-content-center align-items-center">
+
+      <div class="register-card">
+
+        <div class="mb-4">
+
+          <h2>Create Account</h2>
+
+          <p class="text-muted">
+
+            Fill in the details below to get started
+
+          </p>
+
+        </div>
+
+        <form
+          [formGroup]="registerForm"
+          (ngSubmit)="register()">
+
+          <!-- Full Name -->
+
+          <div class="mb-3">
+
+            <label class="form-label">
+
+              Full Name
+
+            </label>
+
+            <div class="input-group">
+
+              <span class="input-group-text">
+
+                <i class="bi bi-person"></i>
+
+              </span>
+
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Enter your full name"
+                formControlName="fullName">
+
+            </div>
+
+            <div
+              class="text-danger mt-1"
+              *ngIf="f['fullName'].touched && f['fullName'].invalid">
+
+              <small *ngIf="f['fullName'].errors?.['required']">
+
+                Full Name is required.
+
+              </small>
+
+              <small *ngIf="f['fullName'].errors?.['minlength']">
+
+                Minimum 3 characters required.
+
+              </small>
+
+              <small *ngIf="f['fullName'].errors?.['pattern']">
+
+                Only alphabets and spaces allowed.
+
+              </small>
+
+            </div>
+
+          </div>
+
+          <!-- Email -->
+
+          <div class="mb-3">
+
+            <label class="form-label">
+
+              Email Address
+
+            </label>
+
+            <div class="input-group">
+
+              <span class="input-group-text">
+
+                <i class="bi bi-envelope"></i>
+
+              </span>
+
+              <input
+                type="email"
+                class="form-control"
+                placeholder="Enter your email"
+                formControlName="email">
+
+            </div>
+
+            <div
+              class="text-danger mt-1"
+              *ngIf="f['email'].touched && f['email'].invalid">
+
+              <small *ngIf="f['email'].errors?.['required']">
+
+                Email is required.
+
+              </small>
+
+              <small *ngIf="f['email'].errors?.['email']">
+
+                Enter a valid email.
+
+              </small>
+
+            </div>
+
+          </div>
+
+          <!-- Mobile Number -->
+
+          <div class="mb-3">
+
+            <label class="form-label">
+
+              Mobile Number
+
+            </label>
+
+            <div class="input-group">
+
+              <span class="input-group-text">
+
+                <i class="bi bi-telephone"></i>
+
+              </span>
+
+              <input
+                type="text"
+                maxlength="10"
+                class="form-control"
+                placeholder="Enter mobile number"
+                formControlName="mobileNumber">
+
+            </div>
+
+            <div
+              class="text-danger mt-1"
+              *ngIf="f['mobileNumber'].touched && f['mobileNumber'].invalid">
+
+              <small>
+
+                Enter a valid mobile number.
+
+              </small>
+
+            </div>
+
+          </div>
+
+          <!-- Password -->
+
+          <div class="mb-3">
+
+            <label class="form-label">
+
+              Password
+
+            </label>
+
+            <div class="input-group">
+
+              <span class="input-group-text">
+
+                <i class="bi bi-lock"></i>
+
+              </span>
+
+              <input
+                [type]="hidePassword ? 'password' : 'text'"
+                class="form-control"
+                placeholder="Create a password"
+                formControlName="password">
+
+              <button
+                class="btn btn-outline-secondary"
+                type="button"
+                (click)="togglePassword()">
+
+                <i
+                  class="bi"
+                  [ngClass]="hidePassword ? 'bi-eye' : 'bi-eye-slash'">
+                </i>
+
+              </button>
+
+            </div>
+
+          </div>
+
+          <!-- Confirm Password -->
+
+          <div class="mb-3">
+
+            <label class="form-label">
+
+              Confirm Password
+
+            </label>
+
+            <div class="input-group">
+
+              <span class="input-group-text">
+
+                <i class="bi bi-lock-fill"></i>
+
+              </span>
+
+              <input
+                [type]="hideConfirmPassword ? 'password' : 'text'"
+                class="form-control"
+                placeholder="Confirm your password"
+                formControlName="confirmPassword">
+
+              <button
+                class="btn btn-outline-secondary"
+                type="button"
+                (click)="toggleConfirmPassword()">
+
+                <i
+                  class="bi"
+                  [ngClass]="hideConfirmPassword ? 'bi-eye' : 'bi-eye-slash'">
+                </i>
+
+              </button>
+
+            </div>
+
+            <div
+              class="text-danger mt-1"
+              *ngIf="passwordMismatch">
+
+              <small>
+
+                Passwords do not match.
+
+              </small>
+
+            </div>
+
+          </div>
+
+          <!-- Terms -->
+
+          <div class="form-check mb-4">
+
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="terms">
+
+            <label
+              class="form-check-label"
+              for="terms">
+
+              I agree to the
+
+              <a href="#">
+
+                Terms of Service
+
+              </a>
+
+              and
+
+              <a href="#">
+
+                Privacy Policy
+
+              </a>
+
+            </label>
+
+          </div>
+
+          <!-- Register Button -->
+
+          <button
+            type="submit"
+            class="btn register-btn w-100"
+            [disabled]="registerForm.invalid || isSubmitting">
+
+            <span *ngIf="!isSubmitting">
+
+              Create Account
+
+            </span>
+
+            <span *ngIf="isSubmitting">
+
+              <span class="spinner-border spinner-border-sm me-2"></span>
+
+              Creating Account...
+
+            </span>
+
+          </button>
+
+        </form>
+
+        <!-- Login -->
+
+        <div class="text-center mt-4">
+
+          Already have an account?
+
+          <a
+            routerLink="/login"
+            class="fw-bold">
+
+            Sign In
+
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

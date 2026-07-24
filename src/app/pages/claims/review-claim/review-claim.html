@@ -1,0 +1,92 @@
+<div class="container mt-4">
+
+  <div class="card shadow">
+
+    <div class="card-header bg-primary text-white">
+      <h3 class="mb-0">Review Claim</h3>
+    </div>
+
+    <div class="card-body">
+
+      <form #reviewForm="ngForm" (ngSubmit)="submitReview()">
+
+        <!-- Claim Id -->
+        <div class="mb-3">
+          <label class="form-label fw-bold">Claim ID</label>
+          <input
+            type="text"
+            class="form-control"
+            [value]="claimId"
+            readonly>
+        </div>
+
+        <!-- Recommendation -->
+        <div class="mb-3">
+          <label class="form-label fw-bold">
+            Recommendation
+          </label>
+
+          <select
+            class="form-select"
+            name="recommendedStatus"
+            [(ngModel)]="review.recommendedStatus"
+            required>
+
+            <option [ngValue]="2">
+  Recommended For Approval
+</option>
+
+<option [ngValue]="3">
+  Recommended For Rejection
+</option>
+
+          </select>
+
+        </div>
+
+        <!-- Remarks -->
+        <div class="mb-3">
+          <label class="form-label fw-bold">
+            Remarks
+          </label>
+
+          <textarea
+            class="form-control"
+            rows="5"
+            name="remarks"
+            [(ngModel)]="review.remarks"
+            placeholder="Enter review remarks..."
+            required>
+          </textarea>
+
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex gap-2">
+
+          <button
+            type="submit"
+            class="btn btn-success"
+            [disabled]="reviewForm.invalid">
+
+            Submit Review
+
+          </button>
+
+          <a
+            routerLink="/claims"
+            class="btn btn-secondary">
+
+            Cancel
+
+          </a>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+</div>
