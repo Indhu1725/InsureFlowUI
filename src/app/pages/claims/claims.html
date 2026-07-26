@@ -173,29 +173,29 @@
 
                 <td>
 
-                  <span
-                    class="badge"
-                    [ngClass]="{
-                      'bg-warning text-dark': claim.claimStatus == 0,
-                      'bg-info': claim.claimStatus == 1,
-                      'bg-primary': claim.claimStatus == 2,
-                      'bg-secondary': claim.claimStatus == 3,
-                      'bg-success': claim.claimStatus == 4,
-                      'bg-danger': claim.claimStatus == 5
-                    }">
+                      <span
+                        class="badge"
+                        [ngClass]="{
+                          'bg-warning text-dark': claim.claimStatus === 'Submitted',
+                          'bg-info': claim.claimStatus === 'UnderReview',
+                          'bg-primary': claim.claimStatus === 'RecommendedForApproval',
+                          'bg-secondary': claim.claimStatus === 'RecommendedForRejection',
+                          'bg-success': claim.claimStatus === 'Approved',
+                          'bg-danger': claim.claimStatus === 'Rejected'
+                        }">
 
-                    {{
-                      claim.claimStatus == 0 ? 'Submitted' :
-                      claim.claimStatus == 1 ? 'Under Review' :
-                      claim.claimStatus == 2 ? 'Recommended For Approval' :
-                      claim.claimStatus == 3 ? 'Recommended For Rejection' :
-                      claim.claimStatus == 4 ? 'Approved' :
-                      'Rejected'
-                    }}
+                        {{
+                          claim.claimStatus === 'Submitted' ? 'Submitted' :
+                          claim.claimStatus === 'UnderReview' ? 'Under Review' :
+                          claim.claimStatus === 'RecommendedForApproval' ? 'Recommended For Approval' :
+                          claim.claimStatus === 'RecommendedForRejection' ? 'Recommended For Rejection' :
+                          claim.claimStatus === 'Approved' ? 'Approved' :
+                          'Rejected'
+                        }}
 
-                  </span>
+                      </span>
 
-                </td>
+                    </td>
 
                 <td>
 
@@ -209,7 +209,7 @@
 
                   @if(userRole === 'Admin'){
 
-                    @if(claim.claimStatus == 2 || claim.claimStatus == 3){
+                   @if(claim.claimStatus === 'RecommendedForApproval' ||claim.claimStatus === 'RecommendedForRejection'){
 
                       <a
                         class="btn btn-sm decision-btn"

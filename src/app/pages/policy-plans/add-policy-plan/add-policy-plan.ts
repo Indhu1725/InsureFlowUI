@@ -25,7 +25,7 @@ export class AddPolicyPlan {
 
   premiumTypes = [
     'OneTime',
-    'Annual'
+    'Monthly'
   ];
 
   planForm: FormGroup;

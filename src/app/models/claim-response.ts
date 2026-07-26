@@ -14,7 +14,7 @@ export interface ClaimResponse {
 
   incidentDate: string;
 
-  claimStatus: number;
+  claimStatus: string;
 
   internalStaffRemarks: string;
 
