@@ -1,256 +1,321 @@
 <div class="container mt-4">
 
+  <!-- Header -->
   <div class="d-flex justify-content-between align-items-center mb-4">
 
     <div>
 
-        <h2 class="fw-bold">Premium Payments</h2>
+      <h2 class="fw-bold">Premium Payments</h2>
 
-        <p class="page-subtitle">
-            Manage all premium payment transactions.
-        </p>
+      <p class="page-subtitle">
+        Manage all premium payment transactions.
+      </p>
 
     </div>
 
     <button
-        class="btn add-btn"
-        (click)="addPayment()">
+      class="btn add-btn"
+      type="button"
+      (click)="addPayment()">
 
-        <i class="bi bi-plus-circle me-2"></i>
+      <i class="bi bi-plus-circle me-2"></i>
 
-        Add Payment
+      Add Payment
 
     </button>
 
-</div>
+  </div>
 
-  <!-- ================= Filter ================= -->
+  <!-- Filter -->
 
   <div class="card filter-card mb-4">
 
-<div class="card-body">
+    <div class="card-body">
 
-<div class="row">
+      <form
+        #paymentForm="ngForm"
+        (ngSubmit)="searchPayments()">
 
-    <div class="col-md-4">
-      <label class="form-label fw-bold">Payment Filter</label>
+        <div class="row">
 
-      <select
-  class="form-select"
-  [(ngModel)]="selectedFilter"
-  (change)="onFilterChange()">
+          <!-- Payment Filter -->
 
-  @if(role !== 'Customer'){
+          <div class="col-md-4">
 
-    <option value="all">All Payments</option>
-    <option value="id">Payment By ID</option>
-    <option value="policy">Policy Payments</option>
+            <label class="form-label fw-bold d-flex">
 
-  }
+              Payment Filter
 
-  <option value="customer">Customer Payments</option>
+              <span class="text-danger fw-bold ms-1">*</span>
 
-</select>
-    </div>
+            </label>
 
-    <div
-      class="col-md-4"
-      *ngIf="selectedFilter !== 'all'">
+            <select
+              class="form-select"
+              name="selectedFilter"
+              [ngModel]="selectedFilter()"
+              (ngModelChange)="onFilterChange($event)"
+              required>
 
-      <label class="form-label">{{ idLabel }}</label>
+              @if(role !== 'Customer'){
 
-      <input
-        type="number"
-        class="form-control"
-        [(ngModel)]="searchId"
-        placeholder="Enter ID">
-    </div>
+              <option value="all">
+                All Payments
+              </option>
 
-    <div
-      class="col-md-2 d-flex align-items-end"
-      *ngIf="selectedFilter !== 'all'">
+              <option value="id">
+                Payment By ID
+              </option>
 
-      <button
-        class="btn btn-primary w-100"
-        (click)="searchPayments()">
+              <option value="policy">
+                Policy Payments
+              </option>
 
-        Search
+              }
 
-      </button>
+              <option value="customer">
+                Customer Payments
+              </option>
+
+            </select>
+
+          </div>
+
+          @if(selectedFilter() !== 'all'){
+
+          <!-- Search ID -->
+
+          <div class="col-md-4">
+
+            <label class="form-label fw-semibold d-flex">
+
+              {{ idLabel() }}
+
+              <span class="text-danger fw-bold ms-1">*</span>
+
+            </label>
+
+            <input
+              type="number"
+              class="form-control"
+              name="searchId"
+              required
+              min="1"
+              [(ngModel)]="searchId"
+              #searchIdCtrl="ngModel">
+
+            @if(searchIdCtrl.invalid && searchIdCtrl.touched){
+
+            <small class="text-danger">
+
+              Please enter a valid {{ idLabel().toLowerCase() }}.
+
+            </small>
+
+            }
+
+          </div>
+
+          <!-- Search Button -->
+
+          <div class="col-md-2 d-flex align-items-end">
+
+            <button
+              type="submit"
+              class="btn btn-primary w-100"
+              [disabled]="paymentForm.invalid">
+
+              Search
+
+            </button>
+
+          </div>
+
+          }
+
+        </div>
+
+      </form>
 
     </div>
 
   </div>
-  </div>
-
-</div>
 
   <!-- Loading -->
 
-  <div
-    *ngIf="loading"
-    class="alert alert-info">
+  @if(loading()){
+
+  <div class="alert alert-info">
 
     Loading...
 
   </div>
 
-  <!-- Error -->
+  }
 
-  <div
-    *ngIf="errorMessage"
-    class="alert alert-danger">
+  <!-- Table -->
 
-    {{ errorMessage }}
+  @if(!loading() && payments().length > 0){
+
+  <div class="card shadow-sm">
+
+    <div class="card-body">
+
+      <div class="table-responsive">
+
+        <table class="table table-hover table-bordered align-middle">
+
+          <thead>
+
+            <tr>
+
+              <th
+                style="cursor:pointer"
+                (click)="sort('policyNumber')">
+
+                Policy Number
+
+              </th>
+
+              <th
+                style="cursor:pointer"
+                (click)="sort('amount')">
+
+                Amount
+
+              </th>
+
+              <th
+                style="cursor:pointer"
+                (click)="sort('paymentDate')">
+
+                Payment Date
+
+              </th>
+
+              <th>
+
+                Payment Mode
+
+              </th>
+
+              <th>
+
+                Transaction Reference
+
+              </th>
+
+              <th
+                style="cursor:pointer"
+                (click)="sort('paymentStatus')">
+
+                Status
+
+              </th>
+
+              <th>
+
+                Action
+
+              </th>
+
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            @for(payment of payments(); track payment.paymentId){
+
+            <tr>
+
+              <td>{{ payment.policyNumber }}</td>
+
+              <td>{{ payment.amount | currency:'INR':'symbol' }}</td>
+
+              <td>{{ payment.paymentDate | date:'dd-MM-yyyy' }}</td>
+
+              <td>{{ payment.paymentMode }}</td>
+
+              <td>{{ payment.transactionReference }}</td>
+
+              <td>{{ payment.paymentStatus }}</td>
+
+              <td>
+
+                <button
+                  type="button"
+                  class="btn btn-sm view-btn"
+                  (click)="viewPayment(payment.paymentId)">
+
+                  View
+
+                </button>
+
+              </td>
+
+            </tr>
+
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
 
   </div>
 
-  <!-- ================= Async Pipe ================= -->
+  }
 
-  <ng-container *ngIf="payments$ | async as payments">
+  <!-- No Records -->
 
-    <!-- Table -->
+  @if(!loading() && payments().length === 0){
 
-    <div
-class="card shadow-sm"
-*ngIf="!loading && payments.length > 0">
+  <div class="alert alert-warning">
 
-<div class="card-body">
+    No premium payments found.
 
-<div class="table-responsive">
+  </div>
 
-<table
-class="table table-hover table-bordered align-middle">
+  }
 
-      <thead>
+  <!-- Pagination -->
 
-        <tr>
+  @if(payments().length > 0){
 
-          <th>Payment ID</th>
+  <div class="d-flex justify-content-between align-items-center mt-3">
 
-          <th
-            (click)="sort('policyNumber')"
-            style="cursor:pointer">
+    <button
+      type="button"
+      class="btn btn-secondary"
+      (click)="previousPage()"
+      [disabled]="pageNumber() === 1">
 
-            Policy Number
+      Previous
 
-          </th>
+    </button>
 
-          <th
-            (click)="sort('amount')"
-            style="cursor:pointer">
+    <span class="fw-semibold">
 
-            Amount
+      Page {{ pageNumber() }} of {{ totalPages() }}
 
-          </th>
+    </span>
 
-          <th
-            (click)="sort('paymentDate')"
-            style="cursor:pointer">
+    <button
+      type="button"
+      class="btn btn-secondary"
+      (click)="nextPage()"
+      [disabled]="pageNumber() === totalPages()">
 
-            Payment Date
+      Next
 
-          </th>
+    </button>
 
-          <th>Payment Mode</th>
+  </div>
 
-          <th>Transaction Reference</th>
-
-          <th
-            (click)="sort('paymentStatus')"
-            style="cursor:pointer">
-
-            Status
-
-          </th>
-
-          <th>Action</th>
-
-        </tr>
-
-      </thead>
-
-      <tbody>
-
-        <tr *ngFor="let payment of payments">
-
-          <td>{{ payment.paymentId }}</td>
-
-          <td>{{ payment.policyNumber }}</td>
-
-          <td>{{ payment.amount | currency:'INR':'symbol' }}</td>
-
-          <td>{{ payment.paymentDate | date:'dd-MM-yyyy' }}</td>
-
-          <td>{{ payment.paymentMode }}</td>
-
-          <td>{{ payment.transactionReference }}</td>
-
-          <td>{{ payment.paymentStatus }}</td>
-
-          <td>
-
-            <button
-              class="btn view-btn btn-sm"
-              (click)="viewPayment(payment.paymentId)">
-
-              View
-
-            </button>
-
-          </td>
-
-        </tr>
-
-      </tbody>
-
-    </table>
-    </div>
-
-</div>
-
-</div>
-
-    <!-- No Records -->
-
-    <div
-      *ngIf="!loading && payments.length === 0 && !errorMessage"
-      class="alert alert-warning">
-
-      No premium payments found.
-
-    </div>
-
-    <!-- Pagination -->
-
-    <div
-      class="d-flex justify-content-between align-items-center mt-3"
-      *ngIf="payments.length > 0">
-
-      <button
-        class="btn btn-secondary"
-        (click)="previousPage()"
-        [disabled]="pageNumber === 1">
-
-        Previous
-
-      </button>
-
-      <span>
-        Page {{ pageNumber }} of {{ totalPages }}
-      </span>
-
-      <button
-        class="btn btn-secondary"
-        (click)="nextPage()"
-        [disabled]="pageNumber === totalPages">
-
-        Next
-
-      </button>
-
-    </div>
-
-  </ng-container>
+  }
 
 </div>

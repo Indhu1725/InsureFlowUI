@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 import { ClaimService } from '../../../services/claim';
 import { ClaimReview } from '../../../models/claim-review';
@@ -17,37 +18,49 @@ import { ClaimReview } from '../../../models/claim-review';
   templateUrl: './review-claim.html',
   styleUrl: './review-claim.css'
 })
-export class ReviewClaim {
+export class ReviewClaim implements OnInit {
 
-  claimId: number = 0;
+  // Signal
+  claimId = signal(0);
 
+  // Keep as normal object for ngModel
   review: ClaimReview = {
-
-    recommendedStatus: 2,   // Recommended For Approval
-
+    recommendedStatus: 2,
     remarks: ''
-
   };
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private claimService: ClaimService
-  ) { }
+    private claimService: ClaimService,
+    private toastr: ToastrService
+  ) {}
 
   ngOnInit(): void {
 
-    this.claimId = Number(this.route.snapshot.paramMap.get('id'));
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+
+    if (id > 0) {
+
+      this.claimId.set(id);
+
+    } else {
+
+      this.toastr.error('Invalid claim ID.');
+
+      this.router.navigate(['/claims']);
+
+    }
 
   }
 
   submitReview(): void {
 
-    this.claimService.reviewClaim(this.claimId, this.review).subscribe({
+    this.claimService.reviewClaim(this.claimId(), this.review).subscribe({
 
       next: () => {
 
-        alert('Claim reviewed successfully.');
+        this.toastr.success('Claim reviewed successfully.');
 
         this.router.navigate(['/claims']);
 
@@ -55,9 +68,9 @@ export class ReviewClaim {
 
       error: (error) => {
 
-        console.log(error);
+        console.error(error);
 
-        alert('Failed to review claim.');
+        this.toastr.error('Failed to review claim.');
 
       }
 

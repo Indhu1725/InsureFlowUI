@@ -85,7 +85,7 @@ children:[
 
 //Premium Payments
 { path: 'premium-payments', component: PremiumPayments,canActivate: [authGuard]},
-{ path: 'premium-payments/add', component: AddPremiumPaymentComponent,canActivate: [authGuard, roleGuard],data: { role: 'Customer' }},
+{ path: 'premium-payments/add', component: AddPremiumPaymentComponent,canActivate: [authGuard, roleGuard],data: { role:['Admin', 'InternalStaff', 'Customer'] }},
 { path: 'premium-payments/view/:id',component: ViewPremiumPaymentComponent,canActivate: [authGuard]},
 
 //Insurance Products

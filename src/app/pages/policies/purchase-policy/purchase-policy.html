@@ -1,55 +1,88 @@
 <div class="container mt-4">
 
-    <div class="card shadow">
+  <div class="card shadow">
 
-        <div class="card-header bg-success text-white">
+    <div class="card-header bg-success text-white">
 
-            <h3>Purchase Policy</h3>
-
-        </div>
-
-        <div class="card-body">
-
-            <div class="mb-3">
-
-                <label class="form-label">
-
-                    Plan Id
-
-                </label>
-
-                <input
-                    type="number"
-                    class="form-control"
-                    [(ngModel)]="purchase.planId">
-
-            </div>
-
-            <div class="mb-3">
-
-                <label class="form-label">
-
-                    Start Date
-
-                </label>
-
-                <input
-                    type="date"
-                    class="form-control"
-                    [(ngModel)]="purchase.startDate">
-
-            </div>
-
-            <button
-                class="btn btn-success"
-                (click)="purchasePolicy()">
-
-                Purchase
-
-            </button>
-
-        </div>
+      <h3>Purchase Policy</h3>
 
     </div>
+
+    <div class="card-body">
+
+      <!-- Plan ID -->
+      <div class="mb-3">
+
+        <label class="form-label d-flex">
+          Plan ID
+          <span class="text-danger fw-bold ms-1">*</span>
+        </label>
+
+        <select
+  class="form-select"
+  [value]="purchase().planId"
+  (change)="purchase.set({
+    ...purchase(),
+    planId: +$any($event.target).value
+  })">
+
+  <option value="0">-- Select Plan --</option>
+
+  @for(plan of plans(); track plan.planId) {
+    <option [value]="plan.planId">
+      {{ plan.planName }}
+    </option>
+  }
+
+</select>
+
+      </div>
+
+      <!-- Start Date -->
+      <div class="mb-4">
+
+        <label class="form-label d-flex">
+          Start Date
+          <span class="text-danger fw-bold ms-1">*</span>
+        </label>
+
+        <input
+          type="date"
+          class="form-control"
+          [value]="purchase().startDate"
+          (input)="purchase.set({
+            ...purchase(),
+            startDate: $any($event.target).value
+          })">
+
+      </div>
+
+      <!-- Buttons -->
+      <button
+        type="button"
+        class="btn btn-success"
+        (click)="purchasePolicy()"
+        [disabled]="
+          isLoading() ||
+          purchase().planId <= 0 ||
+          !purchase().startDate
+        ">
+
+        Purchase
+
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-secondary ms-2"
+        routerLink="/policies">
+
+        Cancel
+
+      </button>
+
+    </div>
+
+  </div>
 
 </div>

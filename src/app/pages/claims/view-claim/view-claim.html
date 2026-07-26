@@ -1,4 +1,4 @@
-@if (claim$ | async; as claim) {
+@if (claim(); as claim) {
 
 <div class="container mt-4">
 
@@ -43,22 +43,23 @@
 
           <p>
 
-            <span class="badge"
+            <span
+              class="badge"
               [ngClass]="{
-                'bg-warning text-dark': claim.claimStatus == 0,
-                'bg-info': claim.claimStatus == 1,
-                'bg-primary': claim.claimStatus == 2,
-                'bg-secondary': claim.claimStatus == 3,
-                'bg-success': claim.claimStatus == 4,
-                'bg-danger': claim.claimStatus == 5
+                'bg-warning text-dark': claim.claimStatus === 0,
+                'bg-info': claim.claimStatus === 1,
+                'bg-primary': claim.claimStatus === 2,
+                'bg-secondary': claim.claimStatus === 3,
+                'bg-success': claim.claimStatus === 4,
+                'bg-danger': claim.claimStatus === 5
               }">
 
               {{
-                claim.claimStatus == 0 ? 'Submitted' :
-                claim.claimStatus == 1 ? 'Under Review' :
-                claim.claimStatus == 2 ? 'Recommended For Approval' :
-                claim.claimStatus == 3 ? 'Recommended For Rejection' :
-                claim.claimStatus == 4 ? 'Approved' :
+                claim.claimStatus === 0 ? 'Submitted' :
+                claim.claimStatus === 1 ? 'Under Review' :
+                claim.claimStatus === 2 ? 'Recommended For Approval' :
+                claim.claimStatus === 3 ? 'Recommended For Rejection' :
+                claim.claimStatus === 4 ? 'Approved' :
                 'Rejected'
               }}
 
@@ -112,9 +113,7 @@
 <div class="container mt-4">
 
   <div class="alert alert-info text-center">
-
     Loading claim details...
-
   </div>
 
 </div>

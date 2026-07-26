@@ -1,12 +1,12 @@
-import { AfterViewInit, Component, OnInit,ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, signal} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import Chart from 'chart.js/auto';
+import { ToastrService } from 'ngx-toastr';
 
 import { CustomerService } from '../../services/customer';
 import { PolicyService } from '../../services/policy';
 import { PolicyPlanService } from '../../services/policy-plan';
 import { ClaimService } from '../../services/claim';
-import { PremiumPaymentService } from '../../services/premium-payment';
 
 @Component({
   selector: 'app-dashboard',
@@ -17,16 +17,19 @@ import { PremiumPaymentService } from '../../services/premium-payment';
 })
 export class DashboardComponent implements OnInit {
 
-  totalCustomers = 0;
-  totalPolicies = 0;
-  totalClaims = 0;
-  totalPlans = 0;
-  approvedClaims = 0;
-  pendingClaims = 0;
-  rejectedClaims = 0;
-  recentClaims: any[] = [];
-  topPlans: any[] = [];
-  premiumChartData: number[] = [0, 0, 0, 0, 0, 0, 0];
+  totalCustomers = signal(0);
+  totalPolicies = signal(0);
+  totalClaims = signal(0);
+  totalPlans = signal(0);
+
+  approvedClaims = signal(0);
+  pendingClaims = signal(0);
+  rejectedClaims = signal(0);
+
+  recentClaims = signal<any[]>([]);
+  topPlans = signal<any[]>([]);
+
+  premiumChartData = signal<number[]>([0,0,0,0,0,0,0]);
 
   role = localStorage.getItem('role');
 
@@ -35,7 +38,7 @@ export class DashboardComponent implements OnInit {
     private policyService: PolicyService,
     private policyPlanService: PolicyPlanService,
     private claimService: ClaimService,
-    private cdr: ChangeDetectorRef
+    private toastr: ToastrService
   ) { }
 
   ngOnInit(): void {
@@ -67,49 +70,71 @@ export class DashboardComponent implements OnInit {
   this.customerService.getCustomers(1, 100).subscribe({
   next: (response: any) => {
 
-    this.totalCustomers = response.data.totalRecords;
+    this.totalCustomers.set(response.data.totalRecords);
 
-    console.log(this.totalCustomers);
+    console.log(this.totalCustomers());
 
-    this.cdr.detectChanges();
+    
 
   },
-  error: err => console.log(err)
+ error: () => {
+
+  this.toastr.error(
+    'Unable to load customers.',
+    'Dashboard Error'
+  );
+
+}
 });
 
   // Policies
   this.policyService.getPolicies().subscribe({
   next: (response: any) => {
 
-    this.totalPolicies = response.data.totalRecords;
+  this.totalPolicies.set(response.data.totalRecords);
 
     const policies = response.data.records;
 
     this.calculatePremiumChart(policies);
 
-    this.cdr.detectChanges();
+    
 
   },
-  error: err => console.log(err)
+  error: () => {
+
+  this.toastr.error(
+    'Unable to load policies.',
+    'Dashboard Error'
+  );
+
+}
 });
   // Claims
 this.claimService.getAllClaims().subscribe({
   next: (response: any) => {
 
-    this.totalClaims = response.data.length;
+    this.totalClaims.set(response.data.length);
 
     this.calculateClaimChart(response.data);
 
-    this.recentClaims = response.data
-      .sort((a: any, b: any) =>
-        new Date(b.createdDate).getTime() -
-        new Date(a.createdDate).getTime())
-      .slice(0, 5);
-
-    this.cdr.detectChanges();
+    this.recentClaims.set(
+  response.data
+    .sort((a: any, b: any) =>
+      new Date(b.createdDate).getTime() -
+      new Date(a.createdDate).getTime())
+    .slice(0, 5)
+);
+    
 
   },
-  error: err => console.log(err)
+  error: () => {
+
+  this.toastr.error(
+    'Unable to load claims.',
+    'Dashboard Error'
+  );
+
+}
 });
   // Policy Plans
   this.policyPlanService.getPlans({
@@ -120,14 +145,21 @@ this.claimService.getAllClaims().subscribe({
 }).subscribe({
   next: (response: any) => {
 
-   this.totalPlans = response.data.totalRecords;
+   this.totalPlans.set(response.data.totalRecords);
 
-this.topPlans = response.data.records.slice(0, 5);
+this.topPlans.set(response.data.records.slice(0, 5));
 
-this.cdr.detectChanges();
+
 
   },
-  error: err => console.log(err)
+  error: () => {
+
+  this.toastr.error(
+    'Unable to load policy plans.',
+    'Dashboard Error'
+  );
+
+}
 });
 
 }
@@ -143,15 +175,21 @@ loadCustomerDashboard(): void {
 
     next: (response: any) => {
 
-      this.totalPolicies = response.data.length;
+      this.totalPolicies.set(response.data.length);
 
       this.calculatePremiumChart(response.data);
 
-      this.cdr.detectChanges();
 
     },
 
-    error: err => console.log(err)
+   error: () => {
+
+  this.toastr.error(
+    'Unable to load My Policies.',
+    'Dashboard Error'
+  );
+
+}
 
   });
 
@@ -160,21 +198,29 @@ loadCustomerDashboard(): void {
 
     next: (response: any) => {
 
-      this.totalClaims = response.data.length;
+      this.totalClaims.set(response.data.length);
 
       this.calculateClaimChart(response.data);
 
-      this.recentClaims = response.data
-        .sort((a: any, b: any) =>
-          new Date(b.createdDate).getTime() -
-          new Date(a.createdDate).getTime())
-        .slice(0, 5);
+      this.recentClaims.set(
+  response.data
+    .sort((a:any,b:any)=>
+      new Date(b.createdDate).getTime()-
+      new Date(a.createdDate).getTime())
+    .slice(0,5)
+);
 
-      this.cdr.detectChanges();
 
     },
 
-    error: err => console.log(err)
+    error: () => {
+
+  this.toastr.error(
+    'Unable to load My Claims.',
+    'Dashboard Error'
+  );
+
+}
 
   });
 
@@ -190,15 +236,20 @@ loadCustomerDashboard(): void {
 
     next: (response: any) => {
 
-      this.totalPlans = response.data.totalRecords;
+      this.totalPlans.set(response.data.totalRecords);
 
-      this.topPlans = response.data.records.slice(0, 5);
-
-      this.cdr.detectChanges();
+      this.topPlans.set(response.data.records.slice(0,5));
 
     },
 
-    error: err => console.log(err)
+    error: () => {
+
+  this.toastr.error(
+    'Unable to load policy plans.',
+    'Dashboard Error'
+  );
+
+}
 
   });
 
@@ -220,7 +271,7 @@ calculatePremiumChart(policies: any[]): void {
 
   });
 
-  this.premiumChartData = monthlyPremium;
+  this.premiumChartData.set(monthlyPremium);
 
   setTimeout(() => {
   this.createLineChart();
@@ -249,7 +300,7 @@ if (!premiumCanvas) {
         datasets: [
           {
             label: 'Premium',
-            data: this.premiumChartData,
+            data: this.premiumChartData(),
             borderColor: '#6f42c1',
             backgroundColor: 'rgba(111,66,193,0.15)',
             fill: true,
@@ -270,24 +321,24 @@ if (!premiumCanvas) {
 
     console.log('Claims:', claims);
 
-  this.approvedClaims = 0;
-  this.pendingClaims = 0;
-  this.rejectedClaims = 0;
+  this.approvedClaims.set(0);
+  this.pendingClaims.set(0);
+  this.rejectedClaims.set(0);
 
   claims.forEach(claim => {
 
     switch (claim.claimStatus) {
 
       case 4:
-        this.approvedClaims++;
+        this.approvedClaims.update(v=>v+1);
         break;
 
       case 5:
-        this.rejectedClaims++;
+        this.rejectedClaims.update(v=>v+1);
         break;
 
       default:
-        this.pendingClaims++;
+        this.pendingClaims.update(v=>v+1);
         break;
 
     }
@@ -323,10 +374,11 @@ if (!claimCanvas) {
         datasets: [
           {
             data: [
-  this.approvedClaims,
-  this.pendingClaims,
-  this.rejectedClaims
-],
+              this.approvedClaims(),
+              this.pendingClaims(),
+              this.rejectedClaims()
+
+           ],
             backgroundColor: [
               '#28a745',
               '#ffc107',

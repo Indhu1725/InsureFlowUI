@@ -1,23 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {FormBuilder,FormGroup,ReactiveFormsModule,Validators} from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { map } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 
 import { PolicyPlanService } from '../../../services/policy-plan';
 import { ProductService } from '../../../services/insurance-product';
-
 import { Product } from '../../../models/product';
 import { PolicyPlanRequest } from '../../../models/policy-plan-request';
 
 @Component({
   selector: 'app-edit-policy-plan',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    RouterModule
-  ],
+  imports: [CommonModule,ReactiveFormsModule,RouterModule],
   templateUrl: './edit-policy-plan.html',
   styleUrl: './edit-policy-plan.css'
 })
@@ -25,53 +20,83 @@ export class EditPolicyPlan {
 
   planId = 0;
 
-  products: Product[] = [];
+  products = signal<Product[]>([]);
+
+  isLoading = signal(false);
 
   planForm: FormGroup;
+
+  premiumTypes = [
+    'OneTime',
+    'Annual'
+  ];
 
   constructor(
     private fb: FormBuilder,
     private planService: PolicyPlanService,
     private productService: ProductService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService
   ) {
 
     this.planForm = this.fb.group({
 
       productId: [
         '',
-        Validators.required
+        [
+          Validators.required,
+          Validators.min(1)
+        ]
       ],
 
       planName: [
         '',
-        Validators.required
+        [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(100),
+          Validators.pattern('^[a-zA-Z0-9 ]+$')
+        ]
       ],
 
       coverageAmount: [
         '',
-        Validators.required
+        [
+          Validators.required,
+          Validators.min(1)
+        ]
       ],
 
       premiumAmount: [
         '',
-        Validators.required
+        [
+          Validators.required,
+          Validators.min(1)
+        ]
       ],
 
       premiumType: [
-        0,
+        '',
         Validators.required
       ],
 
       durationYears: [
         '',
-        Validators.required
+        [
+          Validators.required,
+          Validators.min(1),
+          Validators.max(100)
+        ]
       ],
 
       termsAndConditions: [
         '',
-        Validators.required
+        [
+          Validators.required,
+          Validators.minLength(10),
+          Validators.maxLength(1000)
+        ]
       ],
 
       isActive: [
@@ -90,60 +115,58 @@ export class EditPolicyPlan {
 
   loadProducts(): void {
 
-    this.productService
-      .getActiveProducts()
-      .pipe(
-        map(response => response.data)
-      )
-      .subscribe({
+    this.productService.getActiveProducts().subscribe({
 
-        next: (data) => {
+      next: (response) => {
 
-          this.products = data;
+        this.products.set(response.data);
 
-        },
+      },
 
-        error: (err) => {
+      error: () => {
 
-          console.log(err);
+        this.toastr.error('Unable to load products.','Error');
 
-        }
+      }
 
-      });
+    });
 
   }
 
   loadPlan(): void {
 
-    this.planService
-      .getPlanById(this.planId)
-      .subscribe({
+    this.isLoading.set(true);
 
-        next: (response) => {
+    this.planService.getPlanById(this.planId).subscribe({
 
-          this.planForm.patchValue({
+      next: (response) => {
 
-            productId: response.data.productId,
-            planName: response.data.planName,
-            coverageAmount: response.data.coverageAmount,
-            premiumAmount: response.data.premiumAmount,
-            premiumType: response.data.premiumType,
-            durationYears: response.data.durationYears,
-            termsAndConditions: response.data.termsAndConditions,
-            isActive: response.data.isActive
+        this.planForm.patchValue({
 
-          });
+          productId: response.data.productId,
+          planName: response.data.planName,
+          coverageAmount: response.data.coverageAmount,
+          premiumAmount: response.data.premiumAmount,
+          premiumType: response.data.premiumType,
+          durationYears: response.data.durationYears,
+          termsAndConditions: response.data.termsAndConditions,
+          isActive: response.data.isActive
 
-        },
+        });
 
-        error: (err) => {
+        this.isLoading.set(false);
 
-          console.log(err);
-          alert('Unable to load policy plan.');
+      },
 
-        }
+      error: () => {
 
-      });
+        this.isLoading.set(false);
+
+        this.toastr.error('Unable to load policy plan.','Error');
+
+      }
+
+    });
 
   }
 
@@ -153,33 +176,61 @@ export class EditPolicyPlan {
 
       this.planForm.markAllAsTouched();
 
+      this.toastr.warning('Please fill all required fields correctly.','Validation');
+
       return;
 
     }
 
-    const request: PolicyPlanRequest = this.planForm.value;
+    const request = this.planForm.value as PolicyPlanRequest;
 
-    this.planService
-      .updatePlan(this.planId, request)
-      .subscribe({
+    if (request.coverageAmount <= 0) {
 
-        next: () => {
+      this.toastr.error('Coverage Amount must be greater than 0.','Validation');
 
-          alert('Policy Plan updated successfully.');
+      return;
 
-          this.router.navigate(['/policy-plans']);
+    }
 
-        },
+    if (request.premiumAmount <= 0) {
 
-        error: (err) => {
+      this.toastr.error('Premium Amount must be greater than 0.','Validation');
 
-          console.log(err);
+      return;
 
-          alert(err.error?.message ?? 'Unable to update policy plan.');
+    }
 
-        }
+    if (request.durationYears <= 0) {
 
-      });
+      this.toastr.error('Duration must be greater than 0.','Validation');
+
+      return;
+
+    }
+
+    this.isLoading.set(true);
+
+    this.planService.updatePlan(this.planId, request).subscribe({
+
+      next: () => {
+
+        this.isLoading.set(false);
+
+        this.toastr.success('Policy Plan updated successfully.','Success');
+
+        this.router.navigate(['/policy-plans']);
+
+      },
+
+      error: (err) => {
+
+        this.isLoading.set(false);
+
+        this.toastr.error(err.error?.message || 'Unable to update policy plan.','Error');
+
+      }
+
+    });
 
   }
 

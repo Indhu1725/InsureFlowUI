@@ -8,151 +8,207 @@
 
     <div class="card-body">
 
-      <div
-        class="alert alert-success"
-        *ngIf="successMessage">
-        {{ successMessage }}
-      </div>
-
-      <div
-        class="alert alert-danger"
-        *ngIf="errorMessage">
-        {{ errorMessage }}
-      </div>
-
       <form
         [formGroup]="paymentForm"
         (ngSubmit)="submit()">
 
-        <!-- Policy Id -->
+        <!-- Policy -->
         <div class="mb-3">
 
-          <label class="form-label">Policy Id</label>
+          <label class="form-label d-flex">
+            Policy
+            <span class="text-danger fw-bold ms-1">*</span>
+          </label>
 
-          <input
-            type="number"
-            class="form-control"
-            formControlName="policyId">
+          <select
+            class="form-select"
+            formControlName="policyId"
+            [class.is-invalid]="submitted() && paymentForm.get('policyId')?.invalid">
 
-          <div
-            class="text-danger"
-            *ngIf="submitted && paymentForm.get('policyId')?.invalid">
+            <option value="">
+              Select Policy
+            </option>
 
-            <small
-              *ngIf="paymentForm.get('policyId')?.hasError('required')">
-              Policy Id is required.
-            </small>
+            @for(policy of policies(); track policy.policyId){
 
-            <small
-              *ngIf="paymentForm.get('policyId')?.hasError('min')">
-              Policy Id must be greater than 0.
-            </small>
+            <option [value]="policy.policyId">
+
+              {{ policy.policyNumber }} - {{ policy.customerName }}
+
+            </option>
+
+            }
+
+          </select>
+
+          @if(submitted() && paymentForm.get('policyId')?.invalid){
+
+          <div class="text-danger mt-1">
+
+            @if(paymentForm.get('policyId')?.hasError('required')){
+
+            <small>Please select a policy.</small>
+
+            }
 
           </div>
+
+          }
 
         </div>
 
         <!-- Amount -->
         <div class="mb-3">
 
-          <label class="form-label">Amount</label>
+          <label class="form-label d-flex">
+            Amount
+            <span class="text-danger fw-bold ms-1">*</span>
+          </label>
 
           <input
             type="number"
             class="form-control"
-            formControlName="amount">
+            formControlName="amount"
+            [class.is-invalid]="submitted() && paymentForm.get('amount')?.invalid">
 
-          <div
-            class="text-danger"
-            *ngIf="submitted && paymentForm.get('amount')?.invalid">
+          @if(submitted() && paymentForm.get('amount')?.invalid){
 
-            <small
-              *ngIf="paymentForm.get('amount')?.hasError('required')">
-              Amount is required.
-            </small>
+          <div class="text-danger mt-1">
 
-            <small
-              *ngIf="paymentForm.get('amount')?.hasError('min')">
-              Amount must be greater than 0.
-            </small>
+            @if(paymentForm.get('amount')?.hasError('required')){
+
+            <small>Amount is required.</small>
+
+            }
+
+            @if(paymentForm.get('amount')?.hasError('min')){
+
+            <small>Amount must be greater than 0.</small>
+
+            }
 
           </div>
+
+          }
 
         </div>
 
         <!-- Payment Mode -->
         <div class="mb-3">
 
-          <label class="form-label">Payment Mode</label>
+          <label class="form-label d-flex">
+            Payment Mode
+            <span class="text-danger fw-bold ms-1">*</span>
+          </label>
 
           <select
             class="form-select"
-            formControlName="paymentMode">
+            formControlName="paymentMode"
+            [class.is-invalid]="submitted() && paymentForm.get('paymentMode')?.invalid">
 
-            <option
-  *ngFor="let mode of paymentModes"
-  [ngValue]="mode.value">
+            <option [ngValue]="null">
+              Select Payment Mode
+            </option>
 
-  {{ mode.text }}
+            @for(mode of paymentModes; track mode.value){
 
-</option>
+            <option [ngValue]="mode.value">
+
+              {{ mode.text }}
+
+            </option>
+
+            }
 
           </select>
+
+          @if(submitted() && paymentForm.get('paymentMode')?.invalid){
+
+          <div class="text-danger mt-1">
+
+            <small>Payment Mode is required.</small>
+
+          </div>
+
+          }
 
         </div>
 
         <!-- Transaction Reference -->
-        <div class="mb-3">
+        <div class="mb-4">
 
-          <label class="form-label">
+          <label class="form-label d-flex">
             Transaction Reference
+            <span class="text-danger fw-bold ms-1">*</span>
           </label>
 
           <input
             type="text"
             class="form-control"
-            formControlName="transactionReference">
+            formControlName="transactionReference"
+            [class.is-invalid]="submitted() && paymentForm.get('transactionReference')?.invalid">
 
-          <div
-            class="text-danger"
-            *ngIf="submitted && paymentForm.get('transactionReference')?.invalid">
+          @if(submitted() && paymentForm.get('transactionReference')?.invalid){
 
-            <small
-              *ngIf="paymentForm.get('transactionReference')?.hasError('required')">
+          <div class="text-danger mt-1">
 
-              Transaction Reference is required.
+            @if(paymentForm.get('transactionReference')?.hasError('required')){
 
-            </small>
+            <small>Transaction Reference is required.</small>
 
-            <small
-              *ngIf="paymentForm.get('transactionReference')?.hasError('maxlength')">
+            }
 
-              Maximum 100 characters allowed.
+            @if(paymentForm.get('transactionReference')?.hasError('minlength')){
 
-            </small>
+            <small>Minimum 5 characters are required.</small>
+
+            }
+
+            @if(paymentForm.get('transactionReference')?.hasError('maxlength')){
+
+            <small>Maximum 100 characters are allowed.</small>
+
+            }
+
+            @if(paymentForm.get('transactionReference')?.hasError('pattern')){
+
+            <small>Only letters, numbers and '-' are allowed.</small>
+
+            }
 
           </div>
 
+          }
+
         </div>
 
+        <!-- Buttons -->
         <button
-          class="btn btn-success"
           type="submit"
-          [disabled]="loading">
+          class="btn btn-success"
+          [disabled]="loading() || paymentForm.invalid">
 
-          <span
-            *ngIf="loading"
-            class="spinner-border spinner-border-sm me-2">
-          </span>
+          @if(loading()){
 
-          {{ loading ? 'Submitting...' : 'Submit Payment' }}
+          <span class="spinner-border spinner-border-sm me-2"></span>
+
+          Processing...
+
+          }
+
+          @else{
+
+          Submit Payment
+
+          }
 
         </button>
 
         <button
           type="button"
           class="btn btn-secondary ms-2"
-          (click)="cancel()">
+          (click)="cancel()"
+          [disabled]="loading()">
 
           Cancel
 

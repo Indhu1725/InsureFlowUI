@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule, AsyncPipe } from '@angular/common';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { Observable, of, map } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 
 import { ClaimService } from '../../services/claim';
 import { ClaimResponse } from '../../models/claim-response';
@@ -9,164 +9,209 @@ import { ClaimResponse } from '../../models/claim-response';
 @Component({
   selector: 'app-claims',
   standalone: true,
-  imports: [CommonModule,RouterModule,AsyncPipe],
+  imports: [CommonModule, RouterModule],
   templateUrl: './claims.html',
   styleUrl: './claims.css'
 })
 export class Claims implements OnInit {
 
-  claims$!: Observable<ClaimResponse[]>;
+  private claimService = inject(ClaimService);
+  private toastr = inject(ToastrService);
 
-  allClaims: ClaimResponse[] = [];
+  claims = signal<ClaimResponse[]>([]);
+  isLoading = signal(false);
 
-  selectedFilter = 'all';
+  selectedFilter = signal('all');
 
-  isLoading = false;
-  pageNumber = 1;
+  pageNumber = signal(1);
   pageSize = 10;
-  totalPages = 1;
+  totalPages = signal(1);
 
   userRole = localStorage.getItem('role');
 
-  constructor(private claimService: ClaimService) { }
-
   ngOnInit(): void {
 
-    if (this.userRole === 'Admin') {
+    switch (this.userRole) {
+      case 'Admin':
+        this.loadClaims();
+        break;
 
-      this.loadClaims();
+      case 'InternalStaff':
+        this.loadReviewClaims();
+        break;
 
+      default:
+        this.loadMyClaims();
+        break;
     }
-    else if (this.userRole === 'InternalStaff') {
-
-      this.loadReviewClaims();
-
-    }
-    else {
-
-      this.loadMyClaims();
-
-    }
-
   }
 
-  // Admin
+  //================ Admin =================
+
   loadClaims(): void {
 
-  this.isLoading = true;
+    this.isLoading.set(true);
 
-  this.claims$ = this.claimService.getPagedClaims({
+    this.claimService.getPagedClaims({
 
-    pageNumber: this.pageNumber,
-    pageSize: this.pageSize,
-    sortBy: 'CreatedDate',
-    sortDirection: 'desc'
+      pageNumber: this.pageNumber(),
+      pageSize: this.pageSize,
+      sortBy: 'CreatedDate',
+      sortDirection: 'desc'
 
-  }).pipe(
+    }).subscribe({
 
-    map(response => {
+      next: (response) => {
 
-      this.allClaims = response.data.records;
+        this.claims.set(response.data.records);
 
-      this.pageNumber = response.data.currentPage;
+        this.pageNumber.set(response.data.currentPage);
 
-      this.totalPages = response.data.totalPages;
+        this.totalPages.set(response.data.totalPages);
 
-      this.isLoading = false;
+        this.isLoading.set(false);
 
-      return response.data.records;
+      },
 
-    })
+      error: () => {
 
-  );
+        this.isLoading.set(false);
 
-}
+        this.toastr.error('Unable to load claims.');
 
-  // Customer
+      }
+
+    });
+
+  }
+
   loadMyClaims(): void {
 
-    this.isLoading = true;
+    this.isLoading.set(true);
 
-    this.claims$ = this.claimService.getMyClaims().pipe(
+    this.claimService.getMyClaims().subscribe({
 
-      map(response => {
+      next: (response) => {
 
-        this.allClaims = response.data;
+        this.claims.set(response.data);
 
-        this.isLoading = false;
+        this.isLoading.set(false);
 
-        return response.data;
+      },
 
-      })
+      error: () => {
 
-    );
+        this.isLoading.set(false);
+
+        this.toastr.error('Unable to load your claims.');
+
+      }
+
+    });
 
   }
 
-  // Internal Staff
+  //================ Staff =================
+
   loadReviewClaims(): void {
 
-    this.isLoading = true;
+    this.isLoading.set(true);
 
-    this.claims$ = this.claimService.getReviewClaims().pipe(
+    this.claimService.getReviewClaims().subscribe({
 
-      map(response => {
+      next: (response) => {
 
-        this.allClaims = response.data;
+        this.claims.set(response.data);
 
-        this.isLoading = false;
+        this.isLoading.set(false);
 
-        return response.data;
+      },
 
-      })
+      error: () => {
 
-    );
+        this.isLoading.set(false);
+
+        this.toastr.error('Unable to load review claims.');
+
+      }
+
+    });
 
   }
+
+  //================ Status =================
 
   loadStatus(status: string): void {
 
-    this.isLoading = true;
+    this.isLoading.set(true);
 
-    this.claims$ = this.claimService.getClaimsByStatus(status).pipe(
+    this.claimService.getClaimsByStatus(status).subscribe({
 
-      map(response => {
+      next: (response) => {
 
-        this.allClaims = response.data;
+        this.claims.set(response.data);
 
-        this.isLoading = false;
+        this.isLoading.set(false);
 
-        return response.data;
+        this.toastr.success(`${status} claims loaded.`);
 
-      })
+      },
 
-    );
+      error: () => {
+
+        this.isLoading.set(false);
+
+        this.toastr.error('Unable to load claims.');
+
+      }
+
+    });
 
   }
+
+  //================ Search =================
 
   searchClaim(claimNumber: string): void {
 
-    this.isLoading = true;
+    if (!claimNumber.trim()) {
 
-    this.claims$ = this.claimService.getClaimByNumber(claimNumber).pipe(
+      this.toastr.warning('Please enter a claim number.');
 
-      map((response: any) => {
+      return;
 
-        this.allClaims = [response.data];
+    }
 
-        this.isLoading = false;
+    this.isLoading.set(true);
 
-        return [response.data];
+    this.claimService.getClaimByNumber(claimNumber).subscribe({
 
-      })
+      next: (response: any) => {
 
-    );
+        this.claims.set([response.data]);
+
+        this.isLoading.set(false);
+
+      },
+
+      error: () => {
+
+        this.claims.set([]);
+
+        this.isLoading.set(false);
+
+        this.toastr.error('Claim not found.');
+
+      }
+
+    });
 
   }
 
+  //================ Filter =================
+
   onFilterChange(filter: string): void {
 
-    this.selectedFilter = filter;
+    this.selectedFilter.set(filter);
 
     if (filter === 'all') {
 
@@ -174,70 +219,92 @@ export class Claims implements OnInit {
 
         this.loadClaims();
 
-      }
-      else if (this.userRole === 'InternalStaff') {
+      } else if (this.userRole === 'InternalStaff') {
 
         this.loadReviewClaims();
 
-      }
-      else {
+      } else {
 
         this.loadMyClaims();
 
       }
 
+      return;
+
     }
 
-    else if (filter === 'my') {
+    if (filter === 'my') {
 
       this.loadMyClaims();
 
-    }
-
-    else if(filter === 'submitted' && this.userRole === 'Admin'){
-    this.loadStatus('Submitted');
-}
-
-   else if(filter === 'underreview' && this.userRole === 'Admin'){
-    this.loadStatus('UnderReview');
-}
-
-else if(filter === 'approved' && this.userRole === 'Admin'){
-    this.loadStatus('Approved');
-}
-
-else if(filter === 'rejected' && this.userRole === 'Admin'){
-    this.loadStatus('Rejected');
-}
-
-    else if (filter === 'number') {
-
-      this.claims$ = of([]);
+      return;
 
     }
 
+    if (filter === 'submitted' && this.userRole === 'Admin') {
+
+      this.loadStatus('Submitted');
+
+      return;
+
+    }
+
+    if (filter === 'underreview' && this.userRole === 'Admin') {
+
+      this.loadStatus('UnderReview');
+
+      return;
+
+    }
+
+    if (filter === 'approved' && this.userRole === 'Admin') {
+
+      this.loadStatus('Approved');
+
+      return;
+
+    }
+
+    if (filter === 'rejected' && this.userRole === 'Admin') {
+
+      this.loadStatus('Rejected');
+
+      return;
+
+    }
+
+    if (filter === 'number') {
+
+      this.claims.set([]);
+
+    }
+
   }
-  previousPage(): void  {
 
-  if (this.pageNumber > 1) {
+  //================ Pagination =================
 
-    this.pageNumber--;
+  previousPage(): void {
 
-    this.loadClaims();
+    if (this.pageNumber() > 1) {
 
-  }
+      this.pageNumber.update(page => page - 1);
 
-}
-nextPage(): void {
+      this.loadClaims();
 
-  if (this.pageNumber < this.totalPages) {
-
-    this.pageNumber++;
-
-    this.loadClaims();
+    }
 
   }
 
-}
+  nextPage(): void {
+
+    if (this.pageNumber() < this.totalPages()) {
+
+      this.pageNumber.update(page => page + 1);
+
+      this.loadClaims();
+
+    }
+
+  }
 
 }

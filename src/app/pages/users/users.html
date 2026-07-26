@@ -31,7 +31,9 @@
 
     <div class="col-md-4">
 
-      <label class="form-label fw-semibold">User Filter</label>
+      <label class="form-label fw-semibold ">
+        User Filter<span class="text-danger">*</span>
+      </label>
 
       <select
         class="form-select"
@@ -48,7 +50,9 @@
 
     <div class="col-md-4">
 
-      <label class="form-label fw-semibold">Status</label>
+      <label class="form-label fw-semibold">
+        Status<span class="text-danger">*</span>
+      </label>
 
       <select
         class="form-select"
@@ -71,13 +75,14 @@
   
 
   <!-- Search By ID -->
-  @if(selectedFilter === 'id'){
+  @if(selectedFilter() === 'id'){
 
   <div class="row mb-4">
 
     <div class="col-md-3">
 
-      <label class="form-label fw-semibold">User ID</label>
+      <label class="form-label fw-semibold">User ID
+        <span class="text-danger">*</span></label>
 
       <input
         type="number"
@@ -114,7 +119,6 @@
 
             <tr>
 
-              <th>ID</th>
               <th>Name</th>
               <th>Email</th>
               <th>Mobile</th>
@@ -129,74 +133,64 @@
 
           <tbody>
 
-            @if(users$ | async; as users){
+  @if(users().length > 0){
 
-              @for(user of users; track user.userId){
+    @for(user of users(); track user.userId){
 
-                <tr>
+      <tr>
 
-                  <td>{{ user.userId }}</td>
+        <td>{{ user.fullName }}</td>
 
-                  <td>{{ user.fullName }}</td>
+        <td>{{ user.email }}</td>
 
-                  <td>{{ user.email }}</td>
+        <td>{{ user.mobileNumber }}</td>
 
-                  <td>{{ user.mobileNumber }}</td>
+        <td>{{ user.role }}</td>
 
-                  <td>{{ user.role }}</td>
+        <td>
+          <span
+            class="badge"
+            [ngClass]="user.isActive ? 'status-active' : 'status-inactive'">
 
-                  <td>
+            {{ user.isActive ? 'Active' : 'Inactive' }}
 
-                    <span
-                      class="badge"
-                      [ngClass]="user.isActive ? 'status-active' : 'status-inactive'">
+          </span>
+        </td>
 
-                      {{ user.isActive ? 'Active' : 'Inactive' }}
+        <td>
+          {{ user.createdDate | date:'dd-MM-yyyy' }}
+        </td>
 
-                    </span>
+        <td>
+          <button
+            class="btn btn-sm"
+            [ngClass]="user.isActive ? 'btn-danger' : 'btn-success'"
+            (click)="changeStatus(user)">
 
-                  </td>
+            {{ user.isActive ? 'Deactivate' : 'Activate' }}
 
-                  <td>
+          </button>
+        </td>
 
-                    {{ user.createdDate | date:'dd-MM-yyyy' }}
+      </tr>
 
-                  </td>
+    }
 
-                  <td>
+  } @else {
 
-                    <button
-                      class="btn btn-sm"
-                      [ngClass]="user.isActive ? 'btn-danger' : 'btn-success'"
-                      (click)="changeStatus(user)">
+    <tr>
 
-                      {{ user.isActive ? 'Deactivate' : 'Activate' }}
+      <td colspan="7" class="text-center py-3">
 
-                    </button>
+        No users found.
 
-                  </td>
+      </td>
 
-                </tr>
+    </tr>
 
-              }
+  }
 
-              @if(users.length === 0){
-
-                <tr>
-
-                  <td colspan="8" class="text-center py-3">
-
-                    No users found.
-
-                  </td>
-
-                </tr>
-
-              }
-
-            }
-
-          </tbody>
+</tbody>
 
         </table>
 
@@ -213,7 +207,7 @@ class="d-flex justify-content-between align-items-center mt-4">
     <button
         class="btn btn-secondary"
         (click)="previousPage()"
-        [disabled]="pageNumber === 1">
+        [disabled]="pageNumber() === 1">
 
         Previous
 
@@ -221,14 +215,14 @@ class="d-flex justify-content-between align-items-center mt-4">
 
     <span class="fw-semibold">
 
-        Page {{ pageNumber }} of {{ totalPages }}
+        Page {{ pageNumber() }} of {{ totalPages() }}
 
     </span>
 
     <button
         class="btn btn-secondary"
         (click)="nextPage()"
-        [disabled]="pageNumber === totalPages">
+        [disabled]="pageNumber() === totalPages()">
 
         Next
 

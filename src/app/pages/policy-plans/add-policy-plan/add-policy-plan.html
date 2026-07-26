@@ -29,122 +29,283 @@
           <!-- Product -->
           <div class="col-md-6 mb-3">
 
-            <label class="form-label fw-semibold">
+            <label class="form-label">
               Product
+              <span class="text-danger">*</span>
             </label>
 
             <select
               class="form-select"
-              formControlName="productId">
+              formControlName="productId"
+              [class.is-invalid]="planForm.get('productId')?.invalid && planForm.get('productId')?.touched">
 
-              <option value="">
-                Select Product
-              </option>
+              <option value="">Select Product</option>
 
-              @if(products$ | async; as products){
+              @for(product of products(); track product.productId){
 
-                @for(product of products; track product.productId){
+                <option [value]="product.productId">
 
-                  <option [value]="product.productId">
+                  {{product.productName}}
 
-                    {{ product.productName }}
-
-                  </option>
-
-                }
+                </option>
 
               }
 
             </select>
+
+            @if(planForm.get('productId')?.invalid && planForm.get('productId')?.touched){
+
+              <small class="text-danger">
+
+                Product is required.
+
+              </small>
+
+            }
 
           </div>
 
           <!-- Plan Name -->
           <div class="col-md-6 mb-3">
 
-            <label class="form-label fw-semibold">
+            <label class="form-label">
               Plan Name
+              <span class="text-danger">*</span>
             </label>
 
             <input
               type="text"
               class="form-control"
-              formControlName="planName">
+              formControlName="planName"
+              [class.is-invalid]="planForm.get('planName')?.invalid && planForm.get('planName')?.touched">
+
+            @if(planForm.get('planName')?.touched){
+
+              @if(planForm.get('planName')?.hasError('required')){
+
+                <small class="text-danger">
+                  Plan Name is required.
+                </small>
+
+              }
+
+              @if(planForm.get('planName')?.hasError('minlength')){
+
+                <small class="text-danger">
+                  Minimum 3 characters required.
+                </small>
+
+              }
+
+              @if(planForm.get('planName')?.hasError('maxlength')){
+
+                <small class="text-danger">
+                  Maximum 100 characters allowed.
+                </small>
+
+              }
+
+              @if(planForm.get('planName')?.hasError('pattern')){
+
+                <small class="text-danger">
+                  Only letters, numbers and spaces are allowed.
+                </small>
+
+              }
+
+            }
 
           </div>
 
-          <!-- Coverage -->
+          <!-- Coverage Amount -->
           <div class="col-md-6 mb-3">
 
-            <label class="form-label fw-semibold">
+            <label class="form-label">
               Coverage Amount
+              <span class="text-danger">*</span>
             </label>
 
             <input
               type="number"
               class="form-control"
-              formControlName="coverageAmount">
+              formControlName="coverageAmount"
+              [class.is-invalid]="planForm.get('coverageAmount')?.invalid && planForm.get('coverageAmount')?.touched">
+
+            @if(planForm.get('coverageAmount')?.touched){
+
+              @if(planForm.get('coverageAmount')?.hasError('required')){
+
+                <small class="text-danger">
+                  Coverage Amount is required.
+                </small>
+
+              }
+
+              @if(planForm.get('coverageAmount')?.hasError('min')){
+
+                <small class="text-danger">
+                  Coverage Amount must be greater than 0.
+                </small>
+
+              }
+
+            }
 
           </div>
 
-          <!-- Premium -->
+          <!-- Premium Amount -->
           <div class="col-md-6 mb-3">
 
-            <label class="form-label fw-semibold">
+            <label class="form-label">
               Premium Amount
+              <span class="text-danger">*</span>
             </label>
 
             <input
               type="number"
               class="form-control"
-              formControlName="premiumAmount">
+              formControlName="premiumAmount"
+              [class.is-invalid]="planForm.get('premiumAmount')?.invalid && planForm.get('premiumAmount')?.touched">
+
+            @if(planForm.get('premiumAmount')?.touched){
+
+              @if(planForm.get('premiumAmount')?.hasError('required')){
+
+                <small class="text-danger">
+                  Premium Amount is required.
+                </small>
+
+              }
+
+              @if(planForm.get('premiumAmount')?.hasError('min')){
+
+                <small class="text-danger">
+                  Premium Amount must be greater than 0.
+                </small>
+
+              }
+
+            }
 
           </div>
 
           <!-- Premium Type -->
           <div class="col-md-6 mb-3">
 
-            <label class="form-label fw-semibold">
+            <label class="form-label">
               Premium Type
+              <span class="text-danger">*</span>
             </label>
 
-           <select
-  class="form-select"
-  formControlName="premiumType">
+            <select
+              class="form-select"
+              formControlName="premiumType"
+              [class.is-invalid]="planForm.get('premiumType')?.invalid && planForm.get('premiumType')?.touched">
 
-  <option [ngValue]="0">One Time</option>
-  <option [ngValue]="1">Annual</option>
+              <option value="">Select Premium Type</option>
 
-</select>
+              @for(type of premiumTypes; track type){
+
+                <option [value]="type">
+
+                  {{type}}
+
+                </option>
+
+              }
+
+            </select>
+
+            @if(planForm.get('premiumType')?.invalid && planForm.get('premiumType')?.touched){
+
+              <small class="text-danger">
+
+                Premium Type is required.
+
+              </small>
+
+            }
 
           </div>
 
           <!-- Duration -->
           <div class="col-md-6 mb-3">
 
-            <label class="form-label fw-semibold">
+            <label class="form-label">
               Duration (Years)
+              <span class="text-danger">*</span>
             </label>
 
             <input
               type="number"
               class="form-control"
-              formControlName="durationYears">
+              formControlName="durationYears"
+              [class.is-invalid]="planForm.get('durationYears')?.invalid && planForm.get('durationYears')?.touched">
+
+            @if(planForm.get('durationYears')?.touched){
+
+              @if(planForm.get('durationYears')?.hasError('required')){
+
+                <small class="text-danger">
+                  Duration is required.
+                </small>
+
+              }
+
+              @if(planForm.get('durationYears')?.hasError('min')){
+
+                <small class="text-danger">
+                  Duration must be greater than 0.
+                </small>
+
+              }
+
+              @if(planForm.get('durationYears')?.hasError('max')){
+
+                <small class="text-danger">
+                  Duration cannot exceed 100 years.
+                </small>
+
+              }
+
+            }
 
           </div>
 
           <!-- Terms -->
           <div class="col-12 mb-3">
 
-            <label class="form-label fw-semibold">
+            <label class="form-label">
               Terms & Conditions
+              <span class="text-danger">*</span>
             </label>
 
             <textarea
               rows="4"
               class="form-control"
-              formControlName="termsAndConditions">
+              formControlName="termsAndConditions"
+              [class.is-invalid]="planForm.get('termsAndConditions')?.invalid && planForm.get('termsAndConditions')?.touched">
             </textarea>
+
+            @if(planForm.get('termsAndConditions')?.touched){
+
+              @if(planForm.get('termsAndConditions')?.hasError('required')){
+
+                <small class="text-danger">
+                  Terms & Conditions are required.
+                </small>
+
+              }
+
+              @if(planForm.get('termsAndConditions')?.hasError('minlength')){
+
+                <small class="text-danger">
+                  Minimum 10 characters required.
+                </small>
+
+              }
+
+            }
 
           </div>
 
@@ -172,9 +333,10 @@
 
         <button
           type="submit"
-          class="btn btn-primary me-2">
+          class="btn btn-primary me-2"
+          [disabled]="planForm.invalid || isLoading()">
 
-          Save
+          {{ isLoading() ? 'Saving...' : 'Save' }}
 
         </button>
 

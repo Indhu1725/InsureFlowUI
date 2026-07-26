@@ -2,21 +2,33 @@
 
   <div class="card shadow">
 
+    <!-- Header -->
     <div class="card-header bg-primary text-white">
       <h3 class="mb-0">Submit Claim</h3>
     </div>
+
 
     <div class="card-body">
 
       <form (ngSubmit)="submitClaim()">
 
+
+        <!-- ===================================================== -->
         <!-- Policy -->
+        <!-- ===================================================== -->
 
         <div class="mb-3">
 
-          <label class="form-label">
+          <label class="form-label d-flex">
+
             Policy
+
+            <span class="text-danger fw-bold ms-1">
+              *
+            </span>
+
           </label>
+
 
           <select
             class="form-select"
@@ -28,15 +40,16 @@
               Select Policy
             </option>
 
-            @for(policy of policies; track policy.policyId){
 
-            <option [ngValue]="policy.policyId">
+            @for (policy of policies(); track policy.policyId) {
 
-              {{policy.policyNumber}}
-              -
-              {{policy.planName}}
+              <option [ngValue]="policy.policyId">
 
-            </option>
+                {{ policy.policyNumber }}
+                -
+                {{ policy.planName }}
+
+              </option>
 
             }
 
@@ -44,34 +57,53 @@
 
         </div>
 
+
+
+        <!-- ===================================================== -->
         <!-- Claim Amount -->
+        <!-- ===================================================== -->
 
         <div class="mb-3">
 
-          <label class="form-label">
+          <label class="form-label d-flex">
 
             Claim Amount
 
+            <span class="text-danger fw-bold ms-1">
+              *
+            </span>
+
           </label>
+
 
           <input
             type="number"
             class="form-control"
             [(ngModel)]="claim.claimAmount"
             name="claimAmount"
+            min="1"
             required>
 
         </div>
 
+
+
+        <!-- ===================================================== -->
         <!-- Incident Date -->
+        <!-- ===================================================== -->
 
         <div class="mb-3">
 
-          <label class="form-label">
+          <label class="form-label d-flex">
 
             Incident Date
 
+            <span class="text-danger fw-bold ms-1">
+              *
+            </span>
+
           </label>
+
 
           <input
             type="date"
@@ -82,124 +114,231 @@
 
         </div>
 
+
+
+        <!-- ===================================================== -->
         <!-- Claim Reason -->
+        <!-- ===================================================== -->
 
         <div class="mb-3">
 
-          <label class="form-label">
+          <label class="form-label d-flex">
 
             Claim Reason
 
+            <span class="text-danger fw-bold ms-1">
+              *
+            </span>
+
           </label>
+
 
           <textarea
             rows="4"
             class="form-control"
             [(ngModel)]="claim.claimReason"
             name="claimReason"
+            placeholder="Enter reason for claim"
             required>
-
           </textarea>
 
         </div>
 
+
+
         <hr>
 
-        <h5>
 
+
+        <!-- ===================================================== -->
+        <!-- Supporting Documents -->
+        <!-- ===================================================== -->
+
+        <h5 class="mb-3">
           Supporting Documents
-
         </h5>
 
-        @for(document of claim.supportingDocuments;
-        track $index){
 
-        <div class="border rounded p-3 mb-3">
+        @for (document of documents; track $index) {
 
-          <div class="row">
+          <div class="border rounded p-3 mb-3">
 
-            <div class="col-md-4">
 
-              <label class="form-label">
+            <div class="row">
 
-                Document Name
 
-              </label>
+              <!-- =============================================== -->
+              <!-- Document Name -->
+              <!-- =============================================== -->
 
-              <input
-                type="text"
-                class="form-control"
-                [(ngModel)]="document.documentName"
-                [name]="'documentName'+$index">
+              <div class="col-md-4 mb-3">
+
+                <label class="form-label d-flex">
+
+                  Document Name
+
+                  <span class="text-danger fw-bold ms-1">
+                    *
+                  </span>
+
+                </label>
+
+
+                <input
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="document.documentName"
+                  [name]="'documentName' + $index"
+                  placeholder="e.g. Hospital Bill"
+                  required>
+
+              </div>
+
+
+
+              <!-- =============================================== -->
+              <!-- Document Type -->
+              <!-- =============================================== -->
+
+              <div class="col-md-4 mb-3">
+
+                <label class="form-label d-flex">
+
+                  Document Type
+
+                  <span class="text-danger fw-bold ms-1">
+                    *
+                  </span>
+
+                </label>
+
+
+                <input
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="document.documentType"
+                  [name]="'documentType' + $index"
+                  placeholder="e.g. Medical"
+                  required>
+
+              </div>
+
+
+
+              <!-- =============================================== -->
+              <!-- File -->
+              <!-- =============================================== -->
+
+              <div class="col-md-4 mb-3">
+
+                <label class="form-label d-flex">
+
+                  Choose File
+
+                  <span class="text-danger fw-bold ms-1">
+                    *
+                  </span>
+
+                </label>
+
+
+                <input
+                  type="file"
+                  class="form-control"
+                  [name]="'documentReference' + $index"
+                  (change)="onFileSelected($event, $index)"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  required>
+
+
+                <!-- Selected file name -->
+
+                @if (document.documentReference) {
+
+                  <small class="text-success d-block mt-2">
+
+                    ✓
+                    {{ document.documentReference.name }}
+
+                  </small>
+
+                }
+
+              </div>
 
             </div>
 
-            <div class="col-md-4">
 
-              <label class="form-label">
 
-                Document Type
+            <!-- ================================================= -->
+            <!-- Remove Document -->
+            <!-- ================================================= -->
 
-              </label>
+            <button
+              type="button"
+              class="btn btn-danger mt-2"
+              (click)="removeDocument($index)"
+              [disabled]="documents.length === 1">
 
-              <input
-                type="text"
-                class="form-control"
-                [(ngModel)]="document.documentType"
-                [name]="'documentType'+$index">
+              <i class="bi bi-trash"></i>
 
-            </div>
+              Remove
 
-            <div class="col-md-4">
-
-              <label class="form-label">
-
-                Document Reference
-
-              </label>
-
-              <input
-                type="text"
-                class="form-control"
-                [(ngModel)]="document.documentReference"
-                [name]="'documentReference'+$index">
-
-            </div>
+            </button>
 
           </div>
 
-          <button
-            type="button"
-            class="btn btn-danger mt-3"
-            (click)="removeDocument($index)"
-            [disabled]="claim.supportingDocuments.length==1">
-
-            Remove
-
-          </button>
-
-        </div>
-
         }
+
+
+
+        <!-- ===================================================== -->
+        <!-- Add Another Document -->
+        <!-- ===================================================== -->
 
         <button
           type="button"
           class="btn btn-secondary mb-3"
           (click)="addDocument()">
 
+          <i class="bi bi-plus-circle"></i>
+
           Add Another Document
 
         </button>
 
+
+
         <hr>
+
+
+
+        <!-- ===================================================== -->
+        <!-- Submit -->
+        <!-- ===================================================== -->
 
         <button
           type="submit"
           class="btn btn-success">
 
+          <i class="bi bi-check-circle"></i>
+
           Submit Claim
 
         </button>
+
+
+        <!-- Cancel -->
+
+        <button
+          type="button"
+          class="btn btn-secondary ms-2"
+          routerLink="/claims">
+
+          Cancel
+
+        </button>
+
 
       </form>
 

@@ -1,37 +1,29 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
-import { Observable, map, catchError, of } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 
 import { Sidebar } from '../../../layout/sidebar/sidebar';
 import { Navbar } from '../../../layout/navbar/navbar';
-
 import { CustomerService } from '../../../services/customer';
-
 import { Customer } from '../../../models/customer';
 import { CustomerRequest } from '../../../models/customer-request';
 
 @Component({
   selector: 'app-my-profile',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    RouterModule,
-    Sidebar,
-    Navbar
-  ],
+  imports: [CommonModule,FormsModule,RouterModule,Sidebar,Navbar],
   templateUrl: './my-profile.html',
   styleUrl: './my-profile.css'
 })
 export class MyProfile implements OnInit {
 
-  customer$!: Observable<Customer | null>;
+  customer = signal<Customer | null>(null);
 
-  showCreateForm: boolean = false;
+  showCreateForm = signal(false);
 
-  customerRequest: CustomerRequest = {
+  customerRequest = signal<CustomerRequest>({
     dateOfBirth: '',
     address: '',
     city: '',
@@ -39,11 +31,12 @@ export class MyProfile implements OnInit {
     pinCode: '',
     nomineeName: '',
     nomineeRelation: ''
-  };
+  });
 
   constructor(
     private customerService: CustomerService,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -51,35 +44,75 @@ export class MyProfile implements OnInit {
   }
 
   loadProfile(): void {
-    this.customer$ = this.customerService
-      .getMyProfile()
-      .pipe(
-        map(response => response.data),
 
-        catchError(error => {
+    this.customerService.getMyProfile().subscribe({
 
-          if (error.status === 404) {
-            this.showCreateForm = true;
-          }
+      next: (response) => {
 
-          return of(null);
-        })
-      );
+        this.customer.set(response.data);
+
+        this.showCreateForm.set(false);
+
+      },
+
+      error: (error) => {
+
+        if (error.status === 404) {
+
+          this.customer.set(null);
+
+          this.showCreateForm.set(true);
+
+        } else {
+
+          console.error(error);
+
+          this.toastr.error('Unable to load profile.');
+
+        }
+
+      }
+
+    });
+
   }
 
   saveProfile(): void {
+
     this.customerService
-      .createCustomer(this.customerRequest)
+      .createCustomer(this.customerRequest())
       .subscribe({
+
         next: () => {
-          alert('Profile created successfully');
+
+          this.toastr.success('Profile created successfully.');
+
           this.router.navigate(['/customers/my-profile']);
+
         },
 
         error: (error) => {
-          console.log(error);
-          alert('Unable to create profile');
+
+          console.error(error);
+
+          this.toastr.error('Unable to create profile.');
+
         }
+
       });
+
   }
+
+  updateCustomerField<K extends keyof CustomerRequest>(
+    field: K,
+    value: CustomerRequest[K]
+  ): void {
+
+    this.customerRequest.update(customer => ({
+      ...customer,
+      [field]: value
+    }));
+
+  }
+
 }

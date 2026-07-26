@@ -1,8 +1,13 @@
 export interface ClaimDocumentResponse {
 
   documentId: number;
-  claimId: number;
+
+  documentName: string;
+
+  claimNumber: string;
+
   filePath: string;
+
   uploadedDate: string;
 
 }

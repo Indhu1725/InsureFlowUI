@@ -19,8 +19,9 @@
           <!-- Product Name -->
           <div class="col-md-6 mb-3">
 
-            <label class="form-label fw-semibold">
+            <label class="form-label d-flex">
               Product Name
+              <span class="text-danger fw-bold ms-1">*</span>
             </label>
 
             <input
@@ -28,13 +29,13 @@
               class="form-control"
               formControlName="productName">
 
-            @if(addProductForm.get('productName')?.touched &&
-                addProductForm.get('productName')?.invalid){
-
+            @if (
+              addProductForm.get('productName')?.touched &&
+              addProductForm.get('productName')?.invalid
+            ) {
               <small class="text-danger">
                 Product Name is required.
               </small>
-
             }
 
           </div>
@@ -42,8 +43,9 @@
           <!-- Product Type -->
           <div class="col-md-6 mb-3">
 
-            <label class="form-label fw-semibold">
+            <label class="form-label d-flex">
               Product Type
+              <span class="text-danger fw-bold ms-1">*</span>
             </label>
 
             <select
@@ -54,23 +56,23 @@
                 Select Product Type
               </option>
 
-              @for(type of productTypes; track type.value){
+              @for (type of productTypes; track type.value) {
 
-  <option [ngValue]="type.value">
-    {{ type.name }}
-  </option>
+                <option [value]="type.value">
+                  {{ type.name }}
+                </option>
 
-}
+              }
 
             </select>
 
-            @if(addProductForm.get('productType')?.touched &&
-                addProductForm.get('productType')?.invalid){
-
+            @if (
+              addProductForm.get('productType')?.touched &&
+              addProductForm.get('productType')?.invalid
+            ) {
               <small class="text-danger">
                 Product Type is required.
               </small>
-
             }
 
           </div>
@@ -78,8 +80,9 @@
           <!-- Description -->
           <div class="col-12 mb-4">
 
-            <label class="form-label fw-semibold">
+            <label class="form-label d-flex">
               Description
+              <span class="text-danger fw-bold ms-1">*</span>
             </label>
 
             <textarea
@@ -88,14 +91,26 @@
               formControlName="description">
             </textarea>
 
-            @if(addProductForm.get('description')?.touched &&
-                addProductForm.get('description')?.invalid){
+            @if (
+              addProductForm.get('description')?.touched &&
+              addProductForm.get('description')?.invalid
+            ) {
 
-              <small class="text-danger">
+              @if (addProductForm.get('description')?.errors?.['required']) {
 
-                Description must contain at least 10 characters.
+                <small class="text-danger">
+                  Description is required.
+                </small>
 
-              </small>
+              }
+
+              @if (addProductForm.get('description')?.errors?.['minlength']) {
+
+                <small class="text-danger">
+                  Description must contain at least 10 characters.
+                </small>
+
+              }
 
             }
 
@@ -107,7 +122,8 @@
 
           <button
             type="submit"
-            class="btn btn-success me-2">
+            class="btn btn-success me-2"
+            [disabled]="addProductForm.invalid">
 
             Save Product
 

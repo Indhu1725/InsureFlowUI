@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule, AsyncPipe } from '@angular/common';
+import { Component, OnInit,signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { Observable, of, map } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 
 import { UserService } from '../../services/user';
 import { UserResponse } from '../../models/user-response';
@@ -10,29 +10,29 @@ import { UserStatusUpdate } from '../../models/user-status-update';
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    AsyncPipe
-  ],
+  imports: [CommonModule,RouterModule],
   templateUrl: './users.html',
   styleUrl: './users.css'
 })
 export class Users implements OnInit {
 
-  users$!: Observable<UserResponse[]>;
+  users = signal<UserResponse[]>([]);
 
-  allUsers: UserResponse[] = [];
+  allUsers = signal<UserResponse[]>([]);
 
-  selectedFilter = 'all';
-  selectedStatus = 'all';
+  selectedFilter = signal('all');
 
-  isLoading = false;
-  pageNumber = 1;
-  pageSize = 10;
-  totalPages = 1;
+  selectedStatus = signal('all');
 
-  constructor(private userService: UserService) { }
+  isLoading = signal(false);
+
+  pageNumber = signal(1);
+
+  pageSize = signal(10);
+
+  totalPages = signal(1);
+
+  constructor(private userService: UserService,private toastr: ToastrService) { }
 
   ngOnInit(): void {
     this.loadUsers();
@@ -40,150 +40,179 @@ export class Users implements OnInit {
 
   loadUsers(): void {
 
-  this.isLoading = true;
+  this.isLoading.set(true);
 
-  this.users$ = this.userService
-    .getUsers(
-      this.pageNumber,
-      this.pageSize,
-      'createdDate',
-      'desc'
-    )
-    .pipe(
+  this.userService.getUsers(
+    this.pageNumber(),
+    this.pageSize(),
+    'createdDate',
+    'desc'
+  ).subscribe({
 
-      map(response => {
+    next: response => {
 
-        this.allUsers = response.data.records;
+      this.users.set(response.data.records);
 
-        this.totalPages = response.data.totalPages;
+      this.allUsers.set(response.data.records);
 
-        this.pageNumber = response.data.currentPage;
+      this.totalPages.set(response.data.totalPages);
 
-        this.isLoading = false;
+      this.pageNumber.set(response.data.currentPage);
 
-        return response.data.records;
+      this.isLoading.set(false);
 
-      })
+    },
 
-    );
+    error: () => {
+
+  this.isLoading.set(false);
+
+  this.toastr.error('Unable to load users.','Error');
 
 }
 
-  onFilterChange(filter: string): void {
+  });
 
-    this.selectedFilter = filter;
+}
+ onFilterChange(filter: string): void {
 
-    if (filter === 'all') {
+  this.selectedFilter.set(filter);
 
-      this.loadUsers();
+  if (filter === 'all') {
 
-    }
-
-    else if (filter === 'active') {
-
-      this.loadActiveUsers();
-
-    }
-
-    else if (filter === 'staff') {
-
-      this.loadInternalStaff();
-
-    }
-
-    else if (filter === 'id') {
-
-      this.users$ = of([]);
-
-    }
+    this.loadUsers();
 
   }
 
+  else if (filter === 'active') {
+
+    this.loadActiveUsers();
+
+  }
+
+  else if (filter === 'staff') {
+
+    this.loadInternalStaff();
+
+  }
+
+  else if (filter === 'id') {
+
+    this.users.set([]);
+
+  }
+
+}
   loadActiveUsers(): void {
 
-  this.isLoading = true;
+  this.isLoading.set(true);
 
-  this.users$ = this.userService.getActiveUsers().pipe(
+  this.userService.getActiveUsers().subscribe({
 
-    map((response: any) => {
+    next: response => {
 
-      this.allUsers = response.data;
+      this.users.set(response.data);
 
-      this.isLoading = false;
+      this.allUsers.set(response.data);
 
-      return response.data;
+      this.isLoading.set(false);
 
-    })
+    },
 
-  );
+    error: () => {
+
+  this.isLoading.set(false);
+
+  this.toastr.error('Unable to load active users.','Error');
+
+}
+
+  });
 
 }
 
   loadInternalStaff(): void {
 
-  this.isLoading = true;
+  this.isLoading.set(true);
 
-  this.users$ = this.userService.getInternalStaff().pipe(
+  this.userService.getInternalStaff().subscribe({
 
-    map((response: any) => {
+    next: response => {
 
-      this.allUsers = response.data;
+      this.users.set(response.data);
 
-      this.isLoading = false;
+      this.allUsers.set(response.data);
 
-      return response.data;
+      this.isLoading.set(false);
 
-    })
+    },
 
+    error: () => {
+
+  this.isLoading.set(false);
+
+  this.toastr.error('Unable to load internal staff.','Error');
+
+}
+
+  });
+
+}
+
+ searchById(id: number): void {
+
+  this.isLoading.set(true);
+
+  this.userService.getUserById(id).subscribe({
+
+    next: response => {
+
+     this.users.set([response.data]);
+
+    this.allUsers.set([response.data]);
+
+      this.isLoading.set(false);
+      this.toastr.success('User found successfully.','Success');
+
+    },
+
+    error: () => {
+
+  this.users.set([]);
+  this.isLoading.set(false);
+
+  this.toastr.error(
+    'User not found.',
+    'Error'
   );
 
 }
 
-  searchById(id: number): void {
-
-  this.isLoading = true;
-
-  this.users$ = this.userService.getUserById(id).pipe(
-
-    map((response: any) => {
-
-      console.log(response);
-
-      this.allUsers = [response.data];
-
-      this.isLoading = false;
-
-      return [response.data];
-
-    })
-
-  );
+  });
 
 }
-
   onStatusChange(status: string): void {
 
-    this.selectedStatus = status;
+    this.selectedStatus.set(status);
 
     if (status === 'all') {
 
-      this.users$ = of(this.allUsers);
-
+      this.users.set(this.allUsers());
     }
 
     else if (status === 'active') {
 
-      this.users$ = of(
-        this.allUsers.filter(user => user.isActive)
-      );
+      this.users.set(
+  this.allUsers().filter(user => user.isActive)
+);
 
     }
 
     else if (status === 'inactive') {
 
-      this.users$ = of(
-        this.allUsers.filter(user => !user.isActive)
-      );
+     this.users.set(
+  this.allUsers().filter(user => !user.isActive)
+);
 
     }
 
@@ -201,7 +230,7 @@ export class Users implements OnInit {
 
       next: () => {
 
-        alert('User status updated successfully');
+       this.toastr.success('User status updated successfully');
 
         this.loadUsers();
 
@@ -209,21 +238,23 @@ export class Users implements OnInit {
 
       error: (error) => {
 
-        console.log(error);
+  console.error(error);
 
-        alert('Failed to update user status');
+  this.toastr.error(
+    'Failed to update user status.',
+    'Error'
+  );
 
-      }
+}
 
     });
 
   }
   previousPage(): void {
 
-  if (this.pageNumber > 1) {
+  if (this.pageNumber() > 1) {
 
-    this.pageNumber--;
-
+    this.pageNumber.update(value => value - 1);
     this.loadUsers();
 
   }
@@ -231,10 +262,9 @@ export class Users implements OnInit {
 }
 nextPage(): void {
 
-  if (this.pageNumber < this.totalPages) {
+  if (this.pageNumber() < this.totalPages()) {
 
-    this.pageNumber++;
-
+    this.pageNumber.update(value => value + 1);
     this.loadUsers();
 
   }

@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule, AsyncPipe } from '@angular/common';
+import { Component, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { Observable, of, map } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
+
 import { Sidebar } from '../../layout/sidebar/sidebar';
 import { Navbar } from '../../layout/navbar/navbar';
 import { CustomerService } from '../../services/customer';
@@ -10,22 +11,29 @@ import { Customer } from '../../models/customer';
 @Component({
   selector: 'app-customers',
   standalone: true,
-  imports: [CommonModule, RouterModule, AsyncPipe, Sidebar, Navbar],
+  imports: [CommonModule, RouterModule, Sidebar, Navbar],
   templateUrl: './customers.html',
   styleUrl: './customers.css'
 })
 export class ViewCustomer implements OnInit {
 
-  customers$!: Observable<Customer[]>;
-  allCustomers: Customer[] = [];
-  selectedFilter = 'all';
-  pageNumber = 1;
-  pageSize = 10;
-  totalPages = 1;
+  customers = signal<Customer[]>([]);
+  allCustomers = signal<Customer[]>([]);
+
+  selectedFilter = signal('all');
+
+  pageNumber = signal(1);
+  pageSize = signal(10);
+  totalPages = signal(1);
+
+  isLoading = signal(false);
+
   role = localStorage.getItem('role') ?? '';
+
   constructor(
-    private customerService: CustomerService
-  ) {}
+    private customerService: CustomerService,
+    private toastr: ToastrService
+  ) { }
 
   ngOnInit(): void {
     this.loadCustomers();
@@ -33,119 +41,189 @@ export class ViewCustomer implements OnInit {
 
   loadCustomers(): void {
 
-  this.customers$ = this.customerService
-    .getCustomers(
-      this.pageNumber,
-      this.pageSize,
+    this.isLoading.set(true);
+
+    this.customerService.getCustomers(
+      this.pageNumber(),
+      this.pageSize(),
       'createdDate',
       'desc'
-    )
-    .pipe(
+    ).subscribe({
 
-      map(response => {
+      next: (response) => {
 
-        this.allCustomers = response.data.records;
+        this.customers.set(response.data.records);
 
-        this.totalPages = response.data.totalPages;
+        this.allCustomers.set(response.data.records);
 
-        this.pageNumber = response.data.currentPage;
+        this.pageNumber.set(response.data.currentPage);
 
-        return response.data.records;
+        this.totalPages.set(response.data.totalPages);
 
-      })
+        this.isLoading.set(false);
 
-    );
+      },
 
-}
+      error: () => {
+
+        this.isLoading.set(false);
+
+        this.toastr.error(
+          'Unable to load customers.',
+          'Error'
+        );
+
+      }
+
+    });
+
+  }
 
   onFilterChange(filter: string): void {
 
-    this.selectedFilter = filter;
+    this.selectedFilter.set(filter);
 
     if (filter === 'all') {
+
       this.loadCustomers();
 
     }
 
     else if (filter === 'active') {
 
-      this.customers$ = this.customerService
+      this.isLoading.set(true);
 
-        .getActiveCustomers()
+      this.customerService.getActiveCustomers().subscribe({
 
-        .pipe(
+        next: (response) => {
 
-          map(response => response.data)
+          this.customers.set(response.data);
 
+          this.allCustomers.set(response.data);
+
+          this.isLoading.set(false);
+
+        },
+
+        error: () => {
+
+          this.isLoading.set(false);
+
+          this.toastr.error(
+            'Unable to load active customers.',
+            'Error'
+          );
+
+        }
+
+      });
+
+    }
+
+    else if (filter === 'id') {
+
+      this.customers.set([]);
+
+    }
+
+  }
+
+  searchById(id: number): void {
+
+    if (!id) {
+
+      this.toastr.warning(
+        'Please enter a Customer ID.',
+        'Warning'
+      );
+
+      return;
+
+    }
+
+    this.isLoading.set(true);
+
+    this.customerService.getCustomerById(id).subscribe({
+
+      next: (response) => {
+
+        this.customers.set([response.data]);
+
+        this.allCustomers.set([response.data]);
+
+        this.isLoading.set(false);
+
+      },
+
+      error: () => {
+
+        this.isLoading.set(false);
+
+        this.customers.set([]);
+
+        this.toastr.error(
+          'Customer not found.',
+          'Error'
         );
 
+      }
 
-    }
-    else if (filter === 'id') {
-      this.customers$ = of([]);
-    }
+    });
 
   }
-  searchById(id: number): void {
-    this.customers$ = this.customerService
 
-      .getCustomerById(id)
-
-      .pipe(
-
-        map(response => [response.data])
-
-      );
-
-
-  }
   onStatusChange(status: string): void {
+
     if (status === 'all') {
-      this.customers$ = of(this.allCustomers);
+
+      this.customers.set(this.allCustomers());
+
     }
+
     else if (status === 'active') {
-      this.customers$ = of(
 
-        this.allCustomers
+      this.customers.set(
 
-          .filter(customer => customer.isActive)
+        this.allCustomers().filter(customer => customer.isActive)
 
       );
-
 
     }
+
     else if (status === 'inactive') {
-      this.customers$ = of(
 
-        this.allCustomers
+      this.customers.set(
 
-          .filter(customer => !customer.isActive)
+        this.allCustomers().filter(customer => !customer.isActive)
 
       );
+
     }
 
   }
+
   previousPage(): void {
 
-  if (this.pageNumber > 1) {
+    if (this.pageNumber() > 1) {
 
-    this.pageNumber--;
+      this.pageNumber.update(value => value - 1);
 
-    this.loadCustomers();
+      this.loadCustomers();
 
-  }
-
-}
-nextPage(): void {
-
-  if (this.pageNumber < this.totalPages) {
-
-    this.pageNumber++;
-
-    this.loadCustomers();
+    }
 
   }
 
-}
+  nextPage(): void {
+
+    if (this.pageNumber() < this.totalPages()) {
+
+      this.pageNumber.update(value => value + 1);
+
+      this.loadCustomers();
+
+    }
+
+  }
 
 }

@@ -13,17 +13,17 @@
 
     </div>
 
-    @if(isAdmin){
+    @if (isAdmin()) {
 
-    <button
-      class="btn add-btn"
-      routerLink="/products/add">
+      <button
+        class="btn add-btn"
+        routerLink="/products/add">
 
-      <i class="bi bi-plus-circle me-2"></i>
+        <i class="bi bi-plus-circle me-2"></i>
 
-      Add Product
+        Add Product
 
-    </button>
+      </button>
 
     }
 
@@ -39,7 +39,7 @@
         <div class="col-md-4">
 
           <label class="form-label fw-semibold">
-            Product Filter
+            Product Filter<span class="text-danger fw-bold ms-1">*</span>
           </label>
 
           <select
@@ -57,7 +57,7 @@
         <div class="col-md-4">
 
           <label class="form-label fw-semibold">
-            Status
+            Status<span class="text-danger fw-bold ms-1">*</span>
           </label>
 
           <select
@@ -79,39 +79,38 @@
   </div>
 
   <!-- Search By ID -->
+  @if (selectedFilter() === 'id') {
 
-  @if(selectedFilter === 'id'){
+    <div class="card filter-card mb-4">
 
-  <div class="card filter-card mb-4">
+      <div class="card-body">
 
-    <div class="card-body">
+        <div class="row">
 
-      <div class="row">
+          <div class="col-md-3">
 
-        <div class="col-md-3">
+            <label class="form-label fw-semibold">
+              Product ID<span class="text-danger fw-bold ms-1">*</span>
+            </label>
 
-          <label class="form-label fw-semibold">
+            <input
+              type="number"
+              class="form-control"
+              #productId>
 
-            Product ID
+          </div>
 
-          </label>
+          <div class="col-md-2 d-flex align-items-end">
 
-          <input
-            type="number"
-            class="form-control"
-            #productId>
+            <button
+              class="btn btn-primary w-100"
+              (click)="searchById(productId.valueAsNumber)">
 
-        </div>
+              Search
 
-        <div class="col-md-2 d-flex align-items-end">
+            </button>
 
-          <button
-            class="btn btn-primary w-100"
-            (click)="searchById(productId.valueAsNumber)">
-
-            Search
-
-          </button>
+          </div>
 
         </div>
 
@@ -119,12 +118,9 @@
 
     </div>
 
-  </div>
-
   }
 
   <!-- Table -->
-
   <div class="card shadow-sm">
 
     <div class="card-body">
@@ -137,14 +133,13 @@
 
             <tr>
 
-              <th>ID</th>
               <th>Product Name</th>
               <th>Type</th>
               <th>Description</th>
               <th>Status</th>
               <th>Created</th>
 
-              @if(isAdmin){
+              @if (isAdmin()) {
                 <th>Actions</th>
               }
 
@@ -154,74 +149,72 @@
 
           <tbody>
 
-            @if(products$ | async; as products){
+            @if (products(); as products) {
 
-              @if(products.length > 0){
+              @if (products.length > 0) {
 
-                @for(product of products; track product.productId){
+                @for (product of products; track product.productId) {
 
-                <tr>
+                  <tr>
 
-                  <td>{{product.productId}}</td>
+                    <td>{{ product.productName }}</td>
 
-                  <td>{{product.productName}}</td>
+                    <td>{{ product.productType }}</td>
 
-                  <td>{{product.productType}}</td>
+                    <td class="description-column">
 
-                  <td class="description-column">
+                      {{ product.description }}
 
-                    {{product.description}}
+                    </td>
 
-                  </td>
+                    <td>
 
-                  <td>
+                      <span
+                        class="badge rounded-pill"
+                        [ngClass]="product.isActive ? 'bg-success' : 'bg-danger'">
 
-                    <span
-                      class="badge rounded-pill"
-                      [ngClass]="product.isActive ? 'bg-success':'bg-danger'">
+                        {{ product.isActive ? 'Active' : 'Inactive' }}
 
-                      {{product.isActive ? 'Active':'Inactive'}}
+                      </span>
 
-                    </span>
+                    </td>
 
-                  </td>
+                    <td>
 
-                  <td>
+                      {{ product.createdDate | date:'dd-MM-yyyy' }}
 
-                    {{product.createdDate | date:'dd-MM-yyyy'}}
+                    </td>
 
-                  </td>
+                    @if (isAdmin()) {
 
-                  @if(isAdmin){
+                      <td>
 
-                  <td>
+                        <div class="action-buttons">
 
-                    <div class="action-buttons">
+                          <button
+                            class="btn edit-btn btn-sm"
+                            [routerLink]="['/products/edit', product.productId]">
 
-                      <button
-                        class="btn edit-btn btn-sm"
-                        [routerLink]="['/products/edit', product.productId]">
+                            Edit
 
-                        Edit
+                          </button>
 
-                      </button>
+                          <button
+                            class="btn btn-sm"
+                            [ngClass]="product.isActive ? 'btn-danger' : 'btn-success'"
+                            (click)="toggleStatus(product)">
 
-                      <button
-                        class="btn btn-sm"
-                        [ngClass]="product.isActive ? 'btn-danger':'btn-success'"
-                        (click)="toggleStatus(product)">
+                            {{ product.isActive ? 'Deactivate' : 'Activate' }}
 
-                        {{product.isActive ? 'Deactivate':'Activate'}}
+                          </button>
 
-                      </button>
+                        </div>
 
-                    </div>
+                      </td>
 
-                  </td>
+                    }
 
-                  }
-
-                </tr>
+                  </tr>
 
                 }
 
@@ -230,7 +223,7 @@
                 <tr>
 
                   <td
-                    [attr.colspan]="isAdmin ? 7 : 6"
+                    [attr.colspan]="isAdmin() ? 6 : 5"
                     class="text-center py-4">
 
                     No Products Found
@@ -255,12 +248,14 @@
 
 </div>
 
+<!-- Pagination -->
+
 <div class="d-flex justify-content-between align-items-center mt-4">
 
   <button
     class="btn btn-secondary"
     (click)="previousPage()"
-    [disabled]="pageNumber === 1">
+    [disabled]="pageNumber() === 1">
 
     Previous
 
@@ -268,14 +263,14 @@
 
   <span class="fw-semibold">
 
-    Page {{ pageNumber }} of {{ totalPages }}
+    Page {{ pageNumber() }} of {{ totalPages() }}
 
   </span>
 
   <button
     class="btn btn-secondary"
     (click)="nextPage()"
-    [disabled]="pageNumber === totalPages">
+    [disabled]="pageNumber() === totalPages()">
 
     Next
 

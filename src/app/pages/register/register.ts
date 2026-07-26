@@ -1,27 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-  ReactiveFormsModule,
-  AbstractControl,
-  ValidationErrors
-} from '@angular/forms';
+import { FormBuilder, FormGroup,Validators,ReactiveFormsModule,AbstractControl,ValidationErrors} from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 
 import { AuthService } from '../../services/auth';
 import { RegisterRequest } from '../../models/register-request';
 import { UserResponse } from '../../models/user-response';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    RouterModule
-  ],
+  imports: [ CommonModule,ReactiveFormsModule,RouterModule],
   templateUrl: './register.html',
   styleUrl: './register.css'
 })
@@ -29,14 +19,15 @@ export class Register {
 
   registerForm: FormGroup;
 
-  hidePassword = true;
-  hideConfirmPassword = true;
-  isSubmitting = false;
+  hidePassword = signal(true);
+  hideConfirmPassword = signal(true);
+  isSubmitting = signal(false);
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private toastr: ToastrService,
   ) {
 
     this.registerForm = this.fb.group(
@@ -47,7 +38,7 @@ export class Register {
             Validators.required,
             Validators.minLength(3),
             Validators.maxLength(100),
-            Validators.pattern(/^[A-Za-z\s]+$/)
+            Validators.pattern(/^[A-Z][a-zA-Z]*(\s[A-Z][a-zA-Z]*)*$/)
           ]
         ],
 
@@ -74,9 +65,7 @@ export class Register {
             Validators.required,
             Validators.minLength(8),
             Validators.maxLength(100),
-            Validators.pattern(
-              /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).+$/
-            )
+            Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&^#()_\-+=])[A-Za-z\d@$!%*?&^#()_\-+=]{8,100}$/)
           ]
         ],
 
@@ -122,28 +111,25 @@ export class Register {
 
   }
 
-  togglePassword(): void {
-
-    this.hidePassword = !this.hidePassword;
-
-  }
+ togglePassword(): void {
+  this.hidePassword.update(value => !value);
+}
 
   toggleConfirmPassword(): void {
-
-    this.hideConfirmPassword = !this.hideConfirmPassword;
-
-  }
+  this.hideConfirmPassword.update(value => !value);
+}
 
   register(): void {
 
     if (this.registerForm.invalid) {
 
       this.registerForm.markAllAsTouched();
+       this.toastr.warning('Please correct the highlighted fields before submitting.','Invalid Form');
       return;
 
     }
 
-    this.isSubmitting = true;
+    this.isSubmitting.set(true);
 
     const request: RegisterRequest = {
 
@@ -161,9 +147,9 @@ export class Register {
 
       next: (response: UserResponse) => {
 
-        this.isSubmitting = false;
+        this.isSubmitting.set(false);
 
-        alert('Registration Successful.');
+        this.toastr.success('Your account has been created successfully.','Registration Successful');
 
         this.router.navigate(['/login']);
 
@@ -171,21 +157,21 @@ export class Register {
 
       error: (error: any) => {
 
-        this.isSubmitting = false;
+        this.isSubmitting.set(false);
 
         if (error.status === 409) {
 
-          alert('User with this email already exists.');
+          this.toastr.warning('A user with this email already exists.','Email Exists');
 
         }
         else if (error.status === 400) {
 
-          alert(error.error);
+          this.toastr.warning(error.error,'Validation Error');
 
         }
         else {
 
-          alert('Registration Failed.');
+          this.toastr.error('Unable to create your account. Please try again.','Registration Failed');
 
         }
 

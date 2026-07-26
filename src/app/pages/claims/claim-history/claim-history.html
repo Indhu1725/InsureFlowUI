@@ -18,9 +18,9 @@
 
     <div class="card-body">
 
-      @if(history$ | async; as history){
+      @if (history(); as history) {
 
-        @if(history.length > 0){
+        @if (history.length > 0) {
 
           <table class="table table-bordered table-hover align-middle">
 
@@ -41,7 +41,7 @@
 
             <tbody>
 
-              @for(item of history; track item.historyId; let i = $index){
+              @for (item of history; track item.historyId; let i = $index) {
 
                 <tr>
 
@@ -65,8 +65,7 @@
 
           </table>
 
-        }
-        @else{
+        } @else {
 
           <div class="alert alert-warning text-center">
 

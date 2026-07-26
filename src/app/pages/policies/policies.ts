@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule, AsyncPipe } from '@angular/common';
+import { Component, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { Observable, of, map } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 
 import { PolicyService } from '../../services/policy';
 import { PolicyResponse } from '../../models/policy-response';
@@ -9,254 +9,335 @@ import { PolicyResponse } from '../../models/policy-response';
 @Component({
   selector: 'app-policies',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    AsyncPipe
-  ],
+  imports: [CommonModule,RouterModule],
   templateUrl: './policies.html',
   styleUrl: './policies.css'
 })
 export class Policies implements OnInit {
 
-  policies$!: Observable<PolicyResponse[]>;
+  policies = signal<PolicyResponse[]>([]);
 
-  allPolicies: PolicyResponse[] = [];
+  allPolicies = signal<PolicyResponse[]>([]);
 
-  selectedFilter = 'all';
-  role = localStorage.getItem('role');
+  selectedFilter = signal('all');
 
-  isLoading = false;
-  pageNumber = 1;
-  pageSize = 10;
-  totalPages = 1;
+  isLoading = signal(false);
 
-  constructor(private policyService: PolicyService) {}
+  pageNumber = signal(1);
+
+  pageSize = signal(10);
+
+  totalPages = signal(1);
+
+  role = localStorage.getItem('role') ?? '';
+
+  constructor(
+    private policyService: PolicyService,
+    private toastr: ToastrService
+  ) {}
 
   ngOnInit(): void {
 
-  if (this.role === 'Customer') {
+    if (this.role === 'Customer') {
 
-    this.loadMyPolicies();
+      this.loadMyPolicies();
 
-  } else {
+    } else {
 
-    this.loadPolicies();
+      this.loadPolicies();
+
+    }
 
   }
 
-}
   loadPolicies(): void {
 
-  this.isLoading = true;
+    this.isLoading.set(true);
 
-  this.policies$ = this.policyService.getPolicies({
+    this.policyService.getPolicies({
 
-    pageNumber: this.pageNumber,
-    pageSize: this.pageSize,
-    sortBy: 'createdDate',
-    sortDirection: 'desc'
+      pageNumber: this.pageNumber(),
 
-  }).pipe(
+      pageSize: this.pageSize(),
 
-    map(response => {
+      sortBy: 'createdDate',
 
-      this.allPolicies = response.data.records;
+      sortDirection: 'desc'
 
-      this.pageNumber = response.data.currentPage;
+    }).subscribe({
 
-      this.totalPages = response.data.totalPages;
+      next: (response) => {
 
-      this.isLoading = false;
+        this.policies.set(response.data.records);
 
-      return response.data.records;
+        this.allPolicies.set(response.data.records);
 
-    })
+        this.pageNumber.set(response.data.currentPage);
 
-  );
+        this.totalPages.set(response.data.totalPages);
 
-}
-loadMyPolicies(): void {
+        this.isLoading.set(false);
 
-  this.isLoading = true;
+      },
 
-  this.policies$ = this.policyService.getMyPolicies().pipe(
+      error: () => {
 
-    map(response => {
+        this.isLoading.set(false);
 
-      this.allPolicies = response.data;
+        this.toastr.error('Unable to load policies.','Error' );
 
-      this.totalPages = 1;
+      }
 
-      this.pageNumber = 1;
+    });
 
-      this.isLoading = false;
+  }
 
-      return response.data;
+  loadMyPolicies(): void {
 
-    })
+    this.isLoading.set(true);
 
-  );
+    this.policyService.getMyPolicies().subscribe({
 
-}
+      next: (response) => {
+
+        this.policies.set(response.data);
+
+        this.allPolicies.set(response.data);
+
+        this.pageNumber.set(1);
+
+        this.totalPages.set(1);
+
+        this.isLoading.set(false);
+
+      },
+
+      error: () => {
+
+        this.isLoading.set(false);
+
+        this.toastr.error('Unable to load your policies.','Error');
+
+      }
+
+    });
+
+  }
 
   loadActivePolicies(): void {
 
-    this.isLoading = true;
+    this.isLoading.set(true);
 
-    this.policies$ = this.policyService.getActivePolicies().pipe(
+    this.policyService.getActivePolicies().subscribe({
 
-      map(response => {
+      next: (response) => {
 
-        this.allPolicies = response.data;
+        this.policies.set(response.data);
 
-        this.isLoading = false;
+        this.allPolicies.set(response.data);
 
-        return response.data;
+        this.isLoading.set(false);
 
-      })
+      },
 
-    );
+      error: () => {
+
+        this.isLoading.set(false);
+
+        this.toastr.error('Unable to load active policies.','Error');
+
+      }
+
+    });
 
   }
 
   onFilterChange(filter: string): void {
 
-    this.selectedFilter = filter;
+    this.selectedFilter.set(filter);
 
-   if (filter === 'all') {
+    if (filter === 'all') {
 
-  if (this.role === 'Customer') {
+      if (this.role === 'Customer') {
 
-    this.loadMyPolicies();
+        this.loadMyPolicies();
 
-  } else {
+      } else {
 
-    this.loadPolicies();
+        this.loadPolicies();
+
+      }
+
+    }
+
+    else if (filter === 'active') {
+
+      if (this.role !== 'Customer') {
+
+        this.loadActivePolicies();
+
+      }
+
+    }
+
+    else if (filter === 'id') {
+
+      this.policies.set([]);
+
+    }
+
+    else if (filter === 'number') {
+
+      this.policies.set([]);
+
+    }
 
   }
-
-}
-
-else if (filter === 'active') {
-
-  if (this.role !== 'Customer') {
-
-    this.loadActivePolicies();
-
-  }
-
-}
-
-else if (filter === 'id') {
-
-  this.policies$ = of([]);
-
-}
-
-else if (filter === 'number') {
-
-  this.policies$ = of([]);
-
-}
-
-}
 
   searchById(id: number): void {
 
-    this.isLoading = true;
+    if (!id) {
 
-    this.policies$ = this.policyService.getPolicyById(id).pipe(
+      this.toastr.warning(
+        'Please enter a Policy ID.',
+        'Warning'
+      );
 
-      map(response => {
+      return;
 
-        this.allPolicies = [response.data];
+    }
 
-        this.isLoading = false;
+    this.isLoading.set(true);
 
-        return [response.data];
+    this.policyService.getPolicyById(id).subscribe({
 
-      })
+      next: (response) => {
 
-    );
+        this.policies.set([response.data]);
+
+        this.allPolicies.set([response.data]);
+
+        this.isLoading.set(false);
+
+        this.toastr.success('Policy found successfully.','Success');
+
+      },
+
+      error: () => {
+
+        this.isLoading.set(false);
+
+        this.policies.set([]);
+
+        this.toastr.error(
+          'Policy not found.',
+          'Error'
+        );
+
+      }
+
+    });
 
   }
 
   searchByNumber(policyNumber: string): void {
 
-    this.isLoading = true;
+    if (!policyNumber.trim()) {
 
-    this.policies$ = this.policyService.getPolicyByNumber(policyNumber).pipe(
+      this.toastr.warning('Please enter a Policy Number.','Warning');
 
-      map(response => {
-
-        this.allPolicies = [response.data];
-
-        this.isLoading = false;
-
-        return [response.data];
-
-      })
-
-    );
-
-  }
-
- cancelPolicy(policy: PolicyResponse): void {
-
-  if (!confirm(`Are you sure you want to cancel Policy ${policy.policyNumber}?`)) {
-    return;
-  }
-
-  this.policyService.cancelPolicy(policy.policyId).subscribe({
-
-    next: (response: any) => {
-
-      alert(response.message);
-
-      if (this.role === 'Customer') {
-
-  this.loadMyPolicies();
-
-} else {
-
-  this.loadPolicies();
-
-}
-
-    },
-
-    error: (error) => {
-
-      console.log(error);
-
-      alert(error.error.message);
+      return;
 
     }
 
-  });
+    this.isLoading.set(true);
 
-}
-previousPage(): void {
+    this.policyService.getPolicyByNumber(policyNumber).subscribe({
 
-  if (this.pageNumber > 1) {
+      next: (response) => {
 
-    this.pageNumber--;
+        this.policies.set([response.data]);
 
-    this.loadPolicies();
+        this.allPolicies.set([response.data]);
+
+        this.isLoading.set(false);
+
+        this.toastr.success('Policy found successfully.','Success');
+
+      },
+
+      error: () => {
+
+        this.isLoading.set(false);
+
+        this.policies.set([]);
+
+        this.toastr.error('Policy not found.','Error');
+
+      }
+
+    });
 
   }
 
-}
-nextPage(): void {
+  cancelPolicy(policy: PolicyResponse): void {
 
-  if (this.pageNumber < this.totalPages) {
+    if (!confirm(`Are you sure you want to cancel Policy ${policy.policyNumber}?`)) {
 
-    this.pageNumber++;
+      return;
 
-    this.loadPolicies();
+    }
+
+    this.policyService.cancelPolicy(policy.policyId).subscribe({
+
+      next: (response: any) => {
+
+        this.toastr.success(response.message || 'Policy cancelled successfully.','Success');
+
+        if (this.role === 'Customer') {
+
+          this.loadMyPolicies();
+
+        } else {
+
+          this.loadPolicies();
+
+        }
+
+      },
+
+      error: (error) => {
+
+        this.toastr.error(error.error?.message || 'Unable to cancel policy.','Error');
+
+      }
+
+    });
 
   }
 
-}
+  previousPage(): void {
+
+    if (this.pageNumber() > 1) {
+
+      this.pageNumber.update(value => value - 1);
+
+      this.loadPolicies();
+
+    }
+
+  }
+
+  nextPage(): void {
+
+    if (this.pageNumber() < this.totalPages()) {
+
+      this.pageNumber.update(value => value + 1);
+
+      this.loadPolicies();
+
+    }
+
+  }
+
 }

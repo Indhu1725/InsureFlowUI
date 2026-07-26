@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { Sidebar } from './layout/sidebar/sidebar';
 import { Navbar } from './layout/navbar/navbar';
 import { RouterModule } from '@angular/router';
+import { provideToastr } from 'ngx-toastr';
 
 @Component({
   selector: 'app-root',

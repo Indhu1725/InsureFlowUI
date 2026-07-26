@@ -1,15 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-
+import { ReactiveFormsModule, FormBuilder,FormGroup,Validators} from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-
-import { map, Observable } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 
 import { CustomerService } from '../../../services/customer';
-
 import { Customer } from '../../../models/customer';
 import { CustomerRequest } from '../../../models/customer-request';
 
@@ -19,14 +14,20 @@ import { CustomerRequest } from '../../../models/customer-request';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    RouterModule,
+    RouterModule
   ],
   templateUrl: './edit-profile.html',
   styleUrl: './edit-profile.css'
 })
 export class EditProfile implements OnInit {
 
-  customer$!: Observable<Customer>;
+  customer = signal<Customer | null>(null);
+
+  isLoading = signal(false);
+
+  isSaving = signal(false);
+
+  isFormValid = signal(false);
 
   customerId = 0;
 
@@ -35,7 +36,8 @@ export class EditProfile implements OnInit {
   constructor(
     private fb: FormBuilder,
     private customerService: CustomerService,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService
   ) {
 
     this.editProfileForm = this.fb.group({
@@ -47,36 +49,55 @@ export class EditProfile implements OnInit {
 
       address: [
         '',
-        Validators.required
+        [
+          Validators.required,
+          Validators.minLength(10),
+          Validators.maxLength(250)
+        ]
       ],
 
       city: [
         '',
-        Validators.required
+        [
+          Validators.required,
+          Validators.pattern('^[A-Za-z ]+$')
+        ]
       ],
 
       state: [
         '',
-        Validators.required
+        [
+          Validators.required,
+          Validators.pattern('^[A-Za-z ]+$')
+        ]
       ],
 
       pinCode: [
         '',
         [
           Validators.required,
-          Validators.pattern('^[0-9]{6}$')
+          Validators.pattern('^[1-9][0-9]{5}$')
         ]
       ],
 
       nomineeName: [
         '',
-        Validators.required
+        [
+          Validators.required,
+          Validators.pattern('^[A-Z][a-zA-Z ]*$')
+        ]
       ],
 
       nomineeRelation: [
         '',
         Validators.required
       ]
+
+    });
+
+    this.editProfileForm.statusChanges.subscribe(() => {
+
+      this.isFormValid.set(this.editProfileForm.valid);
 
     });
 
@@ -90,53 +111,74 @@ export class EditProfile implements OnInit {
 
   loadProfile(): void {
 
-    this.customer$ = this.customerService
-      .getMyProfile()
-      .pipe(
+    this.isLoading.set(true);
 
-        map(response => {
+    this.customerService.getMyProfile().subscribe({
 
-          const customer = response.data;
+      next: (response) => {
 
-          this.customerId = customer.customerId;
+        const customer = response.data;
 
-          this.editProfileForm.patchValue({
+        this.customer.set(customer);
 
-            dateOfBirth: customer.dateOfBirth.substring(0,10),
+        this.customerId = customer.customerId;
 
-            address: customer.address,
+        this.editProfileForm.patchValue({
 
-            city: customer.city,
+          dateOfBirth: customer.dateOfBirth.substring(0, 10),
 
-            state: customer.state,
+          address: customer.address,
 
-            pinCode: customer.pinCode,
+          city: customer.city,
 
-            nomineeName: customer.nomineeName,
+          state: customer.state,
 
-            nomineeRelation: customer.nomineeRelation
+          pinCode: customer.pinCode,
 
-          });
+          nomineeName: customer.nomineeName,
 
-          return customer;
+          nomineeRelation: customer.nomineeRelation
 
-        })
+        });
 
-      );
+        this.isLoading.set(false);
+
+      },
+
+      error: () => {
+
+        this.isLoading.set(false);
+
+        this.toastr.error(
+          'Unable to load profile.',
+          'Error'
+        );
+
+      }
+
+    });
 
   }
 
   updateProfile(): void {
 
-    if(this.editProfileForm.invalid){
+    if (this.editProfileForm.invalid) {
 
       this.editProfileForm.markAllAsTouched();
+
+      this.toastr.warning(
+        'Please fill all required fields correctly.',
+        'Validation'
+      );
 
       return;
 
     }
 
-    const request: CustomerRequest = this.editProfileForm.value;
+    this.isSaving.set(true);
+
+    const request =
+      this.editProfileForm.value as CustomerRequest;
 
     this.customerService
       .updateCustomer(this.customerId, request)
@@ -144,17 +186,30 @@ export class EditProfile implements OnInit {
 
         next: () => {
 
-          alert('Profile updated successfully');
+          this.isSaving.set(false);
 
-          this.router.navigate(['/customers/my-profile']);
+          this.toastr.success(
+            'Profile updated successfully.',
+            'Success'
+          );
+
+          this.router.navigate([
+            '/customers/my-profile'
+          ]);
 
         },
 
-        error: (error) => {
+        error: (err) => {
 
-          console.log(error);
+          this.isSaving.set(false);
 
-          alert('Unable to update profile');
+          console.log(err);
+
+          this.toastr.error(
+            err.error?.message ??
+            'Unable to update profile.',
+            'Error'
+          );
 
         }
 

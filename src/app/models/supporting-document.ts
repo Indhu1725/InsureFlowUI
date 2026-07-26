@@ -4,6 +4,6 @@ export interface SupportingDocument {
 
   documentType: string;
 
-  documentReference: string;
+  documentReference: File | null;
 
 }

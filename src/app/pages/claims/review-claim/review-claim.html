@@ -10,20 +10,27 @@
 
       <form #reviewForm="ngForm" (ngSubmit)="submitReview()">
 
-        <!-- Claim Id -->
+        <!-- Claim ID -->
         <div class="mb-3">
-          <label class="form-label fw-bold">Claim ID</label>
+
+          <label class="form-label fw-bold">
+            Claim ID
+          </label>
+
           <input
             type="text"
             class="form-control"
-            [value]="claimId"
+            [value]="claimId()"
             readonly>
+
         </div>
 
         <!-- Recommendation -->
         <div class="mb-3">
-          <label class="form-label fw-bold">
+
+          <label class="form-label d-flex">
             Recommendation
+            <span class="text-danger fw-bold ms-1">*</span>
           </label>
 
           <select
@@ -33,12 +40,12 @@
             required>
 
             <option [ngValue]="2">
-  Recommended For Approval
-</option>
+              Recommended For Approval
+            </option>
 
-<option [ngValue]="3">
-  Recommended For Rejection
-</option>
+            <option [ngValue]="3">
+              Recommended For Rejection
+            </option>
 
           </select>
 
@@ -46,8 +53,10 @@
 
         <!-- Remarks -->
         <div class="mb-3">
-          <label class="form-label fw-bold">
+
+          <label class="form-label d-flex">
             Remarks
+            <span class="text-danger fw-bold ms-1">*</span>
           </label>
 
           <textarea

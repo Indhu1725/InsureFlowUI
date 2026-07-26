@@ -3,63 +3,106 @@
   <div class="card shadow">
 
     <div class="card-header bg-primary text-white">
-
       <h3>Issue Policy</h3>
-
     </div>
 
     <div class="card-body">
 
+      <!-- Customer -->
       <div class="mb-3">
 
-        <label class="form-label">
-
-          Customer ID
-
+        <label class="form-label d-flex">
+          Customer
+          <span class="text-danger fw-bold ms-1">*</span>
         </label>
 
-        <input
-          type="number"
-          class="form-control"
-          [(ngModel)]="issue.customerId">
+        <select
+          class="form-select"
+          [value]="issue().customerId"
+          (change)="issue.set({
+            ...issue(),
+            customerId: +$any($event.target).value
+          })">
+
+          <option value="0">Select Customer</option>
+
+          <option
+            *ngFor="let customer of customers()"
+            [value]="customer.customerId">
+
+            {{ customer.fullName }}
+
+          </option>
+
+        </select>
 
       </div>
 
+      <!-- Policy Plan -->
       <div class="mb-3">
 
-        <label class="form-label">
-
-          Plan ID
-
+        <label class="form-label d-flex">
+          Policy Plan
+          <span class="text-danger fw-bold ms-1">*</span>
         </label>
 
-        <input
-          type="number"
-          class="form-control"
-          [(ngModel)]="issue.planId">
+        <select
+          class="form-select"
+          [value]="issue().planId"
+          (change)="issue.set({
+            ...issue(),
+            planId: +$any($event.target).value
+          })">
+
+          <option value="0">Select Policy Plan</option>
+
+          <option
+            *ngFor="let plan of plans()"
+            [value]="plan.planId">
+
+            {{ plan.planName }}
+
+          </option>
+
+        </select>
 
       </div>
 
-      <div class="mb-3">
+      <!-- Start Date -->
+      <div class="mb-4">
 
-        <label class="form-label">
-
+        <label class="form-label d-flex">
           Start Date
-
+          <span class="text-danger fw-bold ms-1">*</span>
         </label>
 
         <input
           type="date"
           class="form-control"
-          [(ngModel)]="issue.startDate">
+          [value]="issue().startDate"
+          (input)="issue.set({
+            ...issue(),
+            startDate: $any($event.target).value
+          })">
 
       </div>
 
       <button
+        type="button"
         class="btn btn-primary"
-        (click)="issuePolicy()">
+        (click)="issuePolicy()"
+        [disabled]="isLoading()">
 
         Issue Policy
+
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-secondary ms-2"
+        routerLink="/policies">
+
+        Cancel
 
       </button>
 

@@ -4,87 +4,103 @@
 
     <div class="card-header bg-primary text-white">
 
-      <h3>Upload Document</h3>
+      <h3 class="mb-0">Upload Document</h3>
 
     </div>
 
     <div class="card-body">
 
-      <div class="mb-3">
+      <form (ngSubmit)="upload()">
 
-        <label class="form-label">
+        <!-- Claim ID -->
 
-          Claim ID
+        <div class="mb-3">
 
-        </label>
+          <label class="form-label d-flex">
+            Claim ID
+            <span class="text-danger fw-bold ms-1">*</span>
+          </label>
 
-        <input
-          class="form-control"
-          [value]="claimId"
-          readonly>
+          <input
+            type="text"
+            class="form-control"
+            [value]="claimId()"
+            readonly>
 
-      </div>
+        </div>
 
-      <div class="mb-3">
+        <!-- Document Name -->
 
-        <label class="form-label">
+        <div class="mb-3">
 
-          Document Name
+          <label class="form-label d-flex">
+            Document Name
+            <span class="text-danger fw-bold ms-1">*</span>
+          </label>
 
-        </label>
+          <input
+            type="text"
+            class="form-control"
+            [value]="documentName()"
+            (input)="onDocumentNameChange($any($event.target).value)"
+            required>
 
-        <input
-          type="text"
-          class="form-control"
-          [(ngModel)]="documentName">
+        </div>
 
-      </div>
+        <!-- Document Type -->
 
-      <div class="mb-3">
+        <div class="mb-3">
 
-        <label class="form-label">
+          <label class="form-label d-flex">
+            Document Type
+            <span class="text-danger fw-bold ms-1">*</span>
+          </label>
 
-          Document Type
+          <input
+            type="text"
+            class="form-control"
+            [value]="documentType()"
+            (input)="onDocumentTypeChange($any($event.target).value)"
+            required>
 
-        </label>
+        </div>
 
-        <input
-          type="text"
-          class="form-control"
-          [(ngModel)]="documentType">
+        <!-- File -->
 
-      </div>
+        <div class="mb-3">
 
-      <div class="mb-3">
+          <label class="form-label d-flex">
+            Choose File
+            <span class="text-danger fw-bold ms-1">*</span>
+          </label>
 
-        <label class="form-label">
+          <input
+            type="file"
+            class="form-control"
+            (change)="onFileSelected($event)"
+            required>
 
-          Choose File
+        </div>
 
-        </label>
+        <!-- Buttons -->
 
-        <input
-          type="file"
-          class="form-control"
-          (change)="onFileSelected($event)">
+        <button
+          type="submit"
+          class="btn btn-success">
 
-      </div>
+          Upload Document
 
-      <button
-        class="btn btn-success"
-        (click)="upload()">
+        </button>
 
-        Upload Document
+        <a
+          class="btn btn-secondary ms-2"
+          routerLink="/claims">
 
-      </button>
+          Back
 
-      <a
-        class="btn btn-secondary ms-2"
-        routerLink="/claims">
+        </a>
 
-        Back
-
-      </a>
+      </form>
 
     </div>
 

@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ToastrService } from 'ngx-toastr';
 
 import { ClaimService } from '../../services/claim';
 import { CustomerService } from '../../services/customer';
@@ -11,7 +11,7 @@ import { SidebarService } from '../../services/sidebar';
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [ CommonModule],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
@@ -23,7 +23,7 @@ export class Navbar implements OnInit {
   userEmail = localStorage.getItem('email') || '';
   userRole = localStorage.getItem('role') || '';
 
-  searchText = '';
+  searchText = signal('');
 
   constructor(
   private router: Router,
@@ -31,6 +31,7 @@ export class Navbar implements OnInit {
   private customerService: CustomerService,
   private userService: UserService,
   private sidebarService: SidebarService,
+  private toastr: ToastrService
 ) { }
 ngOnInit(): void {
 
@@ -41,7 +42,7 @@ ngOnInit(): void {
 
   search(): void {
 
-  const text = this.searchText.trim().toLowerCase();
+  const text = this.searchText().trim().toLowerCase();
 
   if (!text) {
     return;
@@ -80,9 +81,9 @@ ngOnInit(): void {
   }
 
   else {
-    alert('No matching page found.');
+    this.toastr.warning('No matching page found.','Search');
   }
-   this.searchText = '';
+   this.searchText.set('');
 
 }
 loadNotifications(): void {
@@ -185,6 +186,7 @@ goToProfile(): void {
 toggleNotifications(): void {
 
   this.showNotifications = !this.showNotifications;
+  this.toastr.success('Notifications updated.','Success');
 
 }
   logout(): void {
@@ -192,6 +194,7 @@ toggleNotifications(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
     localStorage.removeItem('email');
+     this.toastr.success('Logged out successfully.','Success');
 
     this.router.navigate(['/login']);
 

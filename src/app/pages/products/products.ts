@@ -1,96 +1,141 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { Observable, map } from 'rxjs';
-import { OnInit } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 
 import { ProductService } from '../../services/insurance-product';
-import { Product } from '../../models/product';
-import { ProductRequest, ProductType } from '../../models/product';
+import { Product, ProductType } from '../../models/product';
 
 @Component({
   selector: 'app-view-product',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-  ],
+  imports: [CommonModule,RouterModule],
   templateUrl: './products.html',
   styleUrl: './products.css'
 })
 export class ViewProduct implements OnInit {
 
-  products$!: Observable<Product[]>;
+  products = signal<Product[]>([]);
 
-  selectedFilter = 'all';
-  selectedStatus = 'all';
-  isAdmin = false;
-  pageNumber = 1;
+  selectedFilter = signal('all');
+
+  selectedStatus = signal('all');
+
+  isAdmin = signal(false);
+
+  pageNumber = signal(1);
+
   pageSize = 10;
-  totalPages = 1;
 
-  constructor(private productService: ProductService) {}
+  totalPages = signal(1);
+
+  constructor(
+    private productService: ProductService,
+    private toastr: ToastrService
+  ) { }
+
   ngOnInit(): void {
 
-  const role = localStorage.getItem('role');
+    const role = localStorage.getItem('role');
 
-  this.isAdmin = role === 'Admin';
+    this.isAdmin.set(role === 'Admin');
 
-  this.loadProducts();
+    this.loadProducts();
 
-}
+  }
 
   loadProducts(): void {
 
-  this.products$ = this.productService
-    .getProducts(
-      this.pageNumber,
+    this.productService.getProducts(
+      this.pageNumber(),
       this.pageSize,
       'ProductName',
       false
-    )
-    .pipe(
+    ).subscribe({
 
-      map(response => {
+      next: (response) => {
 
-        this.pageNumber = response.data.currentPage;
+        this.pageNumber.set(response.data.currentPage);
 
-        this.totalPages = response.data.totalPages;
+        this.totalPages.set(response.data.totalPages);
 
-        return response.data.records;
+        this.products.set(response.data.records);
 
-      })
+        this.applyStatusFilter();
 
-    );
+      },
 
-}
+      error: (error) => {
+
+        console.error(error);
+
+        this.toastr.error('Failed to load products.');
+
+      }
+
+    });
+
+  }
 
   loadActiveProducts(): void {
 
-    this.products$ = this.productService
-      .getActiveProducts()
-      .pipe(
-        map(response => response.data)
-      );
+    this.productService.getActiveProducts().subscribe({
+
+      next: (response) => {
+
+        this.products.set(response.data);
+
+        this.applyStatusFilter();
+
+      },
+
+      error: (error) => {
+
+        console.error(error);
+
+        this.toastr.error('Failed to load active products.');
+
+      }
+
+    });
+
   }
 
   searchById(id: number): void {
 
     if (!id) {
+
       this.loadProducts();
+
       return;
+
     }
 
-    this.products$ = this.productService
-      .getProductById(id)
-      .pipe(
-        map(response => [response.data])
-      );
+    this.productService.getProductById(id).subscribe({
+
+      next: (response) => {
+
+        this.products.set([response.data]);
+
+      },
+
+      error: (error) => {
+
+        console.error(error);
+
+        this.products.set([]);
+
+        this.toastr.error('Product not found.');
+
+      }
+
+    });
+
   }
 
   onFilterChange(filter: string): void {
 
-    this.selectedFilter = filter;
+    this.selectedFilter.set(filter);
 
     switch (filter) {
 
@@ -103,35 +148,47 @@ export class ViewProduct implements OnInit {
         break;
 
       case 'id':
-        this.products$ = new Observable<Product[]>();
+        this.products.set([]);
         break;
+
     }
+
   }
 
   onStatusChange(status: string): void {
 
-    this.selectedStatus = status;
+    this.selectedStatus.set(status);
 
-    if (this.selectedFilter === 'active') {
+    if (this.selectedFilter() === 'active') {
+
       this.loadActiveProducts();
+
     } else {
+
       this.loadProducts();
+
     }
 
-    this.products$ = this.products$.pipe(
-      map(products => {
+  }
 
-        if (status === 'all') {
-          return products;
-        }
+  applyStatusFilter(): void {
 
-        if (status === 'active') {
-          return products.filter(x => x.isActive);
-        }
+    const status = this.selectedStatus();
 
-        return products.filter(x => !x.isActive);
-      })
+    if (status === 'all') {
+
+      return;
+
+    }
+
+    const filtered = this.products().filter(product =>
+      status === 'active'
+        ? product.isActive
+        : !product.isActive
     );
+
+    this.products.set(filtered);
+
   }
 
   toggleStatus(product: Product): void {
@@ -144,51 +201,64 @@ export class ViewProduct implements OnInit {
         description: product.description,
         isActive: !product.isActive
       }
-    )
-    .subscribe({
+    ).subscribe({
 
       next: () => {
 
-        alert(
+        this.toastr.success(
+
           product.isActive
             ? 'Product deactivated successfully.'
             : 'Product activated successfully.'
+
         );
 
-        if (this.selectedFilter === 'active') {
+        if (this.selectedFilter() === 'active') {
+
           this.loadActiveProducts();
+
         } else {
+
           this.loadProducts();
+
         }
+
       },
 
       error: (error) => {
-        console.log(error);
-        alert('Unable to update product status.');
+
+        console.error(error);
+
+        this.toastr.error('Unable to update product status.');
+
       }
 
     });
+
   }
+
   previousPage(): void {
 
-  if (this.pageNumber > 1) {
+    if (this.pageNumber() > 1) {
 
-    this.pageNumber--;
+      this.pageNumber.update(page => page - 1);
 
-    this.loadProducts();
+      this.loadProducts();
 
-  }
-
-}
-nextPage(): void {
-
-  if (this.pageNumber < this.totalPages) {
-
-    this.pageNumber++;
-
-    this.loadProducts();
+    }
 
   }
 
-}
+  nextPage(): void {
+
+    if (this.pageNumber() < this.totalPages()) {
+
+      this.pageNumber.update(page => page + 1);
+
+      this.loadProducts();
+
+    }
+
+  }
+
 }

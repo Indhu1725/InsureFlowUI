@@ -10,6 +10,4 @@ export interface ClaimRequest {
 
   incidentDate: string;
 
-  supportingDocuments: SupportingDocument[];
-
 }

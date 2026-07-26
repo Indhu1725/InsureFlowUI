@@ -16,8 +16,10 @@
           <!-- Full Name -->
           <div class="col-md-6 mb-3">
 
-            <label class="form-label">Full Name</label>
-
+           <label class="form-label d-flex">
+              Full Name
+              <span class="text-danger fw-bold ms-1">*</span>
+            </label>
             <input
               type="text"
               class="form-control"
@@ -43,7 +45,10 @@
           <!-- Email -->
           <div class="col-md-6 mb-3">
 
-            <label class="form-label">Email</label>
+            <label class="form-label d-flex">
+              Email Address
+              <span class="text-danger fw-bold ms-1">*</span>
+            </label>
 
             <input
               type="email"
@@ -75,7 +80,10 @@
           <!-- Mobile Number -->
           <div class="col-md-6 mb-3">
 
-            <label class="form-label">Mobile Number</label>
+            <label class="form-label d-flex">
+              Mobile Number
+              <span class="text-danger fw-bold ms-1">*</span>
+            </label>
 
             <input
               type="text"
@@ -102,7 +110,10 @@
           <!-- Password -->
           <div class="col-md-6 mb-3">
 
-            <label class="form-label">Password</label>
+           <label class="form-label d-flex">
+              Password
+              <span class="text-danger fw-bold ms-1">*</span>
+            </label>
 
             <input
               type="password"
@@ -137,7 +148,10 @@
         <!-- Role -->
         <div class="mb-4">
 
-          <label class="form-label">Role</label>
+         <label class="form-label d-flex">
+            Role
+            <span class="text-danger fw-bold ms-1">*</span>
+          </label>
 
           <select
             class="form-select"
@@ -164,12 +178,13 @@
 
         <!-- Buttons -->
         <button
-          type="submit"
-          class="btn btn-success">
+  type="submit"
+  class="btn btn-success"
+  [disabled]="!isFormValid()">
 
-          Save User
+  Save User
 
-        </button>
+</button>
 
         <button
           type="button"

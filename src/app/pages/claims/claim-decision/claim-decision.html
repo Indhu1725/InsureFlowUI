@@ -3,80 +3,86 @@
   <div class="card shadow">
 
     <div class="card-header bg-success text-white">
-
       <h2>Claim Decision</h2>
-
     </div>
 
     <div class="card-body">
 
-      <div class="mb-3">
+      <form (ngSubmit)="submitDecision()">
 
-        <label class="form-label">
+        <!-- Claim ID -->
+        <div class="mb-3">
 
-          Claim ID
+          <label class="form-label d-flex">
+            Claim ID
+            <span class="text-danger fw-bold ms-1">*</span>
+          </label>
 
-        </label>
+          <input
+            type="text"
+            class="form-control"
+            [value]="claimId()"
+            readonly>
 
-        <input
-          class="form-control"
-          [value]="claimId"
-          readonly>
+        </div>
 
-      </div>
+        <!-- Final Decision -->
+        <div class="mb-3">
 
-      <div class="mb-3">
+          <label class="form-label d-flex">
+            Final Decision
+            <span class="text-danger fw-bold ms-1">*</span>
+          </label>
 
-        <label class="form-label">
+          <select
+            class="form-select"
+            [(ngModel)]="decision.finalDecisionStatus"
+            name="finalDecisionStatus"
+            required>
 
-          Final Decision
+            <option [ngValue]="4">Approve</option>
+            <option [ngValue]="5">Reject</option>
 
-        </label>
+          </select>
 
-        <select
-  class="form-select"
-  [(ngModel)]="decision.finalDecisionStatus"
-  name="finalDecisionStatus">
+        </div>
 
-  <option [ngValue]="4">Approve</option>
-  <option [ngValue]="5">Reject</option>
+        <!-- Remarks -->
+        <div class="mb-3">
 
-</select>
+          <label class="form-label d-flex">
+            Remarks
+            <span class="text-danger fw-bold ms-1">*</span>
+          </label>
 
-      </div>
+          <textarea
+            rows="4"
+            class="form-control"
+            [(ngModel)]="decision.remarks"
+            name="remarks"
+            required>
+          </textarea>
 
-      <div class="mb-3">
+        </div>
 
-        <label class="form-label">
+        <button
+          type="submit"
+          class="btn btn-success me-2">
 
-          Remarks
+          Submit Decision
 
-        </label>
+        </button>
 
-        <textarea
-          rows="4"
-          class="form-control"
-          [(ngModel)]="decision.remarks">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          routerLink="/claims">
 
-        </textarea>
+          Cancel
 
-      </div>
+        </button>
 
-      <button
-        class="btn btn-success me-2"
-        (click)="submitDecision()">
-
-        Submit Decision
-
-      </button>
-
-      <button
-        class="btn btn-secondary"
-        routerLink="/claims">
-
-        Cancel
-
-      </button>
+      </form>
 
     </div>
 

@@ -89,10 +89,9 @@
 
           <div class="mb-3">
 
-            <label class="form-label">
-
+           <label class="form-label d-flex">
               Full Name
-
+              <span class="text-danger fw-bold ms-1">*</span>
             </label>
 
             <div class="input-group">
@@ -115,11 +114,9 @@
               class="text-danger mt-1"
               *ngIf="f['fullName'].touched && f['fullName'].invalid">
 
-              <small *ngIf="f['fullName'].errors?.['required']">
-
-                Full Name is required.
-
-              </small>
+              <small *ngIf="f['fullName'].errors?.['pattern']">
+Each word must start with a capital letter and contain only letters.
+</small>
 
               <small *ngIf="f['fullName'].errors?.['minlength']">
 
@@ -141,10 +138,9 @@
 
           <div class="mb-3">
 
-            <label class="form-label">
-
+            <label class="form-label d-flex">
               Email Address
-
+              <span class="text-danger fw-bold ms-1">*</span>
             </label>
 
             <div class="input-group">
@@ -187,10 +183,9 @@
 
           <div class="mb-3">
 
-            <label class="form-label">
-
+            <label class="form-label d-flex">
               Mobile Number
-
+              <span class="text-danger fw-bold ms-1">*</span>
             </label>
 
             <div class="input-group">
@@ -211,68 +206,89 @@
             </div>
 
             <div
-              class="text-danger mt-1"
-              *ngIf="f['mobileNumber'].touched && f['mobileNumber'].invalid">
+  class="text-danger mt-1"
+  *ngIf="f['mobileNumber'].touched && f['mobileNumber'].invalid">
 
-              <small>
+  <small *ngIf="f['mobileNumber'].errors?.['required']">
+    Mobile Number is required.
+  </small>
 
-                Enter a valid mobile number.
+  <small *ngIf="f['mobileNumber'].errors?.['pattern']">
+    Mobile Number must contain exactly 10 digits and start with 6, 7, 8, or 9.
+  </small>
 
-              </small>
-
-            </div>
+</div>
 
           </div>
 
           <!-- Password -->
 
-          <div class="mb-3">
+          <!-- Password -->
 
-            <label class="form-label">
+<div class="mb-3">
 
-              Password
+  <label class="form-label d-flex">
+    Password
+    <span class="text-danger fw-bold ms-1">*</span>
+  </label>
 
-            </label>
+  <div class="input-group">
 
-            <div class="input-group">
+    <span class="input-group-text">
+      <i class="bi bi-lock"></i>
+    </span>
 
-              <span class="input-group-text">
+    <input
+      [type]="hidePassword() ? 'password' : 'text'"
+      class="form-control"
+      placeholder="Create a password"
+      formControlName="password">
 
-                <i class="bi bi-lock"></i>
+    <button
+      class="btn btn-outline-secondary"
+      type="button"
+      (click)="togglePassword()">
 
-              </span>
+      <i
+        class="bi"
+        [ngClass]="hidePassword() ? 'bi-eye' : 'bi-eye-slash'">
+      </i>
 
-              <input
-                [type]="hidePassword ? 'password' : 'text'"
-                class="form-control"
-                placeholder="Create a password"
-                formControlName="password">
+    </button>
 
-              <button
-                class="btn btn-outline-secondary"
-                type="button"
-                (click)="togglePassword()">
+  </div>
 
-                <i
-                  class="bi"
-                  [ngClass]="hidePassword ? 'bi-eye' : 'bi-eye-slash'">
-                </i>
+  <!-- Password Validation Messages -->
 
-              </button>
+  <div
+    class="text-danger mt-1"
+    *ngIf="f['password'].touched && f['password'].invalid">
 
-            </div>
+    <small *ngIf="f['password'].errors?.['required']">
+      Password is required.
+    </small>
 
-          </div>
+    <small *ngIf="f['password'].errors?.['minlength']">
+      Password must be at least 8 characters.
+    </small>
 
+    <small *ngIf="f['password'].errors?.['pattern']">
+      Password must contain at least one uppercase letter,
+      one lowercase letter,
+      one number,
+      and one special character.
+    </small>
+
+  </div>
+
+</div>
           <!-- Confirm Password -->
 
           <div class="mb-3">
-
-            <label class="form-label">
-
-              Confirm Password
-
-            </label>
+          <label class="form-label d-flex">
+            Confirm Password
+            <span class="text-danger fw-bold ms-1">*</span>
+          </label>
 
             <div class="input-group">
 
@@ -283,7 +299,7 @@
               </span>
 
               <input
-                [type]="hideConfirmPassword ? 'password' : 'text'"
+                [type]="hideConfirmPassword() ? 'password' : 'text'"
                 class="form-control"
                 placeholder="Confirm your password"
                 formControlName="confirmPassword">
@@ -295,7 +311,7 @@
 
                 <i
                   class="bi"
-                  [ngClass]="hideConfirmPassword ? 'bi-eye' : 'bi-eye-slash'">
+                  [ngClass]="hideConfirmPassword()? 'bi-eye' : 'bi-eye-slash'">
                 </i>
 
               </button>
@@ -354,15 +370,15 @@
           <button
             type="submit"
             class="btn register-btn w-100"
-            [disabled]="registerForm.invalid || isSubmitting">
+            [disabled]="registerForm.invalid || isSubmitting()">
 
-            <span *ngIf="!isSubmitting">
+            <span *ngIf="!isSubmitting()">
 
               Create Account
 
             </span>
 
-            <span *ngIf="isSubmitting">
+            <span *ngIf="isSubmitting()">
 
               <span class="spinner-border spinner-border-sm me-2"></span>
 

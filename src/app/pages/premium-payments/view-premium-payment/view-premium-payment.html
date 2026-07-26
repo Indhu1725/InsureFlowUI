@@ -11,16 +11,16 @@
       <!-- Error Message -->
 
       <div
-        *ngIf="errorMessage"
+        *ngIf="errorMessage()"
         class="alert alert-danger">
 
-        {{ errorMessage }}
+        {{ errorMessage() }}
 
       </div>
 
       <!-- Payment Details -->
 
-      <ng-container *ngIf="payment$ | async as payment">
+      <ng-container *ngIf="payment() as payment">
 
         <div class="row">
 

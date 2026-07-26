@@ -1,45 +1,120 @@
-import { Component } from '@angular/core';
+import { Component, signal, OnInit} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 import { PolicyService } from '../../../services/policy';
 import { IssuePolicyRequest } from '../../../models/issue-policy-request';
+import { CustomerService } from '../../../services/customer';
+import { PolicyPlanService } from '../../../services/policy-plan';
+import { PolicyPlan } from '../../../models/policy-plan';
 
 @Component({
   selector: 'app-issue-policy',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
+  imports: [CommonModule,FormsModule, ReactiveFormsModule],
   templateUrl: './issue-policy.html',
   styleUrl: './issue-policy.css'
 })
-export class IssuePolicy {
+export class IssuePolicy implements OnInit{
 
-  issue: IssuePolicyRequest = {
-
+  issue = signal<IssuePolicyRequest>({
     customerId: 0,
-
     planId: 0,
-
     startDate: ''
+  });
 
-  };
+  isLoading = signal(false);
+  customers = signal<any[]>([]);
+  plans = signal<PolicyPlan[]>([]);
 
-  constructor(
-    private policyService: PolicyService,
-    private router: Router
-  ) {}
+ constructor(
+  private policyService: PolicyService,
+  private customerService: CustomerService,
+  private policyPlanService: PolicyPlanService,
+  private router: Router,
+  private toastr: ToastrService
+) {}
+ngOnInit(): void {
+
+  this.loadCustomers();
+
+  this.loadPlans();
+
+}
+loadCustomers(): void {
+
+  this.customerService
+    .getActiveCustomers()
+    .subscribe({
+
+      next: (response) => {
+
+        this.customers.set(response.data);
+
+      },
+
+      error: () => {
+
+        this.toastr.error(
+          'Unable to load customers.'
+        );
+
+      }
+
+    });
+
+}
+loadPlans(): void {
+
+  this.policyPlanService
+    .getActivePlans()
+    .subscribe({
+
+      next: (response) => {
+
+        this.plans.set(response.data);
+
+      },
+
+      error: () => {
+
+        this.toastr.error(
+          'Unable to load policy plans.'
+        );
+
+      }
+
+    });
+
+}
 
   issuePolicy(): void {
 
-    this.policyService.issuePolicy(this.issue).subscribe({
+    const request = this.issue();
+
+    if (
+      request.customerId <= 0 ||
+      request.planId <= 0 ||
+      !request.startDate
+    ) {
+
+      this.toastr.warning('Please fill in all required fields.','Validation');
+
+      return;
+
+    }
+
+    this.isLoading.set(true);
+
+    this.policyService.issuePolicy(request).subscribe({
 
       next: () => {
 
-        alert('Policy issued successfully.');
+        this.isLoading.set(false);
+
+        this.toastr.success('Policy issued successfully.','Success');
 
         this.router.navigate(['/policies']);
 
@@ -47,9 +122,9 @@ export class IssuePolicy {
 
       error: (error) => {
 
-        console.log(error);
+        this.isLoading.set(false);
 
-        alert(error.error.message);
+        this.toastr.error(error.error?.message || 'Unable to issue policy.','Error');
 
       }
 

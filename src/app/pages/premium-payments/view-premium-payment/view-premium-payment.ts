@@ -1,8 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Observable, of } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { ToastrService } from 'ngx-toastr';
 
 import { PremiumPaymentService } from '../../../services/premium-payment';
 import { PremiumPayment } from '../../../models/premium-payment';
@@ -10,18 +9,15 @@ import { PremiumPayment } from '../../../models/premium-payment';
 @Component({
   selector: 'app-view-premium-payment',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule
-  ],
+  imports: [CommonModule,RouterModule],
   templateUrl: './view-premium-payment.html',
   styleUrl: './view-premium-payment.css'
 })
 export class ViewPremiumPaymentComponent {
 
-  payment$!: Observable<PremiumPayment | null>;
+  payment = signal<PremiumPayment | null>(null);
 
-  errorMessage = '';
+  errorMessage = signal('');
 
   paymentModes = [
     { value: 0, text: 'UPI' },
@@ -33,51 +29,49 @@ export class ViewPremiumPaymentComponent {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private paymentService: PremiumPaymentService
+    private paymentService: PremiumPaymentService,
+    private toastr: ToastrService
   ) {
-
     const id = Number(this.route.snapshot.paramMap.get('id'));
-
     this.loadPayment(id);
-
   }
 
   loadPayment(id: number): void {
 
-    this.payment$ = this.paymentService
-      .getPaymentById(id)
-      .pipe(
+    this.paymentService.getPaymentById(id).subscribe({
 
-        map(response => {
+      next: (response) => {
 
-          if (!response.success) {
+        if (response.success) {
 
-            throw new Error(response.message);
+          this.payment.set(response.data);
 
-          }
+        } else {
 
-          return response.data as PremiumPayment;
+          this.errorMessage.set(response.message);
+          this.toastr.error(response.message);
 
-        }),
+        }
 
-        catchError(error => {
+      },
 
-          if (error.status === 404) {
+      error: (error) => {
 
-            this.errorMessage = 'Premium Payment not found.';
+        if (error.status === 404) {
 
-          }
-          else {
+          this.errorMessage.set('Premium Payment not found.');
+          this.toastr.error('Premium Payment not found.');
 
-            this.errorMessage = 'Unable to load premium payment.';
+        } else {
 
-          }
+          this.errorMessage.set('Unable to load premium payment.');
+          this.toastr.error('Unable to load premium payment.');
 
-          return of(null);
+        }
 
-        })
+      }
 
-      );
+    });
 
   }
 

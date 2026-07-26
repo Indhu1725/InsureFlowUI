@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators,ReactiveFormsModule} from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -6,25 +6,28 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth';
 import { LoginRequest } from '../../models/login-request';
 import { LoginResponse } from '../../models/login-response';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ CommonModule, ReactiveFormsModule,RouterModule],
+  imports: [ CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
+
 export class Login {
 
   loginForm: FormGroup;
 
-  hidePassword = true;
-  isSubmitting = false;
+  hidePassword = signal(true);
+  isSubmitting = signal(false);
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private toastr: ToastrService,
   ) {
 
     this.loginForm = this.fb.group({
@@ -58,8 +61,8 @@ export class Login {
   }
 
   togglePassword(): void {
-    this.hidePassword = !this.hidePassword;
-  }
+  this.hidePassword.update(value => !value);
+}
 
   login(): void {
 
@@ -68,7 +71,7 @@ export class Login {
       return;
     }
 
-    this.isSubmitting = true;
+    this.isSubmitting.set(true);
 
     const request: LoginRequest = {
 
@@ -84,39 +87,44 @@ export class Login {
 
         this.authService.saveUser(response);
 
-        this.isSubmitting = false;
+        this.isSubmitting.set(false);
 
-        // You currently have only one dashboard
+        this.toastr.success('Login successful.','Success' );
+
         this.router.navigate(['/dashboard']);
 
-      },
+},
 
-      error: (error: any) => {
+error: (error: any) => {
 
-        this.isSubmitting = false;
+  this.isSubmitting.set(false);
 
-        if (error.status === 404) {
+  if (error.status === 400) {
 
-          alert('Invalid email or password.');
+    this.toastr.warning(error.error,'Validation Error');
 
-        }
+  } else if (error.status === 404) {
 
-        else if (error.status === 400) {
+    this.toastr.error('Invalid email or password.','Login Failed');
 
-          alert(error.error);
+  } else if (error.status === 401) {
 
-        }
+    this.toastr.error('Unauthorized access.','Unauthorized');
 
-        else {
+  } else if (error.status === 403) {
 
-          alert('Unable to login. Please try again.');
+    this.toastr.error('Access denied.','Forbidden');
 
-        }
+  } else {
 
-      }
-
-    });
+    this.toastr.error('Unable to login. Please try again.','Server Error');
 
   }
+
+}
+
+});
+
+}
 
 }

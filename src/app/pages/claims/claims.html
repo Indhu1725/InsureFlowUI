@@ -4,18 +4,15 @@
   <div class="d-flex justify-content-between align-items-center mb-4">
 
     <div>
-
-        <h2 class="fw-bold">Claims</h2>
-
-        <p class="page-subtitle">
-            Manage and track insurance claims.
-        </p>
-
+      <h2 class="fw-bold">Claims</h2>
+      <p class="page-subtitle">
+        Manage and track insurance claims.
+      </p>
     </div>
 
     @if(userRole === 'Customer'){
 
-    <button
+      <button
         class="btn add-btn"
         routerLink="/claims/add">
 
@@ -23,109 +20,111 @@
 
         Add Claim
 
-    </button>
+      </button>
 
     }
 
-</div>
+  </div>
 
   <!-- Filters -->
 
   @if(userRole !== 'Customer'){
 
-  <div class="card filter-card mb-4">
+    <div class="card filter-card mb-4">
 
-<div class="card-body">
+      <div class="card-body">
 
-<div class="row">
+        <div class="row">
 
-    <div class="col-md-4">
+          <div class="col-md-4">
 
-      <label class="form-label fw-semibold">
-        Claim Filter
-      </label>
+            <label class="form-label d-flex">
+              Claim Filter
+              <span class="text-danger fw-bold ms-1">*</span>
+            </label>
 
-      <select
-  class="form-select"
-  (change)="onFilterChange($any($event.target).value)">
+            <select
+              class="form-select"
+              (change)="onFilterChange($any($event.target).value)">
 
-  @if(userRole === 'Admin'){
+              @if(userRole === 'Admin'){
 
-    <option value="all">All Claims</option>
-    <option value="submitted">Submitted</option>
-    <option value="underreview">Under Review</option>
-    <option value="approved">Approved</option>
-    <option value="rejected">Rejected</option>
-    <option value="number">Search by Claim Number</option>
+                <option value="all">All Claims</option>
+                <option value="submitted">Submitted</option>
+                <option value="underreview">Under Review</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+                <option value="number">Search by Claim Number</option>
 
-  }
+              }
 
-  @else if(userRole === 'InternalStaff'){
+              @else if(userRole === 'InternalStaff'){
 
-    <option value="all">Claims For Review</option>
-    <option value="number">Search by Claim Number</option>
+                <option value="all">Claims For Review</option>
+                <option value="number">Search by Claim Number</option>
 
-  }
+              }
 
-  @else{
+              @else{
 
-    <option value="my">My Claims</option>
-    <option value="number">Search by Claim Number</option>
+                <option value="my">My Claims</option>
+                <option value="number">Search by Claim Number</option>
 
-  }
+              }
 
-</select>
+            </select>
 
-    </div>
+          </div>
 
-  </div>
-  </div>
+        </div>
 
-</div>
-
-  }
-
-  <!-- Search by Claim Number -->
-
-  @if(selectedFilter === 'number'){
-
-  <div class="card filter-card mb-4">
-
-<div class="card-body">
-
-<div class="row">
-
-    <div class="col-md-4">
-
-      <label class="form-label fw-semibold">
-
-        Claim Number
-
-      </label>
-
-      <input
-        type="text"
-        class="form-control"
-        #claimNumber>
+      </div>
 
     </div>
 
-    <div class="col-md-2 d-flex align-items-end">
+  }
 
-      <button
-        class="btn btn-primary w-100"
-        (click)="searchClaim(claimNumber.value)">
+  <!-- Search -->
 
-        Search
+  @if(selectedFilter() === 'number'){
 
-      </button>
+    <div class="card filter-card mb-4">
+
+      <div class="card-body">
+
+        <div class="row">
+
+          <div class="col-md-4">
+
+            <label class="form-label d-flex">
+              Claim Number
+              <span class="text-danger fw-bold ms-1">*</span>
+            </label>
+
+            <input
+              type="text"
+              class="form-control"
+              #claimNumber>
+
+          </div>
+
+          <div class="col-md-2 d-flex align-items-end">
+
+            <button
+              class="btn btn-primary w-100"
+              (click)="searchClaim(claimNumber.value)">
+
+              Search
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
 
     </div>
-  </div>
-
-</div>
-
-  </div>
 
   }
 
@@ -137,27 +136,19 @@
 
       <div class="table-responsive">
 
-        <table
-          class="table table-hover table-bordered align-middle">
+        <table class="table table-hover table-bordered align-middle">
 
           <thead>
 
             <tr>
 
               <th>Claim No</th>
-
               <th>Customer</th>
-
               <th>Policy</th>
-
               <th>Amount</th>
-
               <th>Incident Date</th>
-
               <th>Status</th>
-
               <th>Created</th>
-
               <th>Actions</th>
 
             </tr>
@@ -166,213 +157,220 @@
 
           <tbody>
 
-            @if(claims$ | async; as claims){
+            @for(claim of claims(); track claim.claimId){
 
-            @for(claim of claims; track claim.claimId){
+              <tr>
 
-            <tr>
+                <td>{{ claim.claimNumber }}</td>
 
-              <td>{{ claim.claimNumber }}</td>
+                <td>{{ claim.customerName }}</td>
 
-              <td>{{ claim.customerName }}</td>
+                <td>{{ claim.policyNumber }}</td>
 
-              <td>{{ claim.policyNumber }}</td>
+                <td>₹ {{ claim.claimAmount }}</td>
 
-              <td>₹ {{ claim.claimAmount }}</td>
+                <td>{{ claim.incidentDate }}</td>
 
-              <td>{{ claim.incidentDate }}</td>
+                <td>
 
-              <td>
+                  <span
+                    class="badge"
+                    [ngClass]="{
+                      'bg-warning text-dark': claim.claimStatus == 0,
+                      'bg-info': claim.claimStatus == 1,
+                      'bg-primary': claim.claimStatus == 2,
+                      'bg-secondary': claim.claimStatus == 3,
+                      'bg-success': claim.claimStatus == 4,
+                      'bg-danger': claim.claimStatus == 5
+                    }">
 
-                <span
-                  class="badge"
-                  [ngClass]="{
-                    'bg-warning text-dark': claim.claimStatus == 0,
-                    'bg-info': claim.claimStatus == 1,
-                    'bg-primary': claim.claimStatus == 2,
-                    'bg-secondary': claim.claimStatus == 3,
-                    'bg-success': claim.claimStatus == 4,
-                    'bg-danger': claim.claimStatus == 5
-                  }">
+                    {{
+                      claim.claimStatus == 0 ? 'Submitted' :
+                      claim.claimStatus == 1 ? 'Under Review' :
+                      claim.claimStatus == 2 ? 'Recommended For Approval' :
+                      claim.claimStatus == 3 ? 'Recommended For Rejection' :
+                      claim.claimStatus == 4 ? 'Approved' :
+                      'Rejected'
+                    }}
 
-                  {{
-                    claim.claimStatus == 0 ? 'Submitted' :
-                    claim.claimStatus == 1 ? 'Under Review' :
-                    claim.claimStatus == 2 ? 'Recommended For Approval' :
-                    claim.claimStatus == 3 ? 'Recommended For Rejection' :
-                    claim.claimStatus == 4 ? 'Approved' :
-                    'Rejected'
-                  }}
+                  </span>
 
-                </span>
+                </td>
 
-              </td>
+                <td>
 
-              <td>
+                  {{ claim.createdDate | date:'dd-MM-yyyy' }}
 
-                {{ claim.createdDate | date:'dd-MM-yyyy' }}
+                </td>
 
-              </td>
+                <td>
 
-              <td>
-                <!-- Admin -->
+                  <!-- Admin -->
+
+                  @if(userRole === 'Admin'){
+
+                    @if(claim.claimStatus == 2 || claim.claimStatus == 3){
+
+                      <a
+                        class="btn btn-sm decision-btn"
+                        [routerLink]="['/claims/decision', claim.claimId]">
+
+                        Decision
+
+                      </a>
+
+                    }
+
+                    @else{
+
+                      <a
+                        class="btn btn-sm view-btn me-2"
+                        [routerLink]="['/claims/view', claim.claimId]">
+
+                        View
+
+                      </a>
+
+                      <a
+                        class="btn btn-sm btn-secondary me-2"
+                        [routerLink]="['/claims/history', claim.claimId]">
+
+                        History
+
+                      </a>
+
+                      <a
+                        class="btn btn-sm document-btn"
+                        [routerLink]="['/claims/documents', claim.claimId]">
+
+                        Documents
+
+                      </a>
+
+                    }
+
+                  }
+
+                  <!-- Internal Staff -->
+
+                  @if(userRole === 'InternalStaff'){
+
+                    <a
+                      class="btn btn-sm review-btn me-2"
+                      [routerLink]="['/claims/review', claim.claimId]">
+
+                      Review
+
+                    </a>
+
+                    <a
+                      class="btn btn-sm btn-secondary me-2"
+                      [routerLink]="['/claims/history', claim.claimId]">
+
+                      History
+
+                    </a>
+
+                    <a
+                      class="btn btn-sm btn-info"
+                      [routerLink]="['/claims/documents', claim.claimId]">
+
+                      Documents
+
+                    </a>
+
+                  }
+
+                  <!-- Customer -->
+
+                  @if(userRole === 'Customer'){
+
+                    <a
+                      class="btn btn-sm btn-primary me-2"
+                      [routerLink]="['/claims/view', claim.claimId]">
+
+                      View
+
+                    </a>
+
+                    <a
+                      class="btn btn-sm btn-secondary me-2"
+                      [routerLink]="['/claims/history', claim.claimId]">
+
+                      History
+
+                    </a>
+
+                    <a
+                      class="btn btn-sm btn-info"
+                      [routerLink]="['/claims/documents', claim.claimId]">
+
+                      Documents
+
+                    </a>
+
+                  }
+
+                </td>
+
+              </tr>
+
+            }
+
+            @if(claims().length === 0){
+
+              <tr>
+
+                <td colspan="8" class="text-center">
+
+                  No Claims Found
+
+                </td>
+
+              </tr>
+
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
 @if(userRole === 'Admin'){
 
-@if(
-claim.claimStatus==2 ||
-claim.claimStatus==3
-){
+  <div class="d-flex justify-content-between align-items-center mt-4">
 
-<a
-class="btn btn-sm decision-btn"
-[routerLink]="['/claims/decision',claim.claimId]">
+    <button
+      class="btn btn-secondary"
+      (click)="previousPage()"
+      [disabled]="pageNumber() === 1">
 
-Decision
+      Previous
 
-</a>
+    </button>
 
-}
-@else{
+    <span class="fw-semibold">
 
-<a
-class="btn btn-sm view-btn me-2"
-[routerLink]="['/claims/view',claim.claimId]">
+      Page {{ pageNumber() }} of {{ totalPages() }}
 
-View
+    </span>
 
-</a>
+    <button
+      class="btn btn-secondary"
+      (click)="nextPage()"
+      [disabled]="pageNumber() === totalPages()">
 
-<a
-  class="btn btn-sm btn-secondary"
-  [routerLink]="['/claims/history', claim.claimId]">
-  History
-</a>
+      Next
 
-<a
-class="btn btn-sm document-btn"
-[routerLink]="['/claims/documents', claim.claimId]">
+    </button>
 
-Documents
-
-</a>
-
-}
-
-}
-<!-- Internal Staff -->
-@if(userRole === 'InternalStaff'){
-
-<a
-class="btn btn-sm review-btn me-2"
-[routerLink]="['/claims/review', claim.claimId]">
-
-Review
-
-</a>
-
-<a
-  class="btn btn-sm btn-secondary"
-  [routerLink]="['/claims/history', claim.claimId]">
-  History
-</a>
-
-<a
-class="btn btn-sm btn-info"
-[routerLink]="['/claims/documents', claim.claimId]">
-
-Documents
-
-</a>
-
-}
-
-<!-- Customer -->
-@if(userRole === 'Customer'){
-
-<a
-class="btn btn-sm btn-primary me-2"
-[routerLink]="['/claims/view', claim.claimId]">
-
-View
-
-</a>
-
-<a
-  class="btn btn-sm btn-secondary"
-  [routerLink]="['/claims/history', claim.claimId]">
-  History
-</a>
-
-<a
-class="btn btn-sm btn-info"
-[routerLink]="['/claims/documents', claim.claimId]">
-
-Documents
-
-</a>
-}
-
-</td>
-
-</tr>
-
-}
-
-@if(claims.length === 0){
-
-<tr>
-
-  <td colspan="8" class="text-center">
-
-    No Claims Found
-
-  </td>
-
-</tr>
-
-}
-
-}
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-@if(userRole === 'Admin'){
-
-<div class="d-flex justify-content-between align-items-center mt-4">
-
-  <button
-    class="btn btn-secondary"
-    (click)="previousPage()"
-    [disabled]="pageNumber === 1">
-
-    Previous
-
-  </button>
-
-  <span class="fw-semibold">
-
-    Page {{ pageNumber }} of {{ totalPages }}
-
-  </span>
-
-  <button
-    class="btn btn-secondary"
-    (click)="nextPage()"
-    [disabled]="pageNumber === totalPages">
-
-    Next
-
-  </button>
-
-</div>
+  </div>
 
 }

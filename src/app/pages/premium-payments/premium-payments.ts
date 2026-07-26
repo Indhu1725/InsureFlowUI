@@ -1,10 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { switchMap, map, catchError, startWith } from 'rxjs/operators';
+import { ToastrService } from 'ngx-toastr';
 
 import { PremiumPaymentService } from '../../services/premium-payment';
 import { PremiumPayment } from '../../models/premium-payment';
@@ -12,281 +10,303 @@ import { PremiumPayment } from '../../models/premium-payment';
 @Component({
   selector: 'app-premium-payments',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    RouterModule
-  ],
+  imports: [CommonModule,FormsModule, RouterModule],
   templateUrl: './premium-payments.html',
   styleUrl: './premium-payments.css'
 })
 export class PremiumPayments {
+
   role = localStorage.getItem('role');
   customerId = Number(localStorage.getItem('customerId'));
-
-  pageNumber = 1;
-  pageSize = 10;
-
-  totalPages = 0;
-  totalRecords = 0;
-
-  sortBy = 'paymentDate';
-  sortDirection = 'desc';
-
-  selectedFilter = 'all';
-  searchId = 0;
-  idLabel = '';
-
-  loading = false;
-  errorMessage = '';
-
-  private refresh$ = new BehaviorSubject<void>(undefined);
-
-  payments$: Observable<PremiumPayment[]> = this.refresh$.pipe(
-
-    startWith(undefined),
-
-    switchMap(() => {
-
-      this.loading = true;
-      this.errorMessage = '';
-
-      // ================= ALL PAYMENTS =================
-
-      if (this.selectedFilter === 'all') {
-
-  if (this.role === 'Customer') {
-
-    return this.paymentService
-      .getPaymentsByCustomer(
-        this.customerId,
-        this.pageNumber,
-        this.pageSize
-      )
-      .pipe(
-
-        map(response => {
-
-          this.loading = false;
-
-          this.totalPages = response.data.totalPages;
-          this.totalRecords = response.data.totalRecords;
-
-          return response.data.records;
-
-        }),
-
-        catchError(() => {
-
-          this.loading = false;
-          this.errorMessage = 'Unable to load premium payments';
-
-          return of([]);
-
-        })
-
-      );
-
-  }
-
-  return this.paymentService
-    .getPayments(
-      this.pageNumber,
-      this.pageSize,
-      this.sortBy,
-      this.sortDirection
-    )
-    .pipe(
-
-      map(response => {
-
-        this.loading = false;
-
-        this.totalPages = response.data.totalPages;
-        this.totalRecords = response.data.totalRecords;
-
-        return response.data.records;
-
-      }),
-
-      catchError(() => {
-
-        this.loading = false;
-        this.errorMessage = 'Unable to load premium payments';
-
-        return of([]);
-
-      })
-
-    );
-
-}
-// ================= PAYMENT BY ID =================
-
-      if (this.selectedFilter === 'id') {
-
-        return this.paymentService
-          .getPaymentById(this.searchId)
-          .pipe(
-
-            map(response => {
-
-              this.loading = false;
-
-              if (!response.success || !response.data) {
-
-                this.errorMessage = 'Payment not found';
-
-                return [];
-
-              }
-
-              this.totalPages = 1;
-              this.totalRecords = 1;
-
-              return [response.data];
-
-            }),
-
-            catchError(() => {
-
-              this.loading = false;
-
-              this.errorMessage = 'Payment not found';
-
-              return of([]);
-
-            })
-
-          );
-
-      }
-
-      // ================= POLICY PAYMENTS =================
-
-      if (this.selectedFilter === 'policy') {
-
-        return this.paymentService
-          .getPaymentsByPolicy(
-            this.searchId,
-            this.pageNumber,
-            this.pageSize
-          )
-          .pipe(
-
-            map(response => {
-
-              this.loading = false;
-
-              this.totalPages = response.data.totalPages;
-              this.totalRecords = response.data.totalRecords;
-
-              return response.data.records as PremiumPayment[];
-
-            }),
-
-            catchError(() => {
-
-              this.loading = false;
-
-              this.errorMessage = 'No payments found';
-
-              return of([]);
-
-            })
-
-          );
-
-      }
-
-      // ================= CUSTOMER PAYMENTS =================
-
-      return this.paymentService
-        .getPaymentsByCustomer(
-          this.searchId,
-          this.pageNumber,
-          this.pageSize
-        )
-        .pipe(
-
-          map(response => {
-
-            this.loading = false;
-
-            this.totalPages = response.data.totalPages;
-            this.totalRecords = response.data.totalRecords;
-
-            return response.data.records as PremiumPayment[];
-
-          }),
-
-          catchError(() => {
-
-            this.loading = false;
-
-            this.errorMessage = 'No payments found';
-
-            return of([]);
-
-          })
-
-        );
-
-    })
-
-  );
+  payments = signal<PremiumPayment[]>([]);
+  loading = signal(false);
+  pageNumber = signal(1);
+  pageSize = signal(10);
+  totalPages = signal(1);
+  totalRecords = signal(0);
+  sortBy = signal('paymentDate');
+  sortDirection = signal('desc');
+  selectedFilter = signal('all');
+  searchId = signal(0);
+  idLabel = signal('');
 
   constructor(
     private paymentService: PremiumPaymentService,
-    private router: Router
-  ) { }
+    private router: Router,
+    private toastr: ToastrService
+  ) {
 
-  onFilterChange(): void {
-
-    this.searchId = 0;
-    this.errorMessage = '';
-
-    switch (this.selectedFilter) {
-
-      case 'all':
-        this.refresh$.next();
-        break;
-
-      case 'id':
-        this.idLabel = 'Payment ID';
-        break;
-
-      case 'policy':
-        this.idLabel = 'Policy ID';
-        break;
-
-      case 'customer':
-        this.idLabel = 'Customer ID';
-        break;
-
-    }
+    this.loadPayments();
 
   }
 
-  searchPayments(): void {
+  // ================= LOAD PAYMENTS =================
 
-    if (this.searchId <= 0) {
+  loadPayments(): void {
 
-      alert('Please enter a valid ID');
+    this.loading.set(true);
+
+    if (this.selectedFilter() === 'all') {
+
+      if (this.role === 'Customer') {
+
+        this.paymentService.getPaymentsByCustomer(
+          this.customerId,
+          this.pageNumber(),
+          this.pageSize()
+        ).subscribe({
+
+          next: response => {
+
+            this.payments.set(response.data.records);
+
+            this.totalPages.set(response.data.totalPages);
+
+            this.totalRecords.set(response.data.totalRecords);
+
+            this.loading.set(false);
+
+          },
+
+          error: () => {
+
+            this.loading.set(false);
+
+            this.payments.set([]);
+
+            this.toastr.error('Unable to load premium payments.','Error');
+
+          }
+
+        });
+
+      }
+
+      else {
+
+        this.paymentService.getPayments(
+          this.pageNumber(),
+          this.pageSize(),
+          this.sortBy(),
+          this.sortDirection()
+        ).subscribe({
+
+          next: response => {
+
+            this.payments.set(response.data.records);
+
+            this.totalPages.set(response.data.totalPages);
+
+            this.totalRecords.set(response.data.totalRecords);
+
+            this.loading.set(false);
+
+          },
+
+          error: () => {
+
+            this.loading.set(false);
+
+            this.payments.set([]);
+
+            this.toastr.error('Unable to load premium payments.','Error');
+
+          }
+
+        });
+
+      }
+
       return;
 
     }
 
-    this.refresh$.next();
+    // Payment By ID
+
+    if (this.selectedFilter() === 'id') {
+
+      this.paymentService.getPaymentById(this.searchId()).subscribe({
+
+        next: response => {
+
+          this.loading.set(false);
+
+          if (!response.success || !response.data) {
+
+            this.payments.set([]);
+
+            this.toastr.error('Payment not found.','Error');
+
+            return;
+
+          }
+
+          this.payments.set([response.data]);
+
+          this.totalPages.set(1);
+
+          this.totalRecords.set(1);
+
+        },
+
+        error: () => {
+
+          this.loading.set(false);
+
+          this.payments.set([]);
+
+          this.toastr.error('Payment not found.','Error');
+
+        }
+
+      });
+
+      return;
+
+    }
+
+    // Policy Payments
+
+    if (this.selectedFilter() === 'policy') {
+
+      this.paymentService.getPaymentsByPolicy(
+        this.searchId(),
+        this.pageNumber(),
+        this.pageSize()
+      ).subscribe({
+
+        next: response => {
+
+          this.loading.set(false);
+
+          this.payments.set(response.data.records);
+
+          this.totalPages.set(response.data.totalPages);
+
+          this.totalRecords.set(response.data.totalRecords);
+
+        },
+
+        error: () => {
+
+          this.loading.set(false);
+
+          this.payments.set([]);
+
+          this.toastr.error('No payments found.','Error');
+
+        }
+
+      });
+
+      return;
+
+    }
+
+    // Customer Payments
+
+    this.paymentService.getPaymentsByCustomer(
+      this.searchId(),
+      this.pageNumber(),
+      this.pageSize()
+    ).subscribe({
+
+      next: response => {
+
+        this.loading.set(false);
+
+        this.payments.set(response.data.records);
+
+        this.totalPages.set(response.data.totalPages);
+
+        this.totalRecords.set(response.data.totalRecords);
+
+      },
+
+      error: () => {
+
+        this.loading.set(false);
+
+        this.payments.set([]);
+
+        this.toastr.error('No payments found.','Error'
+        );
+
+      }
+
+    });
 
   }
 
+  // ================= FILTER =================
+
+  onFilterChange(filter: string): void {
+
+    this.selectedFilter.set(filter);
+
+    this.searchId.set(0);
+
+    switch (filter) {
+
+      case 'all':
+
+        this.loadPayments();
+
+        break;
+
+      case 'id':
+
+        this.idLabel.set('Payment ID');
+
+        this.payments.set([]);
+
+        break;
+
+      case 'policy':
+
+        this.idLabel.set('Policy ID');
+
+        this.payments.set([]);
+
+        break;
+
+      case 'customer':
+
+        this.idLabel.set('Customer ID');
+
+        this.payments.set([]);
+
+        break;
+
+    }
+
+  }
+
+  // ================= SEARCH =================
+
+  searchPayments(): void {
+
+    if (this.searchId() <= 0) {
+
+      this.toastr.warning('Please enter a valid ID.','Validation');
+
+      return;
+
+    }
+
+    this.loadPayments();
+
+  }
+
+  // ================= PAGINATION =================
+
   previousPage(): void {
 
-    if (this.pageNumber > 1) {
+    if (this.pageNumber() > 1) {
 
-      this.pageNumber--;
-      this.refresh$.next();
+      this.pageNumber.update(value => value - 1);
+
+      this.loadPayments();
 
     }
 
@@ -294,35 +314,43 @@ export class PremiumPayments {
 
   nextPage(): void {
 
-    if (this.pageNumber < this.totalPages) {
+    if (this.pageNumber() < this.totalPages()) {
 
-      this.pageNumber++;
-      this.refresh$.next();
+      this.pageNumber.update(value => value + 1);
+
+      this.loadPayments();
 
     }
 
   }
+
+  // ================= SORT =================
 
   sort(column: string): void {
 
-    if (this.sortBy === column) {
+    if (this.sortBy() === column) {
 
-      this.sortDirection =
-        this.sortDirection === 'asc'
+      this.sortDirection.set(
+        this.sortDirection() === 'asc'
           ? 'desc'
-          : 'asc';
+          : 'asc'
+      );
 
     }
+
     else {
 
-      this.sortBy = column;
-      this.sortDirection = 'asc';
+      this.sortBy.set(column);
+
+      this.sortDirection.set('asc');
 
     }
 
-    this.refresh$.next();
+    this.loadPayments();
 
   }
+
+  // ================= NAVIGATION =================
 
   addPayment(): void {
 

@@ -1,8 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule, AsyncPipe } from '@angular/common';
+import { Component, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { ToastrService } from 'ngx-toastr';
 
 import { ClaimService } from '../../../services/claim';
 import { ClaimDocumentResponse } from '../../../models/claim-document-response';
@@ -10,52 +9,102 @@ import { ClaimDocumentResponse } from '../../../models/claim-document-response';
 @Component({
   selector: 'app-claim-documents',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    AsyncPipe
-  ],
+  imports: [CommonModule, RouterModule],
   templateUrl: './claim-documents.html',
   styleUrl: './claim-documents.css'
 })
 export class ClaimDocuments implements OnInit {
 
-  claimId = 0;
+  claimId = signal(0);
 
-  documents$!: Observable<ClaimDocumentResponse[]>;
+  documents = signal<ClaimDocumentResponse[]>([]);
 
   userRole = localStorage.getItem('role');
 
   constructor(
     private route: ActivatedRoute,
-    private claimService: ClaimService
-  ) { }
+    private claimService: ClaimService,
+    private toastr: ToastrService
+  ) {}
 
   ngOnInit(): void {
 
-    this.claimId = Number(
-      this.route.snapshot.paramMap.get('id')
-    );
+    const id = Number(this.route.snapshot.paramMap.get('id'));
 
-    this.documents$ = this.claimService
-      .getDocuments(this.claimId)
-      .pipe(
-        map((response: any) => response.data ?? [])
-      );
+    if (id > 0) {
+
+      this.claimId.set(id);
+
+      this.loadDocuments();
+
+    } else {
+
+      this.toastr.error('Invalid claim ID.');
+
+    }
+
   }
+
+  loadDocuments(): void {
+
+    this.claimService.getDocuments(this.claimId()).subscribe({
+
+      next: (response) => {
+
+        this.documents.set(response.data ?? []);
+
+      },
+
+      error: (error) => {
+
+        console.error(error);
+
+        this.toastr.error('Failed to load claim documents.');
+
+      }
+
+    });
+
+  }
+
   downloadDocument(filePath: string): void {
 
-  const downloadUrl = `https://localhost:7244/${filePath}`;
+    if (!filePath) {
 
-  const link = document.createElement('a');
+      this.toastr.warning('Document path is not available.');
 
-  link.href = downloadUrl;
+      return;
 
-  link.target = '_blank';
+    }
 
-  link.download = '';
+    const downloadUrl = `https://localhost:7244/${filePath}`;
 
-  link.click();
+    const link = document.createElement('a');
+
+    link.href = downloadUrl;
+
+    link.target = '_blank';
+
+    link.download = '';
+
+    link.click();
+
+    this.toastr.success('Document download started.');
+
+  }
+  getFileName(filePath: string): string {
+
+  const fileName = filePath.split('/').pop();
+
+  if (!fileName) {
+    return '';
+  }
+
+  const index = fileName.indexOf('_');
+
+  return index >= 0
+    ? fileName.substring(index + 1)
+    : fileName;
 
 }
 

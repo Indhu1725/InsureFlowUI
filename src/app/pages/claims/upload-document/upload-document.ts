@@ -1,9 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { ClaimDocumentRequest } from '../../../models/claim-document-request';
+import { ToastrService } from 'ngx-toastr';
+
 import { ClaimService } from '../../../services/claim';
+import { ClaimDocumentRequest } from '../../../models/claim-document-request';
 
 @Component({
   selector: 'app-upload-document',
@@ -16,74 +18,113 @@ import { ClaimService } from '../../../services/claim';
   templateUrl: './upload-document.html',
   styleUrl: './upload-document.css'
 })
-export class UploadDocument {
+export class UploadDocument implements OnInit {
 
-  claimId = 0;
+  claimId = signal(0);
 
-  documentName = '';
+  documentName = signal('');
 
-  documentType = '';
+  documentType = signal('');
 
-  selectedFile!: File;
+  selectedFile = signal<File | null>(null);
 
   constructor(
-  private route: ActivatedRoute,
-  private router: Router,
-  private claimService: ClaimService
-) {
-  this.claimId = Number(this.route.snapshot.paramMap.get('id'));
-}
+    private route: ActivatedRoute,
+    private router: Router,
+    private claimService: ClaimService,
+    private toastr: ToastrService
+  ) { }
 
-  onFileSelected(event: any): void {
+  ngOnInit(): void {
 
-    this.selectedFile = event.target.files[0];
+    const id = Number(this.route.snapshot.paramMap.get('id'));
 
-  }
+    if (id > 0) {
 
- upload(): void {
+      this.claimId.set(id);
 
-  if (!this.selectedFile) {
+    } else {
 
-    alert('Please choose a file.');
+      this.toastr.error('Invalid claim ID.');
 
-    return;
-
-  }
-
-  const request: ClaimDocumentRequest = {
-
-    claimId: this.claimId,
-
-    documentName: this.documentName,
-
-    documentType: this.documentType,
-
-    documentReference: this.selectedFile
-
-  };
-
-  this.claimService.uploadDocument(request).subscribe({
-
-    next: (response) => {
-
-      alert('Document uploaded successfully.');
-
-      console.log(response);
-
-      this.router.navigate(['/claims/documents', this.claimId]);
-
-    },
-
-    error: (error) => {
-
-      console.log(error);
-
-      alert(error.error?.message ?? 'Upload failed.');
+      this.router.navigate(['/claims']);
 
     }
 
-  });
+  }
 
-}
+  onDocumentNameChange(value: string): void {
+
+    this.documentName.set(value);
+
+  }
+
+  onDocumentTypeChange(value: string): void {
+
+    this.documentType.set(value);
+
+  }
+
+  onFileSelected(event: Event): void {
+
+    const input = event.target as HTMLInputElement;
+
+    if (input.files && input.files.length > 0) {
+
+      this.selectedFile.set(input.files[0]);
+
+    }
+
+  }
+
+  upload(): void {
+
+    const file = this.selectedFile();
+
+    if (!file) {
+
+      this.toastr.warning('Please choose a file.');
+
+      return;
+
+    }
+
+    const request: ClaimDocumentRequest = {
+
+      claimId: this.claimId(),
+
+      documentName: this.documentName(),
+
+      documentType: this.documentType(),
+
+      documentReference: file
+
+    };
+
+    this.claimService.uploadDocument(request).subscribe({
+
+      next: (response) => {
+
+        console.log(response);
+
+        this.toastr.success('Document uploaded successfully.');
+
+        this.router.navigate(['/claims/documents', this.claimId()]);
+
+      },
+
+      error: (error) => {
+
+        console.error(error);
+
+        this.toastr.error(
+          error.error?.message ?? 'Upload failed.'
+        );
+
+      }
+
+    });
+
+  }
 
 }

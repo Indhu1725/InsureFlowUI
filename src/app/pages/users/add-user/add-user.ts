@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup,ReactiveFormsModule,Validators} from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 
 import { Router, RouterModule } from '@angular/router';
 import { UserService } from '../../../services/user';
@@ -15,11 +16,13 @@ import { UserService } from '../../../services/user';
 export class AddUser {
 
   addUserForm: FormGroup;
+  isFormValid = signal(false);
 
   constructor(
   private fb: FormBuilder,
   private router: Router,
-  private userService: UserService
+  private userService: UserService,
+  private toastr: ToastrService
 ) {
 
     this.addUserForm = this.fb.group({
@@ -69,6 +72,9 @@ export class AddUser {
   ]
 
 });
+ this.addUserForm.statusChanges.subscribe(() => {
+    this.isFormValid.set(this.addUserForm.valid);
+  });
 
   }
 
@@ -77,6 +83,10 @@ export class AddUser {
   if (this.addUserForm.invalid) {
 
     this.addUserForm.markAllAsTouched();
+    this.toastr.warning(
+    'Please fill all required fields correctly.',
+    'Validation'
+  );
 
     return;
 
@@ -100,7 +110,7 @@ export class AddUser {
 
       next: () => {
 
-        alert('User added successfully');
+        this.toastr.success('User added successfully', 'Success');
 
         this.router.navigate(['/users']);
 
@@ -110,7 +120,7 @@ export class AddUser {
 
         console.log(err);
 
-        alert('Unable to add user');
+        this.toastr.error(err.error?.message ?? 'Unable to create internal staff.','Error');
 
       }
 
@@ -134,7 +144,7 @@ export class AddUser {
 
       next: () => {
 
-        alert('User added successfully');
+        this.toastr.success('User added successfully');
 
         this.router.navigate(['/users']);
 
@@ -144,7 +154,7 @@ export class AddUser {
 
         console.log(err);
 
-        alert('Unable to add user');
+        this.toastr.error('Unable to add user');
 
       }
 

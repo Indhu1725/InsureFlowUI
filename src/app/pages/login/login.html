@@ -88,10 +88,9 @@
 
           <div class="mb-3">
 
-            <label class="form-label">
-
+            <label class="form-label d-flex">
               Email Address
-
+              <span class="text-danger fw-bold ms-1">*</span>
             </label>
 
             <div class="input-group">
@@ -134,10 +133,9 @@
 
           <div class="mb-3">
 
-            <label class="form-label">
-
+            <label class="form-label d-flex">
               Password
-
+              <span class="text-danger fw-bold ms-1">*</span>
             </label>
 
             <div class="input-group">
@@ -149,22 +147,10 @@
               </span>
 
               <input
-                [type]="hidePassword ? 'password' : 'text'"
+                [type]="hidePassword() ? 'password' : 'text'"
                 class="form-control"
                 placeholder="Enter your password"
                 formControlName="password">
-
-              <button
-                class="btn btn-outline-secondary"
-                type="button"
-                (click)="togglePassword()">
-
-                <i
-                  class="bi"
-                  [ngClass]="hidePassword ? 'bi-eye' : 'bi-eye-slash'">
-                </i>
-
-              </button>
 
             </div>
 
@@ -228,15 +214,15 @@
           <button
             type="submit"
             class="btn login-btn w-100"
-            [disabled]="loginForm.invalid || isSubmitting">
+            [disabled]="loginForm.invalid || isSubmitting()">
 
-            <span *ngIf="!isSubmitting">
+            <span *ngIf="!isSubmitting()">
 
               Sign In
 
             </span>
 
-            <span *ngIf="isSubmitting">
+            <span *ngIf="isSubmitting()">
 
               <span class="spinner-border spinner-border-sm me-2"></span>
 

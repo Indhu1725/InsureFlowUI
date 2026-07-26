@@ -63,16 +63,15 @@ uploadDocument(request: ClaimDocumentRequest): Observable<any> {
 
   const formData = new FormData();
 
-  formData.append('claimId', request.claimId.toString());
-  formData.append('documentName', request.documentName);
-  formData.append('documentType', request.documentType);
-  formData.append('documentReference', request.documentReference);
+  formData.append('claimId',request.claimId.toString());
 
-  return this.http.post<any>(
-    `${this.apiUrl}/document`,
-    formData
-  );
+  formData.append('documentName',request.documentName);
 
+  formData.append('documentType',request.documentType);
+
+  formData.append('documentReference',request.documentReference,request.documentReference.name);
+
+  return this.http.post<any>(`${this.apiUrl}/document`,formData);
 }
 //Get Documents
 getDocuments(claimId: number): Observable<any> {

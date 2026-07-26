@@ -50,7 +50,7 @@ My Policies
 
 <h2 class="fw-bold mb-0">
 
-{{ totalPolicies }}
+{{ totalPolicies() }}
 
 </h2>
 
@@ -72,7 +72,7 @@ Total Customers
 
 <h2 class="fw-bold mb-0">
 
-{{ totalCustomers }}
+{{ totalCustomers() }}
 
 </h2>
 
@@ -109,7 +109,7 @@ Available Plans
 
 <h2 class="fw-bold mb-0">
 
-{{ totalPlans }}
+{{ totalPlans() }}
 
 </h2>
 
@@ -131,7 +131,7 @@ Total Policies
 
 <h2 class="fw-bold mb-0">
 
-{{ totalPolicies }}
+{{ totalPolicies() }}
 
 </h2>
 
@@ -168,7 +168,7 @@ My Claims
 
 <h2 class="fw-bold mb-0">
 
-{{ totalClaims }}
+{{ totalClaims() }}
 
 </h2>
 
@@ -190,7 +190,7 @@ Policy Plans
 
 <h2 class="fw-bold mb-0">
 
-{{ totalPlans }}
+{{ totalPlans() }}
 
 </h2>
 
@@ -227,7 +227,7 @@ Approved Claims
 
 <h2 class="fw-bold mb-0">
 
-{{ approvedClaims }}
+{{ approvedClaims() }}
 
 </h2>
 
@@ -249,7 +249,7 @@ Total Claims
 
 <h2 class="fw-bold mb-0">
 
-{{ totalClaims }}
+{{ totalClaims() }}
 
 </h2>
 
@@ -354,7 +354,7 @@ Recent Activities
       <table class="table table-hover align-middle">
         <tbody>
 
-  @for (claim of recentClaims; track claim.claimId) {
+  @for(claim of recentClaims();track claim.claimId){
 
     <tr>
 
@@ -390,7 +390,7 @@ Recent Activities
 
       <h5 class="fw-bold mb-4">Top Policy Plans</h5>
 
-      @for (plan of topPlans; track plan.policyPlanId) {
+      @for(plan of topPlans();track plan.policyPlanId){
 
   <p class="mb-1 fw-semibold">
     {{ plan.planName }}
