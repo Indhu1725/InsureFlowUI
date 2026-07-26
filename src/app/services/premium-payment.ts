@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { PremiumPayment } from '../models/premium-payment';
+import { PremiumDue } from '../models/premium-due';
 import { PremiumPaymentRequest } from '../models/premium-payment-request';
 
 @Injectable({
@@ -72,5 +73,22 @@ export class PremiumPaymentService {
   makePayment(request: PremiumPaymentRequest): Observable<any> {
     return this.http.post<any>(this.apiUrl, request);
   }
+  getPremiumDue() {
+  return this.http.get<any>(`${this.apiUrl}/due`);
+}
+getMyPayments(
+  pageNumber: number = 1,
+  pageSize: number = 10
+): Observable<any> {
+
+  let params = new HttpParams()
+    .set('pageNumber', pageNumber)
+    .set('pageSize', pageSize);
+
+  return this.http.get<any>(
+    `${this.apiUrl}/my-payments`,
+    { params }
+  );
+}
 
 }

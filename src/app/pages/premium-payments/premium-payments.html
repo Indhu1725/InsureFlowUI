@@ -25,10 +25,99 @@
     </button>
 
   </div>
+  <!-- Premium Due Card -->
+
+@if(role === 'Customer' && premiumDue()){
+
+<div class="card shadow-sm border-primary mb-4">
+
+  <div class="card-header bg-primary text-white">
+
+    <h5 class="mb-0">
+      Premium Due Details
+    </h5>
+
+  </div>
+
+  <div class="card-body">
+
+    <div class="row">
+
+      <div class="col-md-6 mb-3">
+
+        <strong>Policy Number</strong>
+
+        <div>{{ premiumDue()?.policyNumber }}</div>
+
+      </div>
+
+      <div class="col-md-6 mb-3">
+
+        <strong>Coverage Amount</strong>
+
+        <div>{{ premiumDue()?.coverageAmount | currency:'INR':'symbol' }}</div>
+
+      </div>
+
+      <div class="col-md-6 mb-3">
+
+        <strong>Monthly Premium</strong>
+
+        <div>{{ premiumDue()?.premiumAmount | currency:'INR':'symbol' }}</div>
+
+      </div>
+
+      <div class="col-md-6 mb-3">
+
+        <strong>Next Due Date</strong>
+
+        <div>{{ premiumDue()?.nextPremiumDueDate | date:'dd-MM-yyyy' }}</div>
+
+      </div>
+
+      <div class="col-md-6 mb-3">
+
+        <strong>Last Payment Date</strong>
+
+        <div>{{ premiumDue()?.lastPremiumPaymentDate | date:'dd-MM-yyyy' }}</div>
+
+      </div>
+
+      <div class="col-md-6 mb-3">
+
+        <strong>Status</strong>
+
+        <div>
+
+          <span
+            class="badge"
+            [ngClass]="{
+              'bg-success': premiumDue()?.status === 'Paid',
+              'bg-danger': premiumDue()?.status === 'Due',
+              'bg-secondary': premiumDue()?.status === 'Completed'
+            }">
+
+            {{ premiumDue()?.status }}
+
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+}
 
   <!-- Filter -->
 
-  <div class="card filter-card mb-4">
+  @if(role !== 'Customer'){
+
+<div class="card filter-card mb-4">
 
     <div class="card-body">
 
@@ -59,23 +148,23 @@
 
               @if(role !== 'Customer'){
 
-              <option value="all">
-                All Payments
-              </option>
+                <option value="all">
+                  All Payments
+                </option>
 
-              <option value="id">
-                Payment By ID
-              </option>
+                <option value="id">
+                  Payment By ID
+                </option>
 
-              <option value="policy">
-                Policy Payments
-              </option>
+                <option value="policy">
+                  Policy Payments
+                </option>
 
-              }
+                <option value="customer">
+                  Customer Payments
+                </option>
 
-              <option value="customer">
-                Customer Payments
-              </option>
+                }
 
             </select>
 
@@ -139,7 +228,7 @@
 
     </div>
 
-  </div>
+  </div>}
 
   <!-- Loading -->
 

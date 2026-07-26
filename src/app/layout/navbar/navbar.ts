@@ -90,35 +90,63 @@ loadNotifications(): void {
 
   this.notifications = [];
 
-  // Claims
-  this.claimService.getAllClaims().subscribe({
+  // ================= Claims =================
 
-    next: (response: any) => {
+  if (this.userRole === 'Admin') {
 
-      const claims = (response.data || []).slice(0, 3).map((claim: any) => ({
-        icon: '📝',
-       message: `New Claim #${claim.claimNumber ?? claim.claimId}`,
-date: claim.createdDate,
-route: `/claims/view/${claim.claimId}`
-      }));
+    this.claimService.getAllClaims().subscribe({
 
-      this.notifications.push(...claims);
-      this.sortNotifications();
+      next: (response: any) => {
 
-    }
+        const claims = (response.data || []).slice(0, 3).map((claim: any) => ({
+          icon: '📝',
+          message: `New Claim #${claim.claimNumber ?? claim.claimId}`,
+          date: claim.createdDate,
+          route: `/claims/view/${claim.claimId}`
+        }));
 
-  });
+        this.notifications.push(...claims);
+        this.sortNotifications();
 
-  // Customers
+      }
+
+    });
+
+  }
+
+  else if (this.userRole === 'InternalStaff') {
+
+    this.claimService.getReviewClaims().subscribe({
+
+      next: (response: any) => {
+
+        const claims = (response.data || []).slice(0, 3).map((claim: any) => ({
+          icon: '📝',
+          message: `Claim #${claim.claimNumber ?? claim.claimId} needs review`,
+          date: claim.createdDate,
+          route: `/claims/view/${claim.claimId}`
+        }));
+
+        this.notifications.push(...claims);
+        this.sortNotifications();
+
+      }
+
+    });
+
+  }
+
+  // ================= Customers =================
+
   this.customerService.getCustomers().subscribe({
 
     next: (response: any) => {
 
-      const customers = (response.data?.items || response.items || []).slice(0, 3).map((customer: any) => ({
+      const customers = (response.data?.items || response.items || response.data?.records || []).slice(0, 3).map((customer: any) => ({
         icon: '👤',
         message: `New Customer ${customer.fullName ?? customer.customerName ?? customer.name}`,
-date: customer.createdDate,
-route: '/customers'
+        date: customer.createdDate,
+        route: '/customers'
       }));
 
       this.notifications.push(...customers);
@@ -128,24 +156,29 @@ route: '/customers'
 
   });
 
-  // Users
-  this.userService.getUsers().subscribe({
+  // ================= Users (Admin Only) =================
 
-    next: (response: any) => {
+  if (this.userRole === 'Admin') {
 
-      const users = (response.data?.items || response.items || []).slice(0, 3).map((user: any) => ({
-        icon: '👥',
-        message: `New User ${user.fullName ?? user.userName ?? user.email}`,
-date: user.createdDate,
-route: '/users'
-      }));
+    this.userService.getUsers().subscribe({
 
-      this.notifications.push(...users);
-      this.sortNotifications();
+      next: (response: any) => {
 
-    }
+        const users = (response.data?.records || response.data?.items || response.items || []).slice(0, 3).map((user: any) => ({
+          icon: '👥',
+          message: `New User ${user.fullName ?? user.userName ?? user.email}`,
+          date: user.createdDate,
+          route: '/users'
+        }));
 
-  });
+        this.notifications.push(...users);
+        this.sortNotifications();
+
+      }
+
+    });
+
+  }
 
 }
 sortNotifications(): void {

@@ -203,7 +203,7 @@ export class EditProfile implements OnInit {
 
           this.isSaving.set(false);
 
-          console.log(err);
+          console.error(err);
 
           this.toastr.error(
             err.error?.message ??

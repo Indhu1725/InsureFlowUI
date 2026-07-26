@@ -165,7 +165,56 @@ this.topPlans.set(response.data.records.slice(0, 5));
 }
 loadStaffDashboard(): void {
 
-  this.loadAdminDashboard();
+  // Customers
+  this.customerService.getCustomers(1, 100).subscribe({
+    next: (response: any) => {
+      this.totalCustomers.set(response.data.totalRecords);
+    }
+  });
+
+  // Policies
+  this.policyService.getPolicies().subscribe({
+    next: (response: any) => {
+      this.totalPolicies.set(response.data.totalRecords);
+      this.calculatePremiumChart(response.data.records);
+    }
+  });
+
+  // Claims for Review
+  this.claimService.getReviewClaims().subscribe({
+    next: (response: any) => {
+
+      const claims = response.data;
+
+      this.totalClaims.set(claims.length);
+
+      this.calculateClaimChart(claims);
+
+      this.recentClaims.set(claims.slice(0, 5));
+
+    },
+    error: () => {
+
+      this.toastr.error(
+        'Unable to load claims.',
+        'Dashboard Error'
+      );
+
+    }
+  });
+
+  // Policy Plans
+  this.policyPlanService.getPlans({
+    pageNumber: 1,
+    pageSize: 100,
+    sortField: 'planName',
+    sortDirection: 'asc'
+  }).subscribe({
+    next: (response: any) => {
+      this.totalPlans.set(response.data.totalRecords);
+      this.topPlans.set(response.data.records.slice(0,5));
+    }
+  });
 
 }
 loadCustomerDashboard(): void {

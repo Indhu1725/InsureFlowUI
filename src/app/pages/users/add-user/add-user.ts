@@ -118,7 +118,7 @@ export class AddUser {
 
       error: (err) => {
 
-        console.log(err);
+        console.error(err);
 
         this.toastr.error(err.error?.message ?? 'Unable to create internal staff.','Error');
 
@@ -152,7 +152,7 @@ export class AddUser {
 
       error: (err) => {
 
-        console.log(err);
+        console.error(err);
 
         this.toastr.error('Unable to add user');
 

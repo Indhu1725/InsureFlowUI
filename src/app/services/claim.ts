@@ -127,5 +127,4 @@ getPagedClaims(request: ClaimPaginationRequest): Observable<any> {
 
 }
 
-
 }

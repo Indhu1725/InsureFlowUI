@@ -86,21 +86,45 @@ export class AddPremiumPaymentComponent implements OnInit {
 }
 loadPolicies(): void {
 
-  this.policyService.getActivePolicies().subscribe({
+  if (localStorage.getItem('role') === 'Customer') {
 
-    next: (response) => {
+    this.policyService.getMyPolicies().subscribe({
 
-      this.policies.set(response.data);
+      next: (response) => {
 
-    },
+        this.policies.set(response.data);
 
-    error: () => {
+      },
 
-      this.toastr.error('Unable to load policies.');
+      error: () => {
 
-    }
+        this.toastr.error('Unable to load policies.');
 
-  });
+      }
+
+    });
+
+  }
+
+  else {
+
+    this.policyService.getActivePolicies().subscribe({
+
+      next: (response) => {
+
+        this.policies.set(response.data);
+
+      },
+
+      error: () => {
+
+        this.toastr.error('Unable to load policies.');
+
+      }
+
+    });
+
+  }
 
 }
 
