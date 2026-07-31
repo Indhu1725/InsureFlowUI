@@ -111,7 +111,7 @@
           <thead>
 
             <tr>
-
+              <th>Photo</th>
               <th>Name</th>
               <th>Email</th>
               <th>Mobile</th>
@@ -130,6 +130,14 @@
             @for(customer of customers(); track customer.customerId) {
 
             <tr>
+               <td>
+                  <img
+                    [src]="customer.profileImageUrl || 'assets/images/default-user.png'"
+                    width="45"
+                    height="45"
+                    class="rounded-circle"
+                    style="object-fit: cover;">
+                </td>
 
               <td>{{ customer.fullName }}</td>
 
@@ -169,7 +177,7 @@
 
             <tr>
 
-              <td colspan="8" class="text-center py-3">
+              <td colspan="9" class="text-center py-3">
 
                 No customers found.
 

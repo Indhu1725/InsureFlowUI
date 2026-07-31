@@ -258,14 +258,17 @@
 
             <tr>
 
-              <th
-                style="cursor:pointer"
-                (click)="sort('policyNumber')">
+                <th>
+                  Customer Name
+                </th>
 
-                Policy Number
+                <th
+                  style="cursor:pointer"
+                  (click)="sort('policyNumber')">
 
-              </th>
+                  Policy Number
 
+                </th>
               <th
                 style="cursor:pointer"
                 (click)="sort('amount')">
@@ -302,11 +305,11 @@
 
               </th>
 
-              <th>
-
-                Action
-
-              </th>
+              @if(role !== 'Customer'){
+                  <th>
+                    Action
+                  </th>
+                  }
 
             </tr>
 
@@ -318,7 +321,10 @@
 
             <tr>
 
-              <td>{{ payment.policyNumber }}</td>
+              
+                <td>{{ payment.customerName }}</td>
+
+                <td>{{ payment.policyNumber }}</td>
 
               <td>{{ payment.amount | currency:'INR':'symbol' }}</td>
 
@@ -330,19 +336,20 @@
 
               <td>{{ payment.paymentStatus }}</td>
 
-              <td>
+              @if(role !== 'Customer'){
+                  <td>
 
-                <button
-                  type="button"
-                  class="btn btn-sm view-btn"
-                  (click)="viewPayment(payment.paymentId)">
+                    <button
+                      type="button"
+                      class="btn btn-sm view-btn"
+                      (click)="viewPayment(payment.paymentId)">
 
-                  View
+                      View
 
-                </button>
+                    </button>
 
-              </td>
-
+                  </td>
+                  }
             </tr>
 
             }

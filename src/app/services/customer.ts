@@ -56,15 +56,30 @@ export class CustomerService {
   }
 
   // Update Customer
-  updateCustomer(
-    id: number,
-    request: CustomerRequest
-  ): Observable<any> {
+  // Update Customer
+updateCustomer(
+  id: number,
+  request: CustomerRequest
+): Observable<any> {
 
-    return this.http.put<any>(
-      `${this.apiUrl}/${id}`,
-      request
-    );
+  const formData = new FormData();
+
+  formData.append('DateOfBirth', request.dateOfBirth);
+  formData.append('Address', request.address);
+  formData.append('City', request.city);
+  formData.append('State', request.state);
+  formData.append('PinCode', request.pinCode);
+  formData.append('NomineeName', request.nomineeName);
+  formData.append('NomineeRelation', request.nomineeRelation);
+
+  if (request.profileImage) {
+    formData.append('ProfileImage', request.profileImage);
   }
+
+  return this.http.put<any>(
+    `${this.apiUrl}/${id}`,
+    formData
+  );
+}
 
 }

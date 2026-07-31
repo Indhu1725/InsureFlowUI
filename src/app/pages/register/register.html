@@ -69,11 +69,11 @@
 
       <div class="register-card">
 
-        <div class="mb-4">
+        <div class="mb-1">
 
           <h2>Create Account</h2>
 
-          <p class="text-muted">
+          <p class="text-muted mb-2">
 
             Fill in the details below to get started
 
@@ -87,7 +87,7 @@
 
           <!-- Full Name -->
 
-          <div class="mb-3">
+          <div class="mb-1">
 
            <label class="form-label d-flex">
               Full Name
@@ -115,8 +115,8 @@
               *ngIf="f['fullName'].touched && f['fullName'].invalid">
 
               <small *ngIf="f['fullName'].errors?.['pattern']">
-Each word must start with a capital letter and contain only letters.
-</small>
+                  Each word must start with a capital letter and contain only letters.
+                  </small>
 
               <small *ngIf="f['fullName'].errors?.['minlength']">
 
@@ -136,7 +136,7 @@ Each word must start with a capital letter and contain only letters.
 
           <!-- Email -->
 
-          <div class="mb-3">
+          <div class="mb-1">
 
             <label class="form-label d-flex">
               Email Address
@@ -181,7 +181,7 @@ Each word must start with a capital letter and contain only letters.
 
           <!-- Mobile Number -->
 
-          <div class="mb-3">
+          <div class="mb-1">
 
             <label class="form-label d-flex">
               Mobile Number
@@ -206,85 +206,92 @@ Each word must start with a capital letter and contain only letters.
             </div>
 
             <div
-  class="text-danger mt-1"
-  *ngIf="f['mobileNumber'].touched && f['mobileNumber'].invalid">
+              class="text-danger mt-1"
+              *ngIf="f['mobileNumber'].touched && f['mobileNumber'].invalid">
 
-  <small *ngIf="f['mobileNumber'].errors?.['required']">
-    Mobile Number is required.
-  </small>
+              <small *ngIf="f['mobileNumber'].errors?.['required']">
+                Mobile Number is required.
+              </small>
 
-  <small *ngIf="f['mobileNumber'].errors?.['pattern']">
-    Mobile Number must contain exactly 10 digits and start with 6, 7, 8, or 9.
-  </small>
+                <small *ngIf="f['mobileNumber'].errors?.['pattern']">
+                  Mobile Number must contain exactly 10 digits and start with 6, 7, 8, or 9.
+                </small>
 
-</div>
+              </div>
 
-          </div>
+                              </div>
+                              <div class="mb-1">
 
-          <!-- Password -->
+                      <label class="form-label d-flex">
+                        Profile Photo
+                      </label>
 
-          <!-- Password -->
+                      <input
+                        type="file"
+                        class="form-control"
+                        accept="image/*"
+                        (change)="onImageSelected($event)">
 
-<div class="mb-3">
+                    </div>
 
-  <label class="form-label d-flex">
-    Password
-    <span class="text-danger fw-bold ms-1">*</span>
-  </label>
+                    <div class="text-center mb-3" *ngIf="imagePreview">
 
-  <div class="input-group">
+                      <img
+                        [src]="imagePreview"
+                        width="90"
+                        height="90"
+                        class="rounded-circle border shadow-sm">
+                    </div>
+                              <!-- Password -->
 
-    <span class="input-group-text">
-      <i class="bi bi-lock"></i>
-    </span>
+                    <div class="mb-1">
 
-    <input
-      [type]="hidePassword() ? 'password' : 'text'"
-      class="form-control"
-      placeholder="Create a password"
-      formControlName="password">
+                      <label class="form-label d-flex">
+                        Password
+                        <span class="text-danger fw-bold ms-1">*</span>
+                      </label>
 
-    <button
-      class="btn btn-outline-secondary"
-      type="button"
-      (click)="togglePassword()">
+                      <div class="input-group">
 
-      <i
-        class="bi"
-        [ngClass]="hidePassword() ? 'bi-eye' : 'bi-eye-slash'">
-      </i>
+                        <span class="input-group-text">
+                          <i class="bi bi-lock"></i>
+                        </span>
 
-    </button>
+                        <input
+                          [type]="hidePassword() ? 'password' : 'text'"
+                          class="form-control"
+                          placeholder="Create a password"
+                          formControlName="password">
 
-  </div>
+                      </div>
 
-  <!-- Password Validation Messages -->
+                      <!-- Password Validation Messages -->
 
-  <div
-    class="text-danger mt-1"
-    *ngIf="f['password'].touched && f['password'].invalid">
+                      <div
+                        class="text-danger mt-1"
+                        *ngIf="f['password'].touched && f['password'].invalid">
 
-    <small *ngIf="f['password'].errors?.['required']">
-      Password is required.
-    </small>
+                        <small *ngIf="f['password'].errors?.['required']">
+                          Password is required.
+                        </small>
 
-    <small *ngIf="f['password'].errors?.['minlength']">
-      Password must be at least 8 characters.
-    </small>
+                        <small *ngIf="f['password'].errors?.['minlength']">
+                          Password must be at least 8 characters.
+                        </small>
 
-    <small *ngIf="f['password'].errors?.['pattern']">
-      Password must contain at least one uppercase letter,
-      one lowercase letter,
-      one number,
-      and one special character.
-    </small>
+                        <small *ngIf="f['password'].errors?.['pattern']">
+                          Password must contain at least one uppercase letter,
+                          one lowercase letter,
+                          one number,
+                          and one special character.
+                        </small>
 
-  </div>
+                      </div>
 
-</div>
+                    </div>
           <!-- Confirm Password -->
 
-          <div class="mb-3">
+          <div class="mb-1">
           <label class="form-label d-flex">
             Confirm Password
             <span class="text-danger fw-bold ms-1">*</span>
@@ -304,18 +311,6 @@ Each word must start with a capital letter and contain only letters.
                 placeholder="Confirm your password"
                 formControlName="confirmPassword">
 
-              <button
-                class="btn btn-outline-secondary"
-                type="button"
-                (click)="toggleConfirmPassword()">
-
-                <i
-                  class="bi"
-                  [ngClass]="hideConfirmPassword()? 'bi-eye' : 'bi-eye-slash'">
-                </i>
-
-              </button>
-
             </div>
 
             <div
@@ -334,7 +329,7 @@ Each word must start with a capital letter and contain only letters.
 
           <!-- Terms -->
 
-          <div class="form-check mb-4">
+          <div class="form-check mb-1">
 
             <input
               class="form-check-input"
@@ -392,7 +387,7 @@ Each word must start with a capital letter and contain only letters.
 
         <!-- Login -->
 
-        <div class="text-center mt-4">
+        <div class="text-center mt-2">
 
           Already have an account?
 

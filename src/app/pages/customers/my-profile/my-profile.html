@@ -19,8 +19,19 @@
   </div>
 
   <!-- Customer Profile -->
+   
 
   @if (customer(); as customer) {
+    <div class="text-center mb-4">
+
+    <img
+        [src]="customer.profileImageUrl || 'assets/images/default-user.png'"
+        class="rounded-circle border shadow"
+        width="160"
+        height="160"
+        style="object-fit:cover">
+
+</div>
 
     <div class="card shadow border-0">
 

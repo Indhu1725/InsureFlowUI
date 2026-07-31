@@ -22,6 +22,7 @@ export class Navbar implements OnInit {
   showProfileMenu = false;
   userEmail = localStorage.getItem('email') || '';
   userRole = localStorage.getItem('role') || '';
+  profileImageUrl = signal('assets/images/avatar.jpg');
 
   searchText = signal('');
 
@@ -37,6 +38,10 @@ ngOnInit(): void {
 
   this.loadNotifications();
 
+  if (this.userRole === 'Customer') {
+    this.loadProfileImage();
+  }
+
 }
 
 
@@ -48,43 +53,96 @@ ngOnInit(): void {
     return;
   }
 
-  if (text.includes('customer')) {
-    this.router.navigate(['/customers']);
-  }
-
-  else if (text.includes('policy plan') || text.includes('plan')) {
-    this.router.navigate(['/policy-plans']);
-  }
-
-  else if (text.includes('policy')) {
-    this.router.navigate(['/policies']);
-  }
-
-  else if (text.includes('claim')) {
-    this.router.navigate(['/claims']);
-  }
-
-  else if (text.includes('premium')) {
-    this.router.navigate(['/premium-payments']);
-  }
-
-  else if (text.includes('product')) {
-    this.router.navigate(['/products']);
-  }
-
-  else if (text.includes('user')) {
-    this.router.navigate(['/users']);
-  }
-
-  else if (text.includes('dashboard')) {
+  // Dashboard
+  if (text === 'dashboard') {
     this.router.navigate(['/dashboard']);
   }
 
-  else {
-    this.toastr.warning('No matching page found.','Search');
+  // My Profile
+  else if (
+    text === 'my profile' ||
+    text === 'profile'
+  ) {
+    if (this.userRole === 'Customer') {
+      this.router.navigate(['/customers/my-profile']);
+    } else {
+      this.router.navigate(['/customers']);
+    }
   }
-   this.searchText.set('');
 
+  // Purchase Policies
+  else if (
+    text === 'purchase policies' ||
+    text === 'purchase policy' ||
+    text === 'purchase'
+  ) {
+    this.router.navigate(['/policy-purchase']);
+  }
+
+  // Policy Plans
+  else if (
+    text === 'policy plans' ||
+    text === 'policy plan' ||
+    text === 'plans' ||
+    text === 'plan'
+  ) {
+    this.router.navigate(['/policy-plans']);
+  }
+
+  // Premium Payments
+  else if (
+    text === 'premium payments' ||
+    text === 'premium payment' ||
+    text === 'premium'
+  ) {
+    this.router.navigate(['/premium-payments']);
+  }
+
+  // Claims
+  else if (
+    text === 'claims' ||
+    text === 'claim'
+  ) {
+    this.router.navigate(['/claims']);
+  }
+
+  // Products
+  else if (
+    text === 'products' ||
+    text === 'product'
+  ) {
+    this.router.navigate(['/products']);
+  }
+
+  // Users
+  else if (
+    text === 'users' ||
+    text === 'user'
+  ) {
+    this.router.navigate(['/users']);
+  }
+
+  // Customers
+  else if (
+    text === 'customers' ||
+    text === 'customer'
+  ) {
+    this.router.navigate(['/customers']);
+  }
+
+  // Policies
+  else if (
+    text === 'policies' ||
+    text === 'policy'
+  ) {
+    this.router.navigate(['/policies']);
+  }
+
+  else {
+    this.toastr.warning('No matching page found.', 'Search');
+  }
+
+  this.searchText.set('');
 }
 loadNotifications(): void {
 
@@ -179,6 +237,29 @@ loadNotifications(): void {
     });
 
   }
+
+}
+loadProfileImage(): void {
+
+  this.customerService.getMyProfile().subscribe({
+
+    next: (response) => {
+
+      const customer = response.data;
+
+      if (customer?.profileImageUrl) {
+        this.profileImageUrl.set(customer.profileImageUrl);
+      }
+
+    },
+
+    error: (err) => {
+
+      console.error('Unable to load profile image', err);
+
+    }
+
+  });
 
 }
 sortNotifications(): void {

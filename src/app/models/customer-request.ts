@@ -6,4 +6,5 @@ export interface CustomerRequest {
   pinCode: string;
   nomineeName: string;
   nomineeRelation: string;
+  profileImage?: File;
 }

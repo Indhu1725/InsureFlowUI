@@ -13,4 +13,5 @@ export interface Customer {
   isActive:boolean;
   createdDate:string;
   updatedDate?:string;
+  profileImageUrl: string;
 }

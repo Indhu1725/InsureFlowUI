@@ -20,7 +20,7 @@
 
 .left-content {
     width: 100%;
-    padding: 45px;
+    padding: 30px;
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -118,10 +118,10 @@
 
 .register-card {
     width: 100%;
-    max-width: 560px;
+    max-width: 550px;
     background: #fff;
     border-radius: 24px;
-    padding: 45px;
+    padding: 22px 28px;
     box-shadow: 0 20px 50px rgba(0,0,0,.08);
 }
 
@@ -165,7 +165,7 @@
 }
 
 .form-control {
-    height: 55px;
+    height: 40px;
     border-left: none;
     border-radius: 0 12px 12px 0;
     font-size: 15px;
@@ -283,7 +283,7 @@
 ========================================== */
 
 .text-danger small {
-    font-size: 13px;
+    font-size: 10px;
 }
 
 /* ==========================================

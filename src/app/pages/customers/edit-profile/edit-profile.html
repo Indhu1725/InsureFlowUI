@@ -15,9 +15,31 @@
 
       @if(!isLoading()){
 
-      <form
-        [formGroup]="editProfileForm"
-        (ngSubmit)="updateProfile()">
+                <form
+                  [formGroup]="editProfileForm"
+                  (ngSubmit)="updateProfile()">
+                  <!-- Profile Image -->
+          <div class="text-center mb-4">
+
+            <img
+              [src]="imagePreview || 'https://via.placeholder.com/150'"
+              alt="Profile Image"
+              class="rounded-circle border shadow"
+              width="150"
+              height="150"
+              style="object-fit: cover;">
+
+            <div class="mt-3">
+
+              <input
+                type="file"
+                accept="image/*"
+                class="form-control"
+                (change)="onImageSelected($event)">
+
+            </div>
+
+          </div>
 
         <div class="row">
 

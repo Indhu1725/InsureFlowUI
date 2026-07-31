@@ -22,6 +22,8 @@ export class Register {
   hidePassword = signal(true);
   hideConfirmPassword = signal(true);
   isSubmitting = signal(false);
+  selectedImage: File | null = null;
+  imagePreview: string | ArrayBuffer | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -133,15 +135,17 @@ export class Register {
 
     const request: RegisterRequest = {
 
-      fullName: this.registerForm.value.fullName.trim(),
+  fullName: this.registerForm.value.fullName.trim(),
 
-      email: this.registerForm.value.email.trim().toLowerCase(),
+  email: this.registerForm.value.email.trim().toLowerCase(),
 
-      password: this.registerForm.value.password,
+  password: this.registerForm.value.password,
 
-      mobileNumber: this.registerForm.value.mobileNumber.trim()
+  mobileNumber: this.registerForm.value.mobileNumber.trim(),
 
-    };
+  profileImage: this.selectedImage ?? undefined
+
+};
 
     this.authService.register(request).subscribe({
 
@@ -180,5 +184,35 @@ export class Register {
     });
 
   }
+  onImageSelected(event: Event): void {
+
+  const input = event.target as HTMLInputElement;
+
+  if (!input.files || input.files.length === 0)
+    return;
+
+  const file = input.files[0];
+
+  if (!file.type.startsWith('image/')) {
+
+    this.toastr.warning('Please select an image.');
+
+    return;
+
+  }
+
+  this.selectedImage = file;
+
+  const reader = new FileReader();
+
+  reader.onload = () => {
+
+    this.imagePreview = reader.result;
+
+  };
+
+  reader.readAsDataURL(file);
+
+}
 
 }

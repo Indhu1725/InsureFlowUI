@@ -30,6 +30,9 @@ export class EditProfile implements OnInit {
   isFormValid = signal(false);
 
   customerId = 0;
+  selectedImage: File | null = null;
+
+  imagePreview: string | ArrayBuffer | null = null;
 
   editProfileForm: FormGroup;
 
@@ -122,6 +125,7 @@ export class EditProfile implements OnInit {
         this.customer.set(customer);
 
         this.customerId = customer.customerId;
+        this.imagePreview = customer.profileImageUrl;
 
         this.editProfileForm.patchValue({
 
@@ -159,6 +163,26 @@ export class EditProfile implements OnInit {
     });
 
   }
+  onImageSelected(event: Event): void {
+
+  const input = event.target as HTMLInputElement;
+
+  if (!input.files || input.files.length === 0)
+    return;
+
+  this.selectedImage = input.files[0];
+
+  const reader = new FileReader();
+
+  reader.onload = () => {
+
+    this.imagePreview = reader.result;
+
+  };
+
+  reader.readAsDataURL(this.selectedImage);
+
+}
 
   updateProfile(): void {
 
@@ -177,8 +201,13 @@ export class EditProfile implements OnInit {
 
     this.isSaving.set(true);
 
-    const request =
-      this.editProfileForm.value as CustomerRequest;
+    const request: CustomerRequest = {
+
+  ...this.editProfileForm.value,
+
+  profileImage: this.selectedImage ?? undefined
+
+};
 
     this.customerService
       .updateCustomer(this.customerId, request)

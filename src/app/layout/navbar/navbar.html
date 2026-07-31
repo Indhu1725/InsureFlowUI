@@ -99,11 +99,11 @@
     <div class="position-relative">
 
   <img
-    src="assets/images/avatar.jpg"
-    alt="Profile"
-    class="avatar"
-    (click)="toggleProfileMenu()"
-    style="cursor:pointer;">
+  [src]="profileImageUrl()"
+  alt="Profile"
+  class="avatar"
+  (click)="toggleProfileMenu()"
+  style="cursor:pointer; object-fit: cover;">
 
   <div
     *ngIf="showProfileMenu"

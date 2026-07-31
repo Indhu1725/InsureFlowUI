@@ -24,14 +24,25 @@ export class AuthService {
 
   }
 
-  register(request: RegisterRequest): Observable<UserResponse> {
+  register(request: RegisterRequest) {
 
-    return this.http.post<UserResponse>(
-      `${this.apiUrl}/register`,
-      request
-    );
+  const formData = new FormData();
 
+  formData.append('FullName', request.fullName);
+  formData.append('Email', request.email);
+  formData.append('Password', request.password);
+  formData.append('MobileNumber', request.mobileNumber);
+
+  if (request.profileImage) {
+    formData.append('ProfileImage', request.profileImage);
   }
+
+  return this.http.post<UserResponse>(
+    `${this.apiUrl}/register`,
+    formData
+  );
+
+}
 
   logout() {
 
