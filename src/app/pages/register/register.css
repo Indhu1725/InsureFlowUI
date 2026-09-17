@@ -33,7 +33,7 @@
 .logo-section {
     display: flex;
     align-items: center;
-    margin-bottom: 45px;
+    margin-bottom: 25px;  
 }
 
 .logo-box {
@@ -69,19 +69,20 @@
 ========================================== */
 
 .welcome-section {
-    margin-bottom: 35px;
+    margin-bottom: 20px;  
 }
 
 .welcome-section h1 {
     font-size: 42px;
     font-weight: 700;
-    margin-bottom: 18px;
+    margin: 0 0 10px 0;   /* 18px → 10px */
 }
 
 .welcome-section p {
     font-size: 18px;
-    line-height: 1.8;
+    line-height: 1.5;     /* 1.8 → 1.5 */
     color: rgba(255,255,255,.85);
+    margin: 0;
 }
 
 /* ==========================================
@@ -89,14 +90,15 @@
 ========================================== */
 
 .dashboard-preview {
-    flex: 1;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
+    margin-top: 10px;
 }
 
 .dashboard-preview img {
-    width: 95%;
+    width: 88%;            /* 95% → 88% */
+    max-width: 560px;
     border-radius: 24px;
     box-shadow: 0 25px 60px rgba(0,0,0,.35);
 }
@@ -107,7 +109,8 @@
 
 .copyright {
     text-align: center;
-    margin-top: 30px;
+    margin-top: 10px;
+    padding: 0;
     font-size: 14px;
     color: rgba(255,255,255,.75);
 }
@@ -310,7 +313,7 @@ a:hover {
     }
 
     .register-card h2 {
-        font-size: 34px;
+        font-size: 32px;
     }
 
 }
@@ -331,11 +334,119 @@ a:hover {
     }
 
     .register-btn {
-        height: 52px;
+        height: 45px;
     }
 
     .social-btn {
         height: 52px;
     }
 
+}
+/* ==========================================
+   Compact Register Page
+========================================== */
+
+/* Register card */
+.register-card {
+    max-width: 550px;
+    padding: 20px 28px;
+    border-radius: 22px;
+}
+
+/* Heading */
+.register-card h2 {
+    font-size: 32px;
+    margin: 0 0 4px 0;
+}
+
+/* Description */
+.register-card > div:first-child p {
+    margin-bottom: 10px !important;
+}
+
+/* Form groups */
+.register-card form > div {
+    margin-bottom: 6px !important;
+}
+
+/* Labels */
+.form-label {
+    font-size: 15px;
+    margin-bottom: 4px !important;
+}
+
+/* Input group */
+.input-group {
+    margin-bottom: 0 !important;
+}
+
+/* Inputs */
+.form-control {
+    height: 42px;
+    font-size: 14px;
+    padding: 8px 12px;
+}
+
+/* Icons */
+.input-group-text {
+    padding: 8px 12px;
+}
+
+/* Validation messages */
+.text-danger {
+    margin-top: 2px !important;
+    line-height: 1.1;
+}
+
+.text-danger small {
+    font-size: 9px;
+}
+
+/* Profile photo input */
+input[type="file"].form-control {
+    height: 42px;
+    padding: 7px 10px;
+}
+
+/* Image preview */
+.register-card img {
+    width: 55px !important;
+    height: 55px !important;
+}
+
+/* Preview spacing */
+.register-card .text-center.mb-3 {
+    margin-bottom: 5px !important;
+}
+
+/* Terms */
+.form-check {
+    margin-top: 5px;
+    margin-bottom: 8px !important;
+}
+
+.form-check-label {
+    font-size: 12px;
+    line-height: 1.2;
+}
+
+/* Create Account button */
+.register-btn {
+    height: 45px;
+    font-size: 15px;
+}
+
+/* Sign In text */
+.register-card .text-center.mt-2 {
+    margin-top: 8px !important;
+    font-size: 13px;
+}
+.image-preview {
+    margin: 4px 0 !important;
+}
+
+.image-preview img {
+    width: 50px !important;
+    height: 50px !important;
+    object-fit: cover;
 }
